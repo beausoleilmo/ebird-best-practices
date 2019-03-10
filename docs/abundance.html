@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Chapter 6 Modeling Relative Abundance | Best Practices for Using eBird Data</title>
+  <meta name="description" content="Best practices for using eBird data to estimate species distributions">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="Chapter 6 Modeling Relative Abundance | Best Practices for Using eBird Data" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Best practices for using eBird data to estimate species distributions" />
+  <meta name="github-repo" content="mstrimas/ebird-good-practices" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Modeling Relative Abundance | Best Practices for Using eBird Data" />
+  
+  <meta name="twitter:description" content="Best practices for using eBird data to estimate species distributions" />
+  
+
+<meta name="author" content="M Strimas-Mackey, A Johnston, WM Hochachka, V Ruiz-Gutierrez, O Robinson, ET Miller, MT Auer, ST Kelling, D Fink">
+
+
+<meta name="date" content="2019-03-10">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="occupancy.html">
+<link rel="next" href="references.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135911366-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-135911366-1');
+</script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">eBird Best Practices</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction and Setup</a><ul>
+<li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#intro-intro"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
+<li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-pre"><i class="fa fa-check"></i><b>1.2</b> Prerequisites</a></li>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="intro.html"><a href="intro.html#intro-setup-data"><i class="fa fa-check"></i><b>1.3.1</b> Data package</a></li>
+<li class="chapter" data-level="1.3.2" data-path="intro.html"><a href="intro.html#intro-setup-ebird"><i class="fa fa-check"></i><b>1.3.2</b> Getting eBird data access</a></li>
+<li class="chapter" data-level="1.3.3" data-path="intro.html"><a href="intro.html#intro-setup-software"><i class="fa fa-check"></i><b>1.3.3</b> Software</a></li>
+<li class="chapter" data-level="1.3.4" data-path="intro.html"><a href="intro.html#intro-setup-packages"><i class="fa fa-check"></i><b>1.3.4</b> R packages</a></li>
+<li class="chapter" data-level="1.3.5" data-path="intro.html"><a href="intro.html#intro-setup-tidyverse"><i class="fa fa-check"></i><b>1.3.5</b> Tidyverse</a></li>
+<li class="chapter" data-level="1.3.6" data-path="intro.html"><a href="intro.html#intro-setup-gis"><i class="fa fa-check"></i><b>1.3.6</b> GIS data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="ebird.html"><a href="ebird.html"><i class="fa fa-check"></i><b>2</b> eBird Data</a><ul>
+<li class="chapter" data-level="2.1" data-path="ebird.html"><a href="ebird.html#ebird-intro"><i class="fa fa-check"></i><b>2.1</b> Introduction</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="ebird.html"><a href="ebird.html#ebird-intro-tax"><i class="fa fa-check"></i><b>2.1.1</b> eBird taxonomy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
+<li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
+<li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="habitat.html"><a href="habitat.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
+<li class="chapter" data-level="3.1" data-path="habitat.html"><a href="habitat.html#habitat-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="habitat.html"><a href="habitat.html#habitat-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="habitat.html"><a href="habitat.html#habitat-dl-r"><i class="fa fa-check"></i><b>3.2.1</b> Download using R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="habitat.html"><a href="habitat.html#habitat-lsm"><i class="fa fa-check"></i><b>3.3</b> Landscape metrics</a></li>
+<li class="chapter" data-level="3.4" data-path="habitat.html"><a href="habitat.html#habitat-prediction"><i class="fa fa-check"></i><b>3.4</b> Prediction surface</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a><ul>
+<li class="chapter" data-level="4.1" data-path="encounter.html"><a href="encounter.html#encouter-intro"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="encounter.html"><a href="encounter.html#encounter-data"><i class="fa fa-check"></i><b>4.2</b> Data preparation</a></li>
+<li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.3.1</b> Calibration</a></li>
+<li class="chapter" data-level="4.3.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-val"><i class="fa fa-check"></i><b>4.3.2</b> Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.4</b> Environmental associations</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.4.1</b> Predictor importance</a></li>
+<li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.4.2</b> Partial dependence</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.5</b> Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
+<li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore"><i class="fa fa-check"></i><b>5.2</b> Exploratory analysis</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-time"><i class="fa fa-check"></i><b>5.2.1</b> Time of day</a></li>
+<li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#checklist-duration-occupancy-explore-duration"><i class="fa fa-check"></i><b>5.2.2</b> Checklist duration {occupancy-explore-duration}</a></li>
+<li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#distance-traveled-occupancy-explore-distance"><i class="fa fa-check"></i><b>5.2.3</b> Distance traveled {occupancy-explore-distance}</a></li>
+<li class="chapter" data-level="5.2.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-observers"><i class="fa fa-check"></i><b>5.2.4</b> Number of observers</a></li>
+<li class="chapter" data-level="5.2.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-cci"><i class="fa fa-check"></i><b>5.2.5</b> Checklist Calibration Index</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.3</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.3.1</b> Preparing for occupancy modeling</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.4</b> Spatial subsampling</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.4.1</b> <code>unmarked</code> object</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.5</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.5.1</b> Assessment</a></li>
+<li class="chapter" data-level="5.5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.5.2</b> Model selection</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.6</b> Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
+<li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="abundance.html"><a href="abundance.html#abundance-data"><i class="fa fa-check"></i><b>6.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="abundance.html"><a href="abundance.html#abundance-data-sss"><i class="fa fa-check"></i><b>6.2.1</b> Spatiotemporal subsampling</a></li>
+<li class="chapter" data-level="6.2.2" data-path="abundance.html"><a href="abundance.html#abundance-data-tt"><i class="fa fa-check"></i><b>6.2.2</b> Test-train split</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>6.3</b> Abundance models</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="abundance.html"><a href="abundance.html#abundance-model-val"><i class="fa fa-check"></i><b>6.3.1</b> Validation</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="abundance.html"><a href="abundance.html#abundance-predict"><i class="fa fa-check"></i><b>6.4</b> Prediction</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Best Practices for Using eBird Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="abundance" class="section level1">
+<h1><span class="header-section-number">Chapter 6</span> Modeling Relative Abundance</h1>
+<div id="abundance-intro" class="section level2">
+<h2><span class="header-section-number">6.1</span> Introduction</h2>
+<p>The previous two chapters focused on modeling occurrence. In Chapter <a href="encounter.html#encounter">4</a>, we modeled encounter rate (i.e. relative occupancy), then in Chapter <a href="occupancy.html#occupancy">5</a> we modeled absolute occupancy, by explicitly accounting for detection probability. However, in addition to recording which species they observed, eBirders have the option of specifying how many individuals of each species were observed. So, in this chapter, we’ll take advantage of these counts to model relative abundance. The metric we are modelling for each species is the expected number of indivudals observed by an expert eBirder on a standard eBird checklist. Note that, as with encounter rate, because we’re not explicitly modeling the deteciton process, our estimates of abundance will be relative to absolute abundance.</p>
+<p>We’ll start by reading in the data and spatiotemporally subsampling it to reduce bias. Next, we’ll fit models of relative abundance using <a href="https://en.wikipedia.org/wiki/Generalized_additive_model">Generalized Additive Models (GAM)</a> with count as the response. We’ll test three different distributions for the response: zero-inflated Poisson, negative binomial, and Tweedie. The distribution of counts varies by species, season, and region, so it is difficult to predict which statistical distribution will be most appropriate. Running models with three different distributions gives us the opportunity to assess which of these fit the data best. We’ll use cross-validation to assess the performance of these models and help us choose which of the three is most suitable. Finally, we’ll make predictions of relative abundance throughout BCR 27 and produce a map of these predictions.</p>
+</div>
+<div id="abundance-data" class="section level2">
+<h2><span class="header-section-number">6.2</span> Data preparation</h2>
+<p>Let’s start by loading the necessary packages and data. If you haven’t already done so, you may want to <a href="(https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip)">download the data package</a> and unzip it to your working directory. As in previous chapters, the Checklist Calibration Index (CCI) is an <strong>optional</strong> covariate in these models. If you’ve <a href="https://ebird.org/data/download">downloaded</a> these data, put the CCI text file in the <code>data/</code> subdirectory of your project. If you haven’t downloaded these data, you can proceed with all the other code, but your maps may have some differences to those shown here.</p>
+<p>Because we’re modeling abundance in this chapter, we’ll remove any records for which the observer reported that Wood Thrush was present, but didn’t report a count of the number of species (coded as ‘X’ records in the eBird database). We’ll also add a day of year variable (1-365) that will be useful as a covariates in the abundance models.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(sf)
+<span class="kw">library</span>(raster)
+<span class="kw">library</span>(dggridR)
+<span class="kw">library</span>(pdp)
+<span class="kw">library</span>(edarf)
+<span class="kw">library</span>(mgcv)
+<span class="kw">library</span>(fitdistrplus)
+<span class="kw">library</span>(viridis)
+<span class="kw">library</span>(fields)
+<span class="kw">library</span>(tidyverse)
+<span class="co"># resolve namespace conflicts</span>
+select &lt;-<span class="st"> </span>dplyr<span class="op">::</span>select
+map &lt;-<span class="st"> </span>purrr<span class="op">::</span>map
+projection &lt;-<span class="st"> </span>raster<span class="op">::</span>projection
+
+<span class="kw">set.seed</span>(<span class="dv">1</span>)
+
+<span class="co"># ebird data</span>
+ebird &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/ebd_woothr_june_bcr27_zf.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">year</span>(observation_date),
+         <span class="dt">day_of_year =</span> <span class="kw">yday</span>(observation_date),
+         <span class="dt">protocol_type =</span> <span class="kw">factor</span>(protocol_type, 
+                                <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;Stationary&quot;</span> , <span class="st">&quot;Traveling&quot;</span>))) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="co"># remove observations with no count</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(observation_count))
+
+<span class="co"># modis habitat covariates</span>
+habitat &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/modis_pland_location-year.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">as.integer</span>(year))
+
+<span class="co"># combine ebird and habitat data</span>
+ebird_habitat &lt;-<span class="st"> </span><span class="kw">inner_join</span>(ebird, habitat, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;locality_id&quot;</span>, <span class="st">&quot;year&quot;</span>))
+
+<span class="co"># optional checklist calibration index</span>
+cci_file &lt;-<span class="st"> &quot;data/cci_june_bcr27.csv&quot;</span>
+<span class="cf">if</span> (<span class="kw">file.exists</span>(cci_file)) {
+  cci &lt;-<span class="st"> </span><span class="kw">read_csv</span>(cci_file)
+  ebird_habitat &lt;-<span class="st"> </span><span class="kw">inner_join</span>(ebird_habitat, cci, <span class="dt">by =</span> <span class="st">&quot;checklist_id&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(checklist_calibration_index))
+}
+
+<span class="co"># prediction surface</span>
+pred_surface &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/modis_pland_prediction-surface.csv&quot;</span>)
+r &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;data/prediction-surface.tif&quot;</span>)
+
+<span class="co"># load agid data for making maps</span>
+map_proj &lt;-<span class="st"> </span><span class="kw">st_crs</span>(<span class="dv">102003</span>)
+ne_land &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_land&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_geometry</span>()
+bcr &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;bcr&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_geometry</span>()
+ne_country_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_country_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_geometry</span>()
+ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_state_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_geometry</span>()</code></pre>
+<div id="abundance-data-sss" class="section level3">
+<h3><span class="header-section-number">6.2.1</span> Spatiotemporal subsampling</h3>
+<p>As discussed in Section <a href="encounter.html#encounter-sss">4.3</a>, spatiotemporal subsampling detection and non-detection observations reduces spatial and temporal bias and the class imbalance. We’ll use exactly the same hexagonal subsampling approach as in Chapter <a href="encounter.html#encounter">4</a>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span>
+dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)
+<span class="co"># get hexagonal cell id and week number for each checklist</span>
+checklist_cell &lt;-<span class="st"> </span>ebird_habitat <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cell =</span> <span class="kw">dgGEO_to_SEQNUM</span>(dggs, longitude, latitude)<span class="op">$</span>seqnum,
+         <span class="dt">week =</span> <span class="kw">week</span>(observation_date))
+<span class="co"># sample one checklist per grid cell per week</span>
+<span class="co"># sample detection/non-detection independently </span>
+ebird_ss &lt;-<span class="st"> </span>checklist_cell <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(species_observed, week, cell) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cell, <span class="op">-</span>week)</code></pre>
+</div>
+<div id="abundance-data-tt" class="section level3">
+<h3><span class="header-section-number">6.2.2</span> Test-train split</h3>
+<p>Before we fit the abundance models, we randomly split the data into 80% of checklists for training and 20% for testing. We’ll hold this 20% aside when we fit the model, then use it as an independent data set to test the predictive performance of the model. Here we select a random 20% of the data, but there are a variety of strategies to select data for testing that may be appropriate in different situations. At this stage, we’ll also select only the variables that we’ll use as covariates in the models. In particular, we’ll use the full suite of effort covariates and the same four habitat covariates we used in Chapter <a href="occupancy.html#occupancy">5</a>. Known wood thrush nesting habitats are deciduous broadleaf forest (<code>pland_04</code>) and mixed forest (<code>pland_05</code>). Habitats they are thought to avoid are croplands (<code>pland_12</code>) and urban (<code>pland_13</code>). The specific set of habit covariates you use will be specific for your species and should be informed by <em>a priori</em> ecological knowledge of the species. See Section <a href="habitat.html#habitat-intro">3.1</a> for a list of the habitat covariates available here.</p>
+<pre class="sourceCode r"><code class="sourceCode r">hab_covs &lt;-<span class="st"> </span><span class="kw">c</span>(
+  <span class="co"># % deciduous forest</span>
+  <span class="st">&quot;pland_04&quot;</span>,
+  <span class="co"># % mixed forest</span>
+  <span class="st">&quot;pland_05&quot;</span>,
+  <span class="co"># % cropland</span>
+  <span class="st">&quot;pland_12&quot;</span>,
+  <span class="co"># % urban</span>
+  <span class="st">&quot;pland_13&quot;</span>)
+ebird_split &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># select only the columns to be used in the model</span>
+<span class="st">  </span><span class="kw">select</span>(observation_count,
+         <span class="co"># effort covariates</span>
+         day_of_year, time_observations_started, duration_minutes,
+         effort_distance_km, number_observers, protocol_type,
+         <span class="kw">contains</span>(<span class="st">&quot;checklist_calibration_index&quot;</span>),
+         <span class="co"># habitat covariates</span>
+         hab_covs) 
+<span class="co"># split 80/20</span>
+ebird_split &lt;-<span class="st"> </span>ebird_split <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">split</span>(<span class="kw">if_else</span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(.)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.8</span>, <span class="st">&quot;train&quot;</span>, <span class="st">&quot;test&quot;</span>))
+<span class="kw">map_int</span>(ebird_split, nrow)
+<span class="co">#&gt;  test train </span>
+<span class="co">#&gt;  2072  8309</span></code></pre>
+</div>
+</div>
+<div id="abundance-model" class="section level2">
+<h2><span class="header-section-number">6.3</span> Abundance models</h2>
+<p>Before we embark on modelling the counts, we’ll start by examining the distribution of the count data. This will give us an idea of which distributions may be appropriate for the counts of this species. We’re looking to assess whether the data fall neatly into known distributions and whether they show evidence of zero-inflation. We look at the distribution of counts both with all the zeros and without the zeros. eBird data often have a very high number of zero counts, as even common bird species are not seen on every checklist.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Skewness">skewness</a> and <a href="https://en.wikipedia.org/wiki/Kurtosis">kurtosis</a> describe aspects of the shape of distributions. A Cullen &amp; Frey graph shows the possible ranges of skewness and kurtosis for a variety of distributions. These plots show where the species count data fall in relation to a variety of distributions. This indicates which distributions may be most appropriate. By also examining the distribution for just the counts (without zeros), we get an indication of whether a zero-inflated distribution may be appropriate.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))
+<span class="co"># counts with zeros</span>
+<span class="kw">hist</span>(ebird_ss<span class="op">$</span>observation_count, <span class="dt">main =</span> <span class="st">&quot;Histogram of counts&quot;</span>)
+<span class="kw">descdist</span>(ebird_ss<span class="op">$</span>observation_count, <span class="dt">discrete =</span> <span class="ot">TRUE</span>)
+<span class="co">#&gt; summary statistics</span>
+<span class="co">#&gt; ------</span>
+<span class="co">#&gt; min:  0   max:  21 </span>
+<span class="co">#&gt; median:  0 </span>
+<span class="co">#&gt; mean:  0.175 </span>
+<span class="co">#&gt; estimated sd:  0.657 </span>
+<span class="co">#&gt; estimated skewness:  8.89 </span>
+<span class="co">#&gt; estimated kurtosis:  163</span>
+<span class="co"># counts without zeros</span>
+pos_counts &lt;-<span class="st"> </span><span class="kw">keep</span>(ebird_ss<span class="op">$</span>observation_count, <span class="op">~</span><span class="st"> </span>. <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)
+<span class="kw">hist</span>(pos_counts, <span class="dt">main =</span> <span class="st">&quot;Histogram of counts &gt; 0&quot;</span>)
+<span class="kw">descdist</span>(pos_counts, <span class="dt">discrete =</span> <span class="ot">TRUE</span>)   
+<span class="co">#&gt; summary statistics</span>
+<span class="co">#&gt; ------</span>
+<span class="co">#&gt; min:  1   max:  21 </span>
+<span class="co">#&gt; median:  1 </span>
+<span class="co">#&gt; mean:  1.54 </span>
+<span class="co">#&gt; estimated sd:  1.3 </span>
+<span class="co">#&gt; estimated skewness:  5.83 </span>
+<span class="co">#&gt; estimated kurtosis:  61.6</span></code></pre>
+<p><img src="ebird-good-practices_files/figure-html/abundance-model-dist-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>For the data that include zeros (top row), the wood thrush shows an extremely zero-inflated and skewed distribution. There are a large number of zero-counts (checklists with no wood thrush detections). The Cullen &amp; Frey graph shows that the observed distribution of counts including zeros (the blue dot) is far from the normal, poisson and negative binomial distributions. It is closest to the negative binomial distribution.</p>
+<p>For the counts only (bottom row), the wood thrush data still show a highly skewed distribution, with lots of checklists with low numbers and only a few checklists with &gt;5 woodthrush. The Cullen &amp; Frey graph indicates that even without zeros the data are far from complying with a standard distribution.</p>
+<p>These plots and conclusions are only indicative - they provide some information about what we can expect for distributions at the next step. Overall for wood thrush we can conclude that the counts are highly skewed with many zero observations.</p>
+<p>Prior to fitting our GAM models, let’s construct the model formula that we’ll use when we call the fitting function. As this is a GAM, for each variable, we’ll need to define the parameters of the smoothing function used. In particular, for each of the continuous covariates we’ll use a thin plate spline smooth with four degrees of freedom (<code>k = 5</code>). The degrees of freedom describe the maximum number of basis functions that contribute to the final smooth spline. In general across a variety of splines the degrees of freedom relate to the ‘wiggliness’ of the smooth function. Higher degrees of freedom will lead to a more wiggly and flexible function. The one variable with a different smooth is checklist start time, which is a cyclic variable (i.e. 0 and 24 are both midnight), so we’ll use a cubic cyclic spline (<code>bs = &quot;cc&quot;</code>) with six degrees of freedom (<code>k = 7</code>). The degrees of freedom selected define the maximum wiggliness and the gam function automatically reduces the degrees of freedom used if the data do not show evidence of a complex relationship. We recommend that users assess the fitted relationships to see whether they show biologically plausible relationships between variables and species counts. Splines can sometimes overfit and in these cases it would be appropriate to reduce the degrees of freedom.</p>
+<p>GAMs are complex and powerful models, but assessing their fit and adapting them accordingly is sometimes more of an art than a science. We recommend people using these functions for their own models consult with a statistician or someone with experience in quantitative modelling.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># gam parameters</span>
+<span class="co"># degrees of freedom for smoothing</span>
+k &lt;-<span class="st"> </span><span class="dv">5</span>
+<span class="co"># degrees of freedom for cyclic time of day smooth</span>
+k_time &lt;-<span class="st"> </span><span class="dv">7</span> 
+
+<span class="co"># continuous predictors</span>
+<span class="co"># hold out time to treat seperately since it&#39;s cyclic</span>
+continuous_covs &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>observation_count, <span class="op">-</span>protocol_type, <span class="op">-</span>time_observations_started) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">names</span>()
+
+<span class="co"># create model formula for predictors</span>
+gam_formula_rhs &lt;-<span class="st"> </span><span class="kw">str_glue</span>(<span class="st">&quot;s({var}, k = {k})&quot;</span>, 
+                            <span class="dt">var =</span> continuous_covs, <span class="dt">k =</span> k) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">str_flatten</span>(<span class="dt">collapse =</span> <span class="st">&quot; + &quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">str_glue</span>(<span class="st">&quot; ~ &quot;</span>, .,
+           <span class="st">&quot; + protocol_type + &quot;</span>,
+           <span class="st">&quot;s(time_observations_started, bs = </span><span class="ch">\&quot;</span><span class="st">cc</span><span class="ch">\&quot;</span><span class="st">, k = {k})&quot;</span>, 
+           <span class="dt">k =</span> k_time) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">as.formula</span>()
+
+<span class="co"># model formula including response</span>
+gam_formula &lt;-<span class="st"> </span><span class="kw">update.formula</span>(observation_count <span class="op">~</span><span class="st"> </span>., gam_formula_rhs)
+gam_formula
+<span class="co">#&gt; observation_count ~ s(day_of_year, k = 5) + s(duration_minutes, </span>
+<span class="co">#&gt;     k = 5) + s(effort_distance_km, k = 5) + s(number_observers, </span>
+<span class="co">#&gt;     k = 5) + s(checklist_calibration_index, k = 5) + s(pland_04, </span>
+<span class="co">#&gt;     k = 5) + s(pland_05, k = 5) + s(pland_12, k = 5) + s(pland_13, </span>
+<span class="co">#&gt;     k = 5) + protocol_type + s(time_observations_started, bs = &quot;cc&quot;, </span>
+<span class="co">#&gt;     k = 7)</span></code></pre>
+<p>Now we’ll use this formula to fit GAM models, testing the following three distributions for the counts:</p>
+<ul>
+<li><p><strong>Zero-inflated Poisson:</strong> This distribution effectively fits the data in two parts: (1) a binomial model that determines the variables associated with species <em>presence</em> and (2) a Poisson count model for those places with species presence, that determines the variables associated with species <em>count</em>. This is an effective distribution when there are a large number of zero counts in the data and the positive counts approximate a Poisson distribution.</p></li>
+<li><p><strong>Negative binomial:</strong> The negative binomial distribution is related to the Poisson distribution. However, the Poisson distribution has the variance of the distribution equal to the mean. With the negative binomial the variance can be considerably different to the mean. This distribution is appropriate for over-dispersed data when the variance is much larger than the mean. This is a common pattern in ecological count data.</p></li>
+<li><p><strong>Tweedie distribution:</strong> Tweedie provides the most flexibility as it encompasses a wide variety of distributions, including those with extremely high variance relative to the mean and extreme over-dispersion. The Tweedie is a general family of probability distributions which includes many more typical distributions: normal, gamma and Poisson.</p></li>
+</ul>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># explicitly specify where the knots should occur for time_observations_started</span>
+<span class="co"># this ensures that the cyclic spline joins the variable at midnight</span>
+<span class="co"># this won&#39;t happen by default if there are no data near midnight</span>
+time_knots &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">time_observations_started =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">length.out =</span> k_time))
+
+<span class="co"># zero-inflated poisson</span>
+m_ziplss &lt;-<span class="st"> </span><span class="kw">gam</span>(<span class="kw">list</span>(gam_formula, <span class="co"># count model</span>
+                     gam_formula_rhs), <span class="co"># presence model</span>
+                <span class="dt">data =</span> ebird_split<span class="op">$</span>train, 
+                <span class="dt">family =</span> <span class="st">&quot;ziplss&quot;</span>, 
+                <span class="dt">knots =</span> time_knots)
+
+<span class="co"># negative binomial</span>
+m_nb &lt;-<span class="st"> </span><span class="kw">gam</span>(gam_formula,
+            <span class="dt">data =</span> ebird_split<span class="op">$</span>train, 
+            <span class="dt">family =</span> <span class="st">&quot;nb&quot;</span>,
+            <span class="dt">knots =</span> time_knots)
+
+<span class="co"># tweedie distribution</span>
+m_tw &lt;-<span class="st"> </span><span class="kw">gam</span>(gam_formula,
+            <span class="dt">data =</span> ebird_split<span class="op">$</span>train, 
+            <span class="dt">family =</span> <span class="st">&quot;tw&quot;</span>,
+            <span class="dt">knots =</span> time_knots)</code></pre>
+<div id="abundance-model-val" class="section level3">
+<h3><span class="header-section-number">6.3.1</span> Validation</h3>
+<p>Before we use formal cross validation to assess these models, let’s visualize the results to see if they appear biologically feasible. Calling <code>plot()</code> on the fitted GAM objects produces plots of the smooth functions for each of the predictors, which gives us a sense of the effect of each predictor on the count response. Unfortunately, for large numbers of predictors, <code>plot()</code> doesn’t work well. Instead, we write a function to capture the data behind the plotting function, then plot it using <code>ggplot2</code> instead.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ggplot function</span>
+plot_gam &lt;-<span class="st"> </span><span class="cf">function</span>(m, <span class="dt">title =</span> <span class="ot">NULL</span>, <span class="dt">ziplss =</span> <span class="kw">c</span>(<span class="st">&quot;presence&quot;</span>, <span class="st">&quot;abundance&quot;</span>)) {
+  <span class="co"># capture plot</span>
+  tmp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
+  <span class="kw">png</span>(tmp)
+  p &lt;-<span class="st"> </span><span class="kw">plot</span>(m, <span class="dt">pages =</span> <span class="dv">1</span>)
+  <span class="kw">dev.off</span>()
+  <span class="kw">unlink</span>(tmp)
+
+  <span class="co"># drop addition models in ziplss</span>
+  <span class="cf">if</span> (m<span class="op">$</span>family<span class="op">$</span>family <span class="op">==</span><span class="st"> &quot;ziplss&quot;</span>) {
+    is_presence &lt;-<span class="st"> </span><span class="kw">map_lgl</span>(p, <span class="op">~</span><span class="st"> </span><span class="kw">str_detect</span>(.<span class="op">$</span>ylab, <span class="st">&quot;^s</span><span class="ch">\\</span><span class="st">.1&quot;</span>))
+    <span class="cf">if</span> (ziplss <span class="op">==</span><span class="st"> &quot;presence&quot;</span>) {
+      p &lt;-<span class="st"> </span>p[is_presence]  
+    } <span class="cf">else</span> {
+      p &lt;-<span class="st"> </span>p[<span class="op">!</span>is_presence]
+    }
+  }
+  
+  <span class="co"># extract data</span>
+  p_df &lt;-<span class="st"> </span><span class="kw">map_df</span>(p, <span class="op">~</span><span class="st"> </span><span class="kw">tibble</span>(<span class="dt">cov =</span> <span class="kw">rep</span>(.<span class="op">$</span>xlab, <span class="kw">length</span>(.<span class="op">$</span>x)),
+                             <span class="dt">x =</span> .<span class="op">$</span>x, <span class="dt">fit =</span> .<span class="op">$</span>fit, <span class="dt">se =</span> .<span class="op">$</span>se))
+
+  <span class="co"># plot</span>
+  g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(p_df) <span class="op">+</span>
+<span class="st">    </span><span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> fit,
+        <span class="dt">ymin =</span> fit <span class="op">-</span><span class="st"> </span>se, <span class="dt">ymax =</span> fit <span class="op">+</span><span class="st"> </span>se) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_ribbon</span>(<span class="dt">fill =</span> <span class="st">&quot;grey80&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>cov, <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>,
+         <span class="dt">y =</span> <span class="st">&quot;Smooth function&quot;</span>,
+         <span class="dt">title =</span> title)
+  <span class="kw">print</span>(g)
+  <span class="kw">invisible</span>(p_df)
+}
+
+<span class="kw">plot_gam</span>(m_ziplss, 
+         <span class="dt">title =</span> <span class="st">&quot;Zero-inflated Poisson GAM (Presence Model)&quot;</span>,
+         <span class="dt">ziplss =</span> <span class="st">&quot;presence&quot;</span>)
+<span class="kw">plot_gam</span>(m_ziplss, 
+         <span class="dt">title =</span> <span class="st">&quot;Zero-inflated Poisson GAM (Abundance Model)&quot;</span>,
+         <span class="dt">ziplss =</span> <span class="st">&quot;abundance&quot;</span>)
+<span class="kw">plot_gam</span>(m_nb, <span class="dt">title =</span> <span class="st">&quot;Negative Binomial GAM&quot;</span>)
+<span class="kw">plot_gam</span>(m_tw, <span class="dt">title =</span> <span class="st">&quot;Tweedie Distributed GAM&quot;</span>)</code></pre>
+<p><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-2.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-3.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-4.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. In this case, the relationships appear to be reasonable. Next we’ll proceed with a formal cross-validation of the three models. Recall from Section <a href="encounter.html#encounter-rf-val">4.3.2</a> that this involves making predictions for the test dataset, which wasn’t used to fit the models, then assessing how well these predictions relate to the actual observed counts.</p>
+<p>Care needs to be taken when making predictions from the zero-inflated Poisson model since it has two components: the probability of presence and expected count given presence. As a result, the <code>predict()</code> function returns a two column matrix with the count and probability respectively, both on the scale of the link functions. So, we need to back-transform these values, then multiply them to get the expected count.</p>
+<pre class="sourceCode r"><code class="sourceCode r">obs_count &lt;-<span class="st"> </span><span class="kw">select</span>(ebird_split<span class="op">$</span>test, <span class="dt">obs =</span> observation_count)
+
+<span class="co"># presence probability is on the complimentary log-log scale</span>
+<span class="co"># we can get the inverse link function with</span>
+inv_link &lt;-<span class="st"> </span><span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;cloglog&quot;</span>)<span class="op">$</span>linkinv
+<span class="co"># count is on the log scale</span>
+m_ziplss_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_ziplss, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">family =</span> <span class="st">&quot;Zero-inflated Poisson&quot;</span>,
+            <span class="dt">pred =</span> <span class="kw">inv_link</span>(V2) <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(V1)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_cols</span>(obs_count)
+
+m_nb_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_nb, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">tibble</span>(<span class="dt">family =</span> <span class="st">&quot;Negative Binomial&quot;</span>, <span class="dt">pred =</span> .) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_cols</span>(obs_count)
+
+m_tw_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(m_tw, ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">tibble</span>(<span class="dt">family =</span> <span class="st">&quot;Tweedie&quot;</span>, <span class="dt">pred =</span> .) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_cols</span>(obs_count)
+
+<span class="co"># combine predictions</span>
+test_pred &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(m_ziplss_pred, m_nb_pred, m_tw_pred) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">family =</span> <span class="kw">as_factor</span>(family))</code></pre>
+<p>Let’s look at a plot of how these predictions compare to the observed counts. Assessing the fit of the models depends considerably on the goals of the model and the most important aspects of the model fit. Here we assume that underestimated abundances are more problematic than overestimated abundances, but model fit assessment should be tailored to the particular goals of an estimated species distribution. We’ll highlight in red on these plots the regions where the predictions are underestimated by more than an order of magnitude. We’ll also overlay the line <span class="math inline">\(y = x\)</span>, which separates overestimates (above the line) from underestimates (below the line), and a blue smoothed fit showing the general trend through all the data.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot predicted vs. observed</span>
+ticks &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">1000</span>)
+mx &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">max</span>(test_pred<span class="op">$</span>obs))
+<span class="kw">ggplot</span>(test_pred) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">log10</span>(obs <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), 
+      <span class="dt">y =</span> <span class="kw">log10</span>(pred <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_jitter</span>(<span class="dt">alpha =</span> <span class="fl">0.2</span>, <span class="dt">height =</span> <span class="dv">0</span>) <span class="op">+</span>
+<span class="st">  </span><span class="co"># y = x line</span>
+<span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="co"># area where counts off by a factor of 10</span>
+<span class="st">  </span><span class="kw">geom_area</span>(<span class="dt">data =</span> <span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">log10</span>(<span class="kw">seq</span>(<span class="dv">0</span>, mx <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), 
+                          <span class="dt">y =</span> <span class="kw">log10</span>(<span class="kw">seq</span>(<span class="dv">0</span>, mx <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span><span class="dv">10</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)),
+            <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y),
+            <span class="dt">fill =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.2</span>) <span class="op">+</span>
+<span class="st">  </span><span class="co"># loess fit</span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;loess&quot;</span>, 
+              <span class="dt">method.args =</span> <span class="kw">list</span>(<span class="dt">span =</span> <span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">3</span>, <span class="dt">degree =</span> <span class="dv">1</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">log10</span>(ticks <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), <span class="dt">labels =</span> ticks) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks =</span> <span class="kw">log10</span>(ticks <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), <span class="dt">labels =</span> ticks) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Observed count&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;Predicted count&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>family, <span class="dt">nrow =</span> <span class="dv">1</span>)</code></pre>
+<p><img src="ebird-good-practices_files/figure-html/encounter-rf-val-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>We see that most of the observed counts are underestimated by the predictions, as most points and the blue line are below the gray y=x line. We also see that most of the checklists observe no wood thrush. Although most predictions for these are also zero (blue line is at 0), there are still a lot of places with predicted Wood Thrush where none were observed. There are also a large number of observations in that problematic region of underestimation by an order of magnitude or more. How many of these cases are there?</p>
+<pre class="sourceCode r"><code class="sourceCode r">test_pred <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n =</span> <span class="kw">sum</span>(obs <span class="op">/</span><span class="st"> </span>pred <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>),
+            <span class="dt">pct =</span> <span class="kw">mean</span>(obs <span class="op">/</span><span class="st"> </span>pred <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>))
+<span class="co">#&gt; # A tibble: 3 x 3</span>
+<span class="co">#&gt;   family                    n    pct</span>
+<span class="co">#&gt;   &lt;fct&gt;                 &lt;int&gt;  &lt;dbl&gt;</span>
+<span class="co">#&gt; 1 Zero-inflated Poisson   131 0.0632</span>
+<span class="co">#&gt; 2 Negative Binomial        67 0.0323</span>
+<span class="co">#&gt; 3 Tweedie                  70 0.0338</span></code></pre>
+<p>It appears based on this metric, that the zero-inflated Poisson model is performing worst in terms of underestimation. Let’s examine some of the cross-validation metrics: deviance explained, mean-squared error (MSE), and Spearman’s rank correlation.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># deviance explained</span>
+de &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">summary</span>(m_ziplss)<span class="op">$</span>dev.expl,
+        <span class="kw">summary</span>(m_nb)<span class="op">$</span>dev.expl,
+        <span class="kw">summary</span>(m_tw)<span class="op">$</span>dev.expl)
+
+<span class="co"># mse and rank correlation</span>
+gam_assessment &lt;-<span class="st"> </span>test_pred <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mse =</span> <span class="kw">mean</span>((obs <span class="op">-</span><span class="st"> </span>pred)<span class="op">^</span><span class="dv">2</span>, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>),
+            <span class="dt">rank_cor =</span> <span class="kw">cor.test</span>(obs, pred, 
+                                <span class="dt">method =</span> <span class="st">&quot;spearman&quot;</span>, 
+                                <span class="dt">exact =</span> <span class="ot">FALSE</span>)<span class="op">$</span>estimate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">dev_exp =</span> de)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">family</th>
+<th align="right">mse</th>
+<th align="right">rank_cor</th>
+<th align="right">dev_exp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Zero-inflated Poisson</td>
+<td align="right">0.373</td>
+<td align="right">0.252</td>
+<td align="right">0.164</td>
+</tr>
+<tr class="even">
+<td align="left">Negative Binomial</td>
+<td align="right">0.372</td>
+<td align="right">0.275</td>
+<td align="right">0.254</td>
+</tr>
+<tr class="odd">
+<td align="left">Tweedie</td>
+<td align="right">0.365</td>
+<td align="right">0.271</td>
+<td align="right">0.232</td>
+</tr>
+</tbody>
+</table>
+<p>The zero-inflated Poisson model performs the worst across all metrics: it has the largest number of problematic errors, the highest MSE, and the lowest values for both rank correlation and deviance explained. The negative binomial and Tweedie models are more similarly in performance. The negative binomial model has slightly more problematic errors and higher MSE, but it performs slightly better in terms of deviance explained and rank correlation. Either model could be chosen; however, it appears visually that predictions from the negative binomial model tend to be a bit higher, and closer to the <span class="math inline">\(y = x\)</span> line, than predictions from the Tweedie model. So, taking a holistic view, the negative binomial model appears to be the best choice in this scenario. Depending on your focal species and region, as well as the particular goals of your analysis, some aspects of model fit will be more important than others, and you may find that a different model is most suitable for your situation.</p>
+<p>Overall, we see that none of these models has a high deviance explained. So a large degree of the variation in wood thrush counts on checklists are not explained by the variables in this model. It is important to hold this in mind when we use results from this model and produce predicted maps.</p>
+<p>In this case we select the negative binomial as the best model from these three options.</p>
+<pre class="sourceCode r"><code class="sourceCode r">pred_model &lt;-<span class="st"> </span>m_nb</code></pre>
+</div>
+</div>
+<div id="abundance-predict" class="section level2">
+<h2><span class="header-section-number">6.4</span> Prediction</h2>
+<p>Now that we’ve selected the negative binomial GAM, we can use this model to map Wood Thrush relative abundance in BCR 27! In Section <a href="habitat.html#habitat-prediction">3.4</a>, we created a prediction surface consisting of the PLAND habitat covariates summarized on a regular grid of points across BCR 27. In this section, we’ll make predictions of relative abundance at these points. However, first we need to bring effort variables into this prediction surface. We’ll use a <strong>standard eBird checklist</strong>: a 1 km, 1 hour traveling count done by a single observer expert eBirder (CCI = 2) at the peak time of day for detecting this this species. To determine this peak time, we’ll predict abundance and its 95% confidence limits at a series of times throughout the day, then pick the time at which the lower confidence limit is at its maximum. By using the lower confidence limits, we select a time that we are confident has high detectability and buffer against edge effects where there are few data points.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create a dataframe of covariates with a range of start times</span>
+seq_tod &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">length.out =</span> <span class="dv">300</span>)
+tod_df &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># find average pland habitat covariates</span>
+<span class="st">  </span><span class="kw">select</span>(<span class="kw">starts_with</span>(<span class="st">&quot;pland&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize_all</span>(mean, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># use standard checklist</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day_of_year =</span> <span class="kw">yday</span>(<span class="kw">ymd</span>(<span class="st">&quot;2016-06-15&quot;</span>)),
+         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,
+         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,
+         <span class="dt">number_observers =</span> <span class="dv">1</span>,
+         <span class="dt">checklist_calibration_index =</span> <span class="dv">2</span>,
+         <span class="dt">protocol_type =</span> <span class="st">&quot;Traveling&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">cbind</span>(<span class="dt">time_observations_started =</span> seq_tod)
+
+<span class="co"># predict at different start times</span>
+pred_tod &lt;-<span class="st"> </span><span class="kw">predict</span>(pred_model, <span class="dt">newdata =</span> tod_df, 
+                    <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>, 
+                    <span class="dt">se.fit =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># calculate backtransformed confidence limits</span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">time_observations_started =</span> seq_tod,
+            <span class="dt">pred =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit),
+            <span class="dt">pred_lcl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit),
+            <span class="dt">pred_ucl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit))
+
+<span class="co"># find optimal time of day</span>
+t_peak &lt;-<span class="st"> </span>pred_tod<span class="op">$</span>time_observations_started[<span class="kw">which.max</span>(pred_tod<span class="op">$</span>pred_lcl)]
+
+<span class="co"># plot the partial dependence plot</span>
+<span class="kw">ggplot</span>(pred_tod) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> time_observations_started, <span class="dt">y =</span> pred,
+      <span class="dt">ymin =</span> pred_lcl, <span class="dt">ymax =</span> pred_ucl) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_ribbon</span>(<span class="dt">fill =</span> <span class="st">&quot;grey80&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> t_peak, <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;Predicted relative abundance&quot;</span>,
+       <span class="dt">title =</span> <span class="st">&quot;Effect of observation start time on Wood Thrush reporting&quot;</span>,
+       <span class="dt">subtitle =</span> <span class="st">&quot;Peak detectability shown as dashed blue line&quot;</span>)</code></pre>
+<p><img src="ebird-good-practices_files/figure-html/abundance-predict-peak-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>So, the peak time of day for detecting Wood Thrush is around 4:15 AM Let’s generate the prediction surface and make predictions at all the points. In addition to relative abundance, we’ll estimate standard error and 95% confidence limits.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add effort covariates to prediction surface</span>
+pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day_of_year =</span> <span class="kw">yday</span>(<span class="kw">ymd</span>(<span class="st">&quot;2017-06-15&quot;</span>)),
+         <span class="dt">time_observations_started =</span> t_peak,
+         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,
+         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,
+         <span class="dt">number_observers =</span> <span class="dv">1</span>,
+         <span class="dt">checklist_calibration_index =</span> <span class="dv">2</span>,
+         <span class="dt">protocol_type =</span> <span class="st">&quot;Traveling&quot;</span>)
+
+<span class="co"># predict</span>
+pred &lt;-<span class="st"> </span><span class="kw">predict</span>(pred_model, <span class="dt">newdata =</span> pred_surface_eff, 
+                <span class="dt">type =</span> <span class="st">&quot;link&quot;</span>, 
+                <span class="dt">se.fit =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># calculate confidence limits and back transform</span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">abd =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit),
+            <span class="dt">abd_se =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(se.fit),
+            <span class="dt">abd_lcl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit),
+            <span class="dt">abd_ucl =</span> pred_model<span class="op">$</span>family<span class="op">$</span><span class="kw">linkinv</span>(fit <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>se.fit)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="co"># add to prediction surface</span>
+<span class="st">  </span><span class="kw">bind_cols</span>(pred_surface_eff, .) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(latitude, longitude, abd, abd_se, abd_lcl, abd_ucl)</code></pre>
+<p>Next, we’ll convert this data frame to spatial points using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
+<pre class="sourceCode r"><code class="sourceCode r">r_pred &lt;-<span class="st"> </span>pred <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(abd, abd_se) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rasterize</span>(r)
+r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]
+
+<span class="co"># save the rasters</span>
+<span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;abd&quot;</span>]], 
+            <span class="dt">filename =</span> <span class="st">&quot;output/abundance-model_abundance_woothr.tif&quot;</span>,
+            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)
+<span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;abd_se&quot;</span>]], 
+            <span class="dt">filename =</span> <span class="st">&quot;output/abundance-model_se_woothr.tif&quot;</span>, 
+            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre>
+<p>Finally, let’s make a map! For the relative abundance map, we’ll treat very small values of relative abundance as zero.</p>
+<p>The values shown on this map are the expected number of Wood Thrush seen by an expert eBirder conducting a 1-hour, 1-km checklist at about 4:15 AM As detectability is not perfect, we expect true Wood Thrush abundance to be higher than these values, but without estimating detectability it is difficult to say how much higher. Also remember at this point that there was a lot of variation in eBird counts that were not explained by our covariates. So this map shows the best estimate of relative abundance, given the model and variables selected for modeling.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># any expected abundances below this threshold are set to zero</span>
+zero_threshold &lt;-<span class="st"> </span><span class="fl">0.05</span>
+
+<span class="co"># project predictions</span>
+r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)
+
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))
+<span class="cf">for</span> (nm <span class="cf">in</span> <span class="kw">names</span>(r_pred)) {
+  r_plot &lt;-<span class="st"> </span>r_pred_proj[[nm]]
+  
+  <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))
+  <span class="co"># set up plot area</span>
+  <span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)
+  <span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+  
+  <span class="co"># modified plasma palette</span>
+  plasma_rev &lt;-<span class="st"> </span><span class="kw">rev</span>(<span class="kw">plasma</span>(<span class="dv">25</span>, <span class="dt">end =</span> <span class="fl">0.9</span>))
+  gray_int &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">c</span>(<span class="st">&quot;#dddddd&quot;</span>, plasma_rev[<span class="dv">1</span>]))
+  pal &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">gray_int</span>(<span class="dv">4</span>)[<span class="dv">2</span>], plasma_rev)
+  
+  <span class="co"># abundance vs. se</span>
+  <span class="cf">if</span> (nm <span class="op">==</span><span class="st"> &quot;abd&quot;</span>) {
+    title &lt;-<span class="st"> &quot;Wood Thrush Relative Abundance&quot;</span>
+    <span class="co"># set very low values to zero</span>
+    r_plot[r_plot <span class="op">&lt;=</span><span class="st"> </span>zero_threshold] &lt;-<span class="st"> </span><span class="ot">NA</span>
+    <span class="co"># log transform</span>
+    r_plot &lt;-<span class="st"> </span><span class="kw">log10</span>(r_plot)
+    <span class="co"># breaks and legend</span>
+    mx &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, max)) <span class="op">/</span><span class="st"> </span><span class="dv">100</span>
+    mn &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, min)) <span class="op">/</span><span class="st"> </span><span class="dv">100</span>
+    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="kw">length</span>(pal) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)
+    lbl_brks &lt;-<span class="st"> </span><span class="kw">sort</span>(<span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, mn, mx))
+    lbls &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="dv">10</span><span class="op">^</span>lbl_brks, <span class="dv">2</span>)
+  } <span class="cf">else</span> {
+    title &lt;-<span class="st"> &quot;Wood Thrush Abundance Uncertainty (SE)&quot;</span>
+    <span class="co"># breaks and legend</span>
+    mx &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">1000</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, max)) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span>
+    mn &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="dv">1000</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_plot, min)) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span>
+    brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="kw">length</span>(pal) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)
+    lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(mn, mx, <span class="dt">length.out =</span> <span class="dv">5</span>)
+    lbls &lt;-<span class="st"> </span><span class="kw">round</span>(lbl_brks, <span class="dv">2</span>)
+  }
+  
+  <span class="co"># abundance</span>
+  <span class="kw">plot</span>(r_plot, 
+       <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, 
+       <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_plot),
+       <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+  
+  <span class="co"># borders</span>
+  <span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+  <span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+  <span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+  <span class="kw">box</span>()
+  
+  <span class="co"># legend</span>
+  <span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))
+  <span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> pal,
+             <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),
+             <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,
+             <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, 
+                              <span class="dt">labels =</span> lbls,
+                              <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,
+                              <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,
+                              <span class="dt">padj =</span> <span class="fl">-1.5</span>),
+             <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,
+                                <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,
+                                <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))
+}</code></pre>
+<p><img src="ebird-good-practices_files/figure-html/abundance-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="occupancy.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mstrimas/ebird-best-practices/edit/master/06_relative-abundance.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
