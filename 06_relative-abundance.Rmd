@@ -14,7 +14,7 @@ We'll start by reading in the data and spatiotemporally subsampling it to reduce
 
 ## Data preparation {#abundance-data}
 
-Let's start by loading the necessary packages and data. If you haven't already done so, you may want to [download the data package]((https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip)) and unzip it to your working directory. As in previous chapters, the Checklist Calibration Index (CCI) is an **optional** covariate in these models. If you've [downloaded](https://ebird.org/data/download) these data, put the CCI text file in the `data/` subdirectory of your project. If you haven't downloaded these data, you can proceed with all the other code, but your maps may have some differences to those shown here. 
+Let's start by loading the necessary packages and data. If you haven't already done so, you may want to [download the data package](https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip) and unzip it to your working directory. As in previous chapters, the Checklist Calibration Index (CCI) is an **optional** covariate in these models. If you've [downloaded](https://ebird.org/data/download) these data, put the CCI text file in the `data/` subdirectory of your project. If you haven't downloaded these data, you can proceed with all the other code, but your maps may have some differences to those shown here. 
 
 Because we're modeling abundance in this chapter, we'll remove any records for which the observer reported that Wood Thrush was present, but didn't report a count of the number of species (coded as 'X' records in the eBird database). We'll also add a day of year variable (1-365) that will be useful as a covariates in the abundance models.
 

@@ -306,7 +306,8 @@ ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<sp
 <p>Hexagonal grids seem exotic relative to square grids, which may be more familiar, however, they have a variaty of benefits <span class="citation">(Sahr <a href="#ref-sahrHexagonalDiscreteGlobal2011">2011</a>)</span> including significantly less spatial distortion. With hexagonal grids we can be sure all the cells are of equal area, which is particularly important if we have a large region for modeling. The R package <a href="https://github.com/r-barnes/dggridR"><code>dggridR</code></a> makes working with hexagonal grids simple and efficient. We’ll contruct a grid with 5 km spacing between the centres of adjacent hexagons, then sample randomly from these hexagonal cells.</p>
 <p>Before working with the real data, it’s instructive to look at a small toy example, to see how this subsampling process works. We’ll generate a few hundred random points, overlay a hexagonal grid, then sample one point from each cell.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># bounding box to generate points from</span>
-bb &lt;-<span class="st"> </span><span class="kw">st_bbox</span>(<span class="kw">c</span>(<span class="dt">xmin =</span> <span class="fl">-0.1</span>, <span class="dt">xmax =</span> <span class="fl">0.1</span>, <span class="dt">ymin =</span> <span class="fl">-0.1</span>, <span class="dt">ymax =</span> <span class="fl">0.1</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+bb &lt;-<span class="st"> </span><span class="kw">st_bbox</span>(<span class="kw">c</span>(<span class="dt">xmin =</span> <span class="fl">-0.1</span>, <span class="dt">xmax =</span> <span class="fl">0.1</span>, <span class="dt">ymin =</span> <span class="fl">-0.1</span>, <span class="dt">ymax =</span> <span class="fl">0.1</span>), 
+              <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">st_as_sfc</span>() <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">st_sf</span>()
 <span class="co"># random points, 10% detections</span>
@@ -434,7 +435,7 @@ ebird_split &lt;-<span class="st"> </span>ebird_split <span class="op">%&gt;%</s
 <span class="st">  </span><span class="kw">split</span>(<span class="kw">if_else</span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(.)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.8</span>, <span class="st">&quot;train&quot;</span>, <span class="st">&quot;test&quot;</span>))
 <span class="kw">map_int</span>(ebird_split, nrow)
 <span class="co">#&gt;  test train </span>
-<span class="co">#&gt;  2081  8310</span></code></pre>
+<span class="co">#&gt;  2075  8316</span></code></pre>
 <p>There are several packages for fitting random forests in R; however, we’ll use <a href="https://github.com/imbs-hl/ranger"><code>ranger</code></a>, which is a blazingly fast implementation with all the features we need. We fit a model with 1,000 classification trees (<code>num.trees</code>). For the number of variables randomly sampled at each split (<code>mtry</code>), we used the square root of the number of covariates (21). This choice of parameters will be suitable for a broad range of species distribution modeling tasks.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># grow random forest</span>
 rf &lt;-<span class="st"> </span><span class="kw">ranger</span>(<span class="dt">formula =</span>  species_observed <span class="op">~</span><span class="st"> </span>., 
@@ -534,21 +535,21 @@ rf_assessment &lt;-<span class="st"> </span><span class="kw">tibble</span>(
 <tbody>
 <tr class="odd">
 <td align="left">RF</td>
-<td align="right">0.090</td>
-<td align="right">0.506</td>
-<td align="right">0.886</td>
-<td align="right">0.793</td>
-<td align="right">0.340</td>
-<td align="right">0.090</td>
+<td align="right">0.088</td>
+<td align="right">0.556</td>
+<td align="right">0.87</td>
+<td align="right">0.808</td>
+<td align="right">0.345</td>
+<td align="right">0.089</td>
 </tr>
 <tr class="even">
 <td align="left">Calibrated RF</td>
-<td align="right">0.113</td>
-<td align="right">0.304</td>
-<td align="right">0.957</td>
-<td align="right">0.711</td>
-<td align="right">0.311</td>
-<td align="right">0.106</td>
+<td align="right">0.116</td>
+<td align="right">0.286</td>
+<td align="right">0.95</td>
+<td align="right">0.808</td>
+<td align="right">0.277</td>
+<td align="right">0.109</td>
 </tr>
 </tbody>
 </table>
@@ -625,7 +626,8 @@ pd_time &lt;-<span class="st"> </span><span class="kw">partial_dependence</span>
 <span class="co"># histogram</span>
 g_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_split<span class="op">$</span>train) <span class="op">+</span>
 <span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> time_observations_started) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>, <span class="dt">center =</span> <span class="fl">0.5</span>, <span class="dt">color =</span> <span class="st">&quot;grey30&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>, <span class="dt">center =</span> <span class="fl">0.5</span>, <span class="dt">color =</span> <span class="st">&quot;grey30&quot;</span>,
+                 <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">3</span>)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,
@@ -644,7 +646,7 @@ g_pd &lt;-<span class="st"> </span><span class="kw">ggplot</span>(pd_time) <span
 <span class="co"># combine</span>
 <span class="kw">grid.arrange</span>(g_hist, g_pd)</code></pre>
 <p><img src="ebird-good-practices_files/figure-html/encounter-predict-time-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<p>As expected, the peak of detectibility is occurring at start times near midnight, which is an artifact of the low data density at night. Let’s instead look for the peak time within hours of the day within which at least 1% of the training data fall.</p>
+<p>As expected, the peak of detectibility is occurring at start times near midnight, which is an artifact of the low data density at night. Let’s instead look for the peak time within hours of the day that contain at least 1% of the training data.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># hours with at least 1% of checklists</span>
 search_hours &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">floor</span>(time_observations_started)) <span class="op">%&gt;%</span>
@@ -657,10 +659,10 @@ t_peak &lt;-<span class="st"> </span>pd_time <span class="op">%&gt;%</span><span
 <span class="st">  </span><span class="kw">filter</span>(<span class="kw">floor</span>(time_observations_started) <span class="op">%in%</span><span class="st"> </span>search_hours<span class="op">$</span>hour) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">top_n</span>(<span class="dv">1</span>, <span class="dt">wt =</span> <span class="kw">desc</span>(time_observations_started)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">pull</span>(time_observations_started)</code></pre>
-<p>Based on this analysis, the best time for viewing Wood Thrush is at 5:04 AM. Now we can add the effort variables to the prediction surface.</p>
+<p>Based on this analysis, the best time for viewing Wood Thrush is at 5:09 AM. Now we can add the effort variables to the prediction surface.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add effort covariates to prediction </span>
 pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_date =</span> <span class="kw">ymd</span>(<span class="st">&quot;2017-06-15&quot;</span>),
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_date =</span> <span class="kw">ymd</span>(<span class="st">&quot;2016-06-15&quot;</span>),
          <span class="dt">time_observations_started =</span> t_peak,
          <span class="dt">duration_minutes =</span> <span class="dv">60</span>,
          <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,
@@ -684,7 +686,8 @@ pred_er &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_sur
 r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]
 
 <span class="co"># save the raster</span>
-<span class="kw">writeRaster</span>(r_pred, <span class="st">&quot;output/rf-model_encounter-rate_woothr.tif&quot;</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre>
+<span class="kw">writeRaster</span>(r_pred, <span class="st">&quot;output/rf-model_encounter-rate_woothr.tif&quot;</span>, 
+            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre>
 <p>Finally, we can map these data!</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># project predictions</span>
 r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)

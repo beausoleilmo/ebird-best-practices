@@ -86,7 +86,8 @@ Before working with the real data, it's instructive to look at a small toy examp
 
 ```{r encounter-sss-toy, results = "hide"}
 # bounding box to generate points from
-bb <- st_bbox(c(xmin = -0.1, xmax = 0.1, ymin = -0.1, ymax = 0.1), crs = 4326) %>% 
+bb <- st_bbox(c(xmin = -0.1, xmax = 0.1, ymin = -0.1, ymax = 0.1), 
+              crs = 4326) %>% 
   st_as_sfc() %>% 
   st_sf()
 # random points, 10% detections
@@ -117,6 +118,10 @@ ggplot() +
 ```
 
 Now let's apply exactly the same approach to subsampling the real eBird checklists.
+
+```{r encounter-sss-seed, echo=FALSE}
+set.seed(1)
+```
 
 ```{r encounter-sss-sample, results = "hide"}
 # generate hexagonal grid with ~ 5 km betweeen cells
@@ -415,7 +420,8 @@ pd_time <- partial_dependence(rf,
 # histogram
 g_hist <- ggplot(ebird_split$train) +
   aes(x = time_observations_started) +
-  geom_histogram(binwidth = 1, center = 0.5, color = "grey30", fill = "grey50") +
+  geom_histogram(binwidth = 1, center = 0.5, color = "grey30",
+                 fill = "grey50") +
   scale_x_continuous(breaks = seq(0, 24, by = 3)) +
   scale_y_continuous(labels = scales::comma) +
   labs(x = "Hours since midnight",
@@ -435,7 +441,7 @@ g_pd <- ggplot(pd_time) +
 grid.arrange(g_hist, g_pd)
 ```
 
-As expected, the peak of detectibility is occurring at start times near midnight, which is an artifact of the low data density at night. Let's instead look for the peak time within hours of the day within which at least 1% of the training data fall.
+As expected, the peak of detectibility is occurring at start times near midnight, which is an artifact of the low data density at night. Let's instead look for the peak time within hours of the day that contain at least 1% of the training data.
 
 ```{r encounter-predict-peak}
 # hours with at least 1% of checklists
@@ -464,7 +470,7 @@ Based on this analysis, the best time for viewing Wood Thrush is at `r human_tim
 ```{r encounter-predict-effort}
 # add effort covariates to prediction 
 pred_surface_eff <- pred_surface %>% 
-  mutate(observation_date = ymd("2017-06-15"),
+  mutate(observation_date = ymd("2016-06-15"),
          time_observations_started = t_peak,
          duration_minutes = 60,
          effort_distance_km = 1,
@@ -492,7 +498,8 @@ r_pred <- pred_er %>%
 r_pred <- r_pred[[-1]]
 
 # save the raster
-writeRaster(r_pred, "output/rf-model_encounter-rate_woothr.tif", overwrite = TRUE)
+writeRaster(r_pred, "output/rf-model_encounter-rate_woothr.tif", 
+            overwrite = TRUE)
 ```
 
 Finally, we can map these data!
