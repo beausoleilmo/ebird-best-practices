@@ -22,10 +22,10 @@
   <meta name="twitter:description" content="Best practices for using eBird data to estimate species distributions" />
   
 
-<meta name="author" content="M Strimas-Mackey, A Johnston, WM Hochachka, V Ruiz-Gutierrez, O Robinson, ET Miller, MT Auer, ST Kelling, D Fink">
+<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink">
 
 
-<meta name="date" content="2019-03-10">
+<meta name="date" content="2019-03-11">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -172,15 +172,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>4</b> Modeling Encounter Rate</a><ul>
 <li class="chapter" data-level="4.1" data-path="encounter.html"><a href="encounter.html#encouter-intro"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
 <li class="chapter" data-level="4.2" data-path="encounter.html"><a href="encounter.html#encounter-data"><i class="fa fa-check"></i><b>4.2</b> Data preparation</a></li>
-<li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a><ul>
-<li class="chapter" data-level="4.3.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.3.1</b> Calibration</a></li>
-<li class="chapter" data-level="4.3.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-val"><i class="fa fa-check"></i><b>4.3.2</b> Validation</a></li>
+<li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a></li>
+<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.4.1</b> Calibration</a></li>
+<li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-val"><i class="fa fa-check"></i><b>4.4.2</b> Validation</a></li>
 </ul></li>
-<li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.4</b> Environmental associations</a><ul>
-<li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.4.1</b> Predictor importance</a></li>
-<li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.4.2</b> Partial dependence</a></li>
+<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Environmental associations</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.5.1</b> Predictor importance</a></li>
+<li class="chapter" data-level="4.5.2" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pd"><i class="fa fa-check"></i><b>4.5.2</b> Partial dependence</a></li>
 </ul></li>
-<li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.5</b> Prediction</a></li>
+<li class="chapter" data-level="4.6" data-path="encounter.html"><a href="encounter.html#encounter-predict"><i class="fa fa-check"></i><b>4.6</b> Prediction</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
@@ -492,7 +493,7 @@ plot_gam &lt;-<span class="st"> </span><span class="cf">function</span>(m, <span
 <span class="kw">plot_gam</span>(m_nb, <span class="dt">title =</span> <span class="st">&quot;Negative Binomial GAM&quot;</span>)
 <span class="kw">plot_gam</span>(m_tw, <span class="dt">title =</span> <span class="st">&quot;Tweedie Distributed GAM&quot;</span>)</code></pre>
 <p><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-2.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-3.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-4.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<p>If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. In this case, the relationships appear to be reasonable. Next we’ll proceed with a formal cross-validation of the three models. Recall from Section <a href="encounter.html#encounter-rf-val">4.3.2</a> that this involves making predictions for the test dataset, which wasn’t used to fit the models, then assessing how well these predictions relate to the actual observed counts.</p>
+<p>If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. In this case, the relationships appear to be reasonable. Next we’ll proceed with a formal cross-validation of the three models. Recall from Section <a href="encounter.html#encounter-rf-val">4.4.2</a> that this involves making predictions for the test dataset, which wasn’t used to fit the models, then assessing how well these predictions relate to the actual observed counts.</p>
 <p>Care needs to be taken when making predictions from the zero-inflated Poisson model since it has two components: the probability of presence and expected count given presence. As a result, the <code>predict()</code> function returns a two column matrix with the count and probability respectively, both on the scale of the link functions. So, we need to back-transform these values, then multiply them to get the expected count.</p>
 <pre class="sourceCode r"><code class="sourceCode r">obs_count &lt;-<span class="st"> </span><span class="kw">select</span>(ebird_split<span class="op">$</span>test, <span class="dt">obs =</span> observation_count)
 

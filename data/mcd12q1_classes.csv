@@ -2,7 +2,7 @@ class,name,description
 0,Water bodies,At least 60% of area is covered by permanent water bodies.
 1,Evergreen Needleleaf Forests,Dominated by evergreen conifer trees (canopy >2m). Tree cover >60%.
 2,Evergreen Broadleaf Forests,Dominated by evergreen broadleaf and palmate trees (canopy >2m). Tree cover >60%.
-3,Deciduous Needleleaf Forests,Dominated by deciduous needleleaf (larch) trees (canopy >2m). Tree cover >60%.
+3,Deciduous Needleleaf Forests,Dominated by deciduous needleleaf (e.g. larch) trees (canopy >2m). Tree cover >60%.
 4,Deciduous Broadleaf Forests,Dominated by deciduous broadleaf trees (canopy >2m). Tree cover >60%.
 5,Mixed Forests,Dominated by neither deciduous nor evergreen (40-60% of each) tree type (canopy >2m). Tree cover >60%.
 6,Closed Shrublands,Dominated by woody perennials (1-2m height) >60% cover.
