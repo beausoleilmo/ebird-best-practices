@@ -155,14 +155,15 @@ Now we have the set of landcover values within a neighborhood around each checkl
 
 ```{r habitat-lsm-pland}
 pland <- lc_extract %>% 
-  filter(!is.na(landcover)) %>% 
   # count landcovers
   count(locality_id, year, landcover) %>% 
   # calculate proporiton
   group_by(locality_id, year) %>% 
   mutate(pland = n / sum(n)) %>% 
   ungroup() %>% 
-  select(-n)
+  select(-n) %>% 
+  # remove NAs after tallying so pland is relative to total number of cells
+  filter(!is.na(landcover))
 
 # tranform to wide format, filling in implicit missing values with 0s
 pland <- pland %>% 

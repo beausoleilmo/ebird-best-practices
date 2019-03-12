@@ -238,7 +238,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="encouter-intro" class="section level2">
 <h2><span class="header-section-number">4.1</span> Introduction</h2>
 <p>In this chapter we’ll estimate the <strong>encounter rate</strong> of Wood Thrush on eBird checklists in June in BCR 27. We define encounter rate as measuring the probability of an expert eBirder encountering a species on an standard eBird checklist, so that the calculated encounter rates approximate the actual occurrence rates of Wood Thrush. The ecological metric we’re ultimately interested in is the probability that a species occurs at a site (i.e. the occupancy probability). This is usually not possible with semi-structured citizen science data like those from eBird because we typically can’t estimate <em>absolute</em> detectability. However, by accounting for much of the variation in detectability by including effort covariaters in our model, the remaining unaccounted detectability will be more consistent across sites <span class="citation">(Guillera-Arroita et al. <a href="#ref-guillera-arroitaMySpeciesDistribution2015">2015</a>)</span>. Therefore, the encounter rate metric will be relative to occupancy up to a constant of detectability, allowing us to compare species distributions across space and time.</p>
-<p><a href="https://en.wikipedia.org/wiki/Random_forest"><strong>Random forests</strong></a> are a general purpose machine learning method applicable to a wide range of <a href="https://en.wikipedia.org/wiki/Statistical_classification">classification</a> and <a href="https://en.wikipedia.org/wiki/Regression_analysis">regression</a> problems, including the task at hand: identifying predictors that classify reporting and non-reporting of a species on eBird checklists. In addition to good predictive performance, random forests are reasonably easy to use and have several efficient implementations in R. Prior to fitting a random forest model, we’ll demonstrate how to address issues of <a href="intro.html#intro-intro">class imblance and spatial bias</a> using spatial subsampling on a regular grid. After fitting the model, we’ll assess its performance using a subset of data put aside for testing, and calibrate the model to ensure predictions are accurate. Finally, we’ll predict encounter rates throughout the study area and produce maps of these predictions.</p>
+<p><a href="https://en.wikipedia.org/wiki/Random_forest"><strong>Random forests</strong></a> are a general purpose machine learning method applicable to a wide range of <a href="https://en.wikipedia.org/wiki/Statistical_classification">classification</a> and <a href="https://en.wikipedia.org/wiki/Regression_analysis">regression</a> problems, including the task at hand: identifying predictors that classify reporting and non-reporting of a species on eBird checklists. In addition to good predictive performance, random forests are reasonably easy to use and have several efficient implementations in R. Prior to fitting a random forest model, we’ll demonstrate how to address issues of <a href="intro.html#intro-intro">class imbalance and spatial bias</a> using spatial subsampling on a regular grid. After fitting the model, we’ll assess its performance using a subset of data put aside for testing, and calibrate the model to ensure predictions are accurate. Finally, we’ll predict encounter rates throughout the study area and produce maps of these predictions.</p>
 </div>
 <div id="encounter-data" class="section level2">
 <h2><span class="header-section-number">4.2</span> Data preparation</h2>
@@ -445,6 +445,7 @@ rf &lt;-<span class="st"> </span><span class="kw">ranger</span>(<span class="dt"
              <span class="dt">mtry =</span> <span class="kw">sqrt</span>(<span class="kw">ncol</span>(ebird_split<span class="op">$</span>train) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>),
              <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>,
              <span class="dt">data =</span> ebird_split<span class="op">$</span>train)</code></pre>
+<p>We’ve found that predictions from <code>ranger</code> can be sensitive to the particular checklists that are selection in the spatial subsampling and test/train split steps. To ensure this is not an issue, we suggest running several iterations of this code, using different sets of samples. The random sampling be controlled by trying different values for the <a href="https://en.wikipedia.org/wiki/Random_seed">ranomd seed</a> set at the <a href="encounter.html#encounter-data">start of the chapter</a> with <code>set.seed(1)</code>.</p>
 <div id="encounter-rf-cal" class="section level3">
 <h3><span class="header-section-number">4.4.1</span> Calibration</h3>
 <p>For various reasons, the predicted probabilities from models do not always align with the observed frequencies of detections. For example, examining all sites with an estimated 0.2 probability of encounter, may in reality have an average encounter rate of 0.35 (35% of sites record the species). Where there is a mismatch between estimated and observed encounter rates, <strong>model calibration</strong> aligns the estimated probabilities to the observed frequencies. For further details on model calibration consult Phillips and Elith <span class="citation">(<a href="#ref-phillipsPOCPlotsCalibrating2010">2010</a>)</span>.</p>
@@ -538,19 +539,19 @@ rf_assessment &lt;-<span class="st"> </span><span class="kw">tibble</span>(
 <tr class="odd">
 <td align="left">RF</td>
 <td align="right">0.088</td>
-<td align="right">0.556</td>
-<td align="right">0.87</td>
+<td align="right">0.552</td>
+<td align="right">0.870</td>
 <td align="right">0.808</td>
-<td align="right">0.345</td>
+<td align="right">0.342</td>
 <td align="right">0.089</td>
 </tr>
 <tr class="even">
 <td align="left">Calibrated RF</td>
 <td align="right">0.116</td>
-<td align="right">0.286</td>
-<td align="right">0.95</td>
+<td align="right">0.295</td>
+<td align="right">0.944</td>
 <td align="right">0.808</td>
-<td align="right">0.277</td>
+<td align="right">0.271</td>
 <td align="right">0.109</td>
 </tr>
 </tbody>

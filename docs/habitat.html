@@ -456,14 +456,15 @@ ebird_locs_year &lt;-<span class="st"> </span><span class="kw">split</span>(ebir
 lc_extract &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(ebird_locs_year)</code></pre>
 <p>Now we have the set of landcover values within a neighborhood around each checklist location. We can summarize these data within each neighborhood to calculate PLAND: the proportion of the neighborhood within each landcover class.</p>
 <pre class="sourceCode r"><code class="sourceCode r">pland &lt;-<span class="st"> </span>lc_extract <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(landcover)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co"># count landcovers</span>
 <span class="st">  </span><span class="kw">count</span>(locality_id, year, landcover) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co"># calculate proporiton</span>
 <span class="st">  </span><span class="kw">group_by</span>(locality_id, year) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pland =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n)
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># remove NAs after tallying so pland is relative to total number of cells</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(landcover))
 
 <span class="co"># tranform to wide format, filling in implicit missing values with 0s</span>
 pland &lt;-<span class="st"> </span>pland <span class="op">%&gt;%</span><span class="st"> </span>
