@@ -25,7 +25,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink">
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-03-14">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -625,6 +625,7 @@ pd_time &lt;-<span class="st"> </span><span class="kw">partial_dependence</span>
                               <span class="co"># use the entire training dataset for estimation</span>
                               <span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">24</span> <span class="op">*</span><span class="st"> </span><span class="dv">6</span>, <span class="kw">nrow</span>(ebird_split<span class="op">$</span>train)), 
                               <span class="dt">data =</span> ebird_split<span class="op">$</span>train)
+<span class="co">#&gt; Aggregating predictions.. Progress: 75%. Estimated remaining time: 10 seconds.</span>
 
 <span class="co"># histogram</span>
 g_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_split<span class="op">$</span>train) <span class="op">+</span>
