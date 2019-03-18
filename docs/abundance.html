@@ -180,7 +180,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3" data-path="encounter.html"><a href="encounter.html#encounter-sss"><i class="fa fa-check"></i><b>4.3</b> Spatiotemporal subsampling</a></li>
 <li class="chapter" data-level="4.4" data-path="encounter.html"><a href="encounter.html#encounter-rf"><i class="fa fa-check"></i><b>4.4</b> Random forests</a><ul>
 <li class="chapter" data-level="4.4.1" data-path="encounter.html"><a href="encounter.html#encounter-rf-cal"><i class="fa fa-check"></i><b>4.4.1</b> Calibration</a></li>
-<li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-val"><i class="fa fa-check"></i><b>4.4.2</b> Validation</a></li>
+<li class="chapter" data-level="4.4.2" data-path="encounter.html"><a href="encounter.html#encounter-rf-assess"><i class="fa fa-check"></i><b>4.4.2</b> Assessment</a></li>
 </ul></li>
 <li class="chapter" data-level="4.5" data-path="encounter.html"><a href="encounter.html#encounter-habitat"><i class="fa fa-check"></i><b>4.5</b> Environmental associations</a><ul>
 <li class="chapter" data-level="4.5.1" data-path="encounter.html"><a href="encounter.html#encounter-habitat-pi"><i class="fa fa-check"></i><b>4.5.1</b> Predictor importance</a></li>
@@ -209,7 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.2.2" data-path="abundance.html"><a href="abundance.html#abundance-data-tt"><i class="fa fa-check"></i><b>6.2.2</b> Test-train split</a></li>
 </ul></li>
 <li class="chapter" data-level="6.3" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>6.3</b> Abundance models</a><ul>
-<li class="chapter" data-level="6.3.1" data-path="abundance.html"><a href="abundance.html#abundance-model-val"><i class="fa fa-check"></i><b>6.3.1</b> Validation</a></li>
+<li class="chapter" data-level="6.3.1" data-path="abundance.html"><a href="abundance.html#abundance-model-assess"><i class="fa fa-check"></i><b>6.3.1</b> Assessment</a></li>
 </ul></li>
 <li class="chapter" data-level="6.4" data-path="abundance.html"><a href="abundance.html#abundance-predict"><i class="fa fa-check"></i><b>6.4</b> Prediction</a></li>
 </ul></li>
@@ -455,8 +455,8 @@ m_tw &lt;-<span class="st"> </span><span class="kw">gam</span>(gam_formula,
             <span class="dt">data =</span> ebird_split<span class="op">$</span>train, 
             <span class="dt">family =</span> <span class="st">&quot;tw&quot;</span>,
             <span class="dt">knots =</span> time_knots)</code></pre>
-<div id="abundance-model-val" class="section level3">
-<h3><span class="header-section-number">6.3.1</span> Validation</h3>
+<div id="abundance-model-assess" class="section level3">
+<h3><span class="header-section-number">6.3.1</span> Assessment</h3>
 <p>Before we use formal cross validation to assess these models, let’s visualize the results to see if they appear biologically feasible. Calling <code>plot()</code> on the fitted GAM objects produces plots of the smooth functions for each of the separate predictors, which gives us a sense of the effect of each predictor on the count response. Unfortunately, for large numbers of predictors, <code>plot()</code> will produce a cramped, unreadable plot. Instead, we write a function to capture the data behind the plotting function, then plot them using <code>ggplot2</code> instead.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ggplot function</span>
 plot_gam &lt;-<span class="st"> </span><span class="cf">function</span>(m, <span class="dt">title =</span> <span class="ot">NULL</span>, <span class="dt">ziplss =</span> <span class="kw">c</span>(<span class="st">&quot;presence&quot;</span>, <span class="st">&quot;abundance&quot;</span>)) {
@@ -503,8 +503,8 @@ plot_gam &lt;-<span class="st"> </span><span class="cf">function</span>(m, <span
          <span class="dt">ziplss =</span> <span class="st">&quot;abundance&quot;</span>)
 <span class="kw">plot_gam</span>(m_nb, <span class="dt">title =</span> <span class="st">&quot;Negative Binomial GAM&quot;</span>)
 <span class="kw">plot_gam</span>(m_tw, <span class="dt">title =</span> <span class="st">&quot;Tweedie Distributed GAM&quot;</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-2.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-3.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-val-plot-4.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<p>If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. In this case, the relationships appear to be reasonable. Next we’ll proceed with a formal cross-validation of the three models. Recall from Section <a href="encounter.html#encounter-rf-val">4.4.2</a> that this involves making predictions for the test dataset, which wasn’t used to fit the models, then assessing how well these predictions relate to the actual observed counts in the test dataset.</p>
+<p><img src="ebird-good-practices_files/figure-html/abundance-model-assess-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-assess-plot-2.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-assess-plot-3.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-assess-plot-4.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. In this case, the relationships appear to be reasonable. Next we’ll proceed with a formal cross-validation of the three models. Recall from Section <a href="encounter.html#encounter-rf-assess">4.4.2</a> that this involves making predictions for the test dataset, which wasn’t used to fit the models, then assessing how well these predictions relate to the actual observed counts in the test dataset.</p>
 <p>Care needs to be taken when making predictions from the zero-inflated Poisson model since it has two components: the probability of presence and expected count given presence. As a result, the <code>predict()</code> function returns a two column matrix with the count and probability respectively, both on the scale of the link functions. So, we need to back-transform these values, then multiply them to get the predicted counts.</p>
 <pre class="sourceCode r"><code class="sourceCode r">obs_count &lt;-<span class="st"> </span><span class="kw">select</span>(ebird_split<span class="op">$</span>test, <span class="dt">obs =</span> observation_count)
 
@@ -552,8 +552,8 @@ mx &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Observed count&quot;</span>,
        <span class="dt">y =</span> <span class="st">&quot;Predicted count&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>family, <span class="dt">nrow =</span> <span class="dv">1</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-rf-val-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<p>We see that most of the observed counts are underestimated by the predictions, as most points and the blue line are below the gray y=x line. We also see that most of the checklists observe no wood thrush. Although most predictions for these are also zero (blue line is at 0), there are still a lot of places with predicted Wood Thrush where none were observed. There are also a large number of observations in that problematic region of underestimation by an order of magnitude or more. How many of these cases are there?</p>
+<p><img src="ebird-good-practices_files/figure-html/encounter-rf-assess-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>We see that most of the observed counts are underestimated by the predictions, as most points and the blue line are below the gray <span class="math inline">\(y = x\)</span> line. We also see that most of the checklists observe no wood thrush. Although most predictions for these are also zero (blue line is at 0), there are still a lot of places with predicted Wood Thrush where none were observed. There are also a large number of observations in that problematic region of underestimation by an order of magnitude or more. How many of these cases are there?</p>
 <pre class="sourceCode r"><code class="sourceCode r">test_pred <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n =</span> <span class="kw">sum</span>(obs <span class="op">/</span><span class="st"> </span>pred <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>),

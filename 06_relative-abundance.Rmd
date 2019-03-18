@@ -237,11 +237,11 @@ m_tw <- gam(gam_formula,
             knots = time_knots)
 ```
 
-### Validation {#abundance-model-val}
+### Assessment {#abundance-model-assess}
 
 Before we use formal cross validation to assess these models, let's visualize the results to see if they appear biologically feasible. Calling `plot()` on the fitted GAM objects produces plots of the smooth functions for each of the separate predictors, which gives us a sense of the effect of each predictor on the count response. Unfortunately, for large numbers of predictors, `plot()` will produce a cramped, unreadable plot. Instead, we write a function to capture the data behind the plotting function, then plot them using `ggplot2` instead.
 
-```{r abundance-model-val-plot}
+```{r abundance-model-assess-plot}
 # ggplot function
 plot_gam <- function(m, title = NULL, ziplss = c("presence", "abundance")) {
   # capture plot
@@ -289,11 +289,11 @@ plot_gam(m_nb, title = "Negative Binomial GAM")
 plot_gam(m_tw, title = "Tweedie Distributed GAM")
 ```
 
-If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. In this case, the relationships appear to be reasonable. Next we'll proceed with a formal cross-validation of the three models. Recall from Section \@ref(encounter-rf-val) that this involves making predictions for the test dataset, which wasn't used to fit the models, then assessing how well these predictions relate to the actual observed counts in the test dataset.
+If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. In this case, the relationships appear to be reasonable. Next we'll proceed with a formal cross-validation of the three models. Recall from Section \@ref(encounter-rf-assess) that this involves making predictions for the test dataset, which wasn't used to fit the models, then assessing how well these predictions relate to the actual observed counts in the test dataset.
 
 Care needs to be taken when making predictions from the zero-inflated Poisson model since it has two components: the probability of presence and expected count given presence. As a result, the `predict()` function returns a two column matrix with the count and probability respectively, both on the scale of the link functions. So, we need to back-transform these values, then multiply them to get the predicted counts.
 
-```{r encounter-rf-val-pred}
+```{r encounter-rf-assess-pred}
 obs_count <- select(ebird_split$test, obs = observation_count)
 
 # presence probability is on the complimentary log-log scale
@@ -321,7 +321,7 @@ test_pred <- bind_rows(m_ziplss_pred, m_nb_pred, m_tw_pred) %>%
 
 Let's look at a plot of how these predictions compare to the observed counts. Assessing the fit of the models depends considerably on the goals of the model and hence on the most important aspects of the model fit for the intended use. Here we assume that underestimated abundances are more problematic than overestimated abundances, but model fit assessment should be tailored to the particular goals of an estimated species distribution. We'll highlight in red on these plots the regions where the predictions are underestimated by more than an order of magnitude. We'll also overlay the line $y = x$, which separates overestimates (above the line) from underestimates (below the line), and a blue smoothed fit showing the general trend through all the data. 
 
-```{r encounter-rf-val-plot}
+```{r encounter-rf-assess-plot}
 # plot predicted vs. observed
 ticks <- c(0, 1, 10, 100, 1000)
 mx <- round(max(test_pred$obs))
@@ -346,9 +346,9 @@ ggplot(test_pred) +
   facet_wrap(~ family, nrow = 1)
 ```
 
-We see that most of the observed counts are underestimated by the predictions, as most points and the blue line are below the gray y=x line. We also see that most of the checklists observe no wood thrush. Although most predictions for these are also zero (blue line is at 0), there are still a lot of places with predicted Wood Thrush where none were observed. There are also a large number of observations in that problematic region of underestimation by an order of magnitude or more. How many of these cases are there? 
+We see that most of the observed counts are underestimated by the predictions, as most points and the blue line are below the gray $y = x$ line. We also see that most of the checklists observe no wood thrush. Although most predictions for these are also zero (blue line is at 0), there are still a lot of places with predicted Wood Thrush where none were observed. There are also a large number of observations in that problematic region of underestimation by an order of magnitude or more. How many of these cases are there? 
 
-```{r encounter-rf-val-overunder}
+```{r encounter-rf-assess-overunder}
 test_pred %>% 
   group_by(family) %>% 
   summarize(n = sum(obs / pred > 10),
@@ -357,7 +357,7 @@ test_pred %>%
 
 It appears based on this metric, that the zero-inflated Poisson model is performing worst in terms of underestimation. Let's examine some of the cross-validation metrics: deviance explained, mean-squared error (MSE), and Spearman's rank correlation.
 
-```{r encounter-rf-val-metrics}
+```{r encounter-rf-assess-metrics}
 # deviance explained
 de <- c(summary(m_ziplss)$dev.expl,
         summary(m_nb)$dev.expl,
@@ -374,7 +374,7 @@ gam_assessment <- test_pred %>%
   mutate(dev_exp = de)
 ```
 
-```{r encounter-rf-val-metrics-print, echo = FALSE}
+```{r encounter-rf-assess-metrics-print, echo = FALSE}
 knitr::kable(gam_assessment, digits = 3)
 ```
 
@@ -384,7 +384,7 @@ Overall, we see that none of these models has a high deviance explained. So a la
 
 In this case we select the negative binomial as the best model from these three options. 
 
-```{r encounter-rf-val-decision}
+```{r encounter-rf-assess-decision}
 pred_model <- m_nb
 ```
 

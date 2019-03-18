@@ -14,7 +14,6 @@ This chapter is distinct from the previous chapter on modeling encounter rate in
 If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also [download the data package]((https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip)), and unzip it to your working directory.  Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an **optional** covariate in these models. Including CCI typical leads to marked improvement in model performance; however, due to the sensitive nature of these data you will need to [download them separately](https://ebird.org/data/download) after you agree to the terms and conditions. If you've downloaded these data, put the CCI text file in the `data/` subdirectory of your project.
 
 ```{r occupancy-data}
-#Install packages
 library(auk)
 library(lubridate)
 library(sf)

@@ -287,11 +287,11 @@ ggplot(cal_pred) +
 
 The calibrated random forest model is now the combination of the original random forest model and the calibration model.
 
-### Validation {#encounter-rf-val}
+### Assessment {#encounter-rf-assess}
 
-Now we'll validate the calibrated random forest model with the 20% test dataset. We'll use a range of performance metrics to compare the predictions to the actual observations: mean squared error (MSE), sensitivity, specificity, AUC, Kappa, and Brier score. Several of these metrics require the raw predicted probabilities to be classified into detection/non-detection. We'll do this using a threshold, chosen to maximize the Kappa statistic.
+Now we'll assess the calibrated random forest model with the 20% test dataset. We'll use a range of performance metrics to compare the predictions to the actual observations: mean squared error (MSE), sensitivity, specificity, AUC, Kappa, and Brier score. Several of these metrics require the raw predicted probabilities to be classified into detection/non-detection. We'll do this using a threshold, chosen to maximize the Kappa statistic.
 
-```{r encounter-rf-val}
+```{r encounter-rf-assess}
 # predict on test data using calibrated model
 p_fitted <- predict(rf, data = ebird_split$test, type = "response")
 p_calibrated <- predict(calibration_model, 
@@ -337,7 +337,7 @@ rf_assessment <- tibble(
 )
 ```
 
-```{r encounter-rf-val-print, echo = FALSE}
+```{r encounter-rf-assess-print, echo = FALSE}
 knitr::kable(rf_assessment, digits = 3)
 ```
 
