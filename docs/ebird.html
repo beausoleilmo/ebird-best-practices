@@ -25,7 +25,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink">
 
 
-<meta name="date" content="2019-03-14">
+<meta name="date" content="2019-03-18">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -159,7 +159,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
 <li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
 <li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
-<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a></li>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="ebird.html"><a href="ebird.html#ebird-explore-time"><i class="fa fa-check"></i><b>2.5.1</b> Time of day</a></li>
+<li class="chapter" data-level="2.5.2" data-path="ebird.html"><a href="ebird.html#ebird-explore-duration"><i class="fa fa-check"></i><b>2.5.2</b> Checklist duration</a></li>
+<li class="chapter" data-level="2.5.3" data-path="ebird.html"><a href="ebird.html#ebird-explore-distance"><i class="fa fa-check"></i><b>2.5.3</b> Distance traveled</a></li>
+<li class="chapter" data-level="2.5.4" data-path="ebird.html"><a href="ebird.html#ebird-explore-observers"><i class="fa fa-check"></i><b>2.5.4</b> Number of observers</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="habitat.html"><a href="habitat.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
 <li class="chapter" data-level="3.1" data-path="habitat.html"><a href="habitat.html#habitat-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
@@ -185,24 +190,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
-<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore"><i class="fa fa-check"></i><b>5.2</b> Exploratory analysis</a><ul>
-<li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-time"><i class="fa fa-check"></i><b>5.2.1</b> Time of day</a></li>
-<li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#checklist-duration-occupancy-explore-duration"><i class="fa fa-check"></i><b>5.2.2</b> Checklist duration {occupancy-explore-duration}</a></li>
-<li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#distance-traveled-occupancy-explore-distance"><i class="fa fa-check"></i><b>5.2.3</b> Distance traveled {occupancy-explore-distance}</a></li>
-<li class="chapter" data-level="5.2.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-observers"><i class="fa fa-check"></i><b>5.2.4</b> Number of observers</a></li>
-<li class="chapter" data-level="5.2.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-cci"><i class="fa fa-check"></i><b>5.2.5</b> Checklist Calibration Index</a></li>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.3</b> Data preparation</a><ul>
-<li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.3.1</b> Preparing for occupancy modeling</a></li>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.3</b> Spatial subsampling</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.3.1</b> <code>unmarked</code> object</a></li>
 </ul></li>
-<li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.4</b> Spatial subsampling</a><ul>
-<li class="chapter" data-level="5.4.1" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.4.1</b> <code>unmarked</code> object</a></li>
+<li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.4</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.4.1</b> Assessment</a></li>
+<li class="chapter" data-level="5.4.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.4.2</b> Model selection</a></li>
 </ul></li>
-<li class="chapter" data-level="5.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.5</b> Occupancy modeling</a><ul>
-<li class="chapter" data-level="5.5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.5.1</b> Assessment</a></li>
-<li class="chapter" data-level="5.5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.5.2</b> Model selection</a></li>
-</ul></li>
-<li class="chapter" data-level="5.6" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.6</b> Prediction</a></li>
+<li class="chapter" data-level="5.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.5</b> Prediction</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
 <li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
@@ -256,6 +254,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
 <span class="kw">library</span>(lubridate)
 <span class="kw">library</span>(sf)
+<span class="kw">library</span>(gridExtra)
 <span class="kw">library</span>(tidyverse)
 select &lt;-<span class="st"> </span>dplyr<span class="op">::</span>select
 
@@ -407,37 +406,127 @@ ebird_sf &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span
 <span class="kw">title</span>(<span class="st">&quot;Wood Thrush eBird Observations</span><span class="ch">\n</span><span class="st">June 2009-2018, BCR 27&quot;</span>)</code></pre>
 <p><img src="ebird-good-practices_files/figure-html/ebird-explore-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>In this map the spatial bias in eBird data becomes immediately obvious, for example, notice the large number of checklists along the heavily populated Atlantic coast, especially around large cities like Jacksonville, Florida and popular birding areas like the Outer Banks of North Carolina.</p>
-<p>We can also explore some of the effort variables. For example, how is birding effort distributed throughout the day?</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(ebird) <span class="op">+</span>
+<p>It’s also valuable to explore some of the effort variables. In particular, we’ll look at the range of effort variables in the data and where the majority of the observations fall. For values of the effort covariates for which we have few observations, our models will likely not perform well.</p>
+<div id="ebird-explore-time" class="section level3">
+<h3><span class="header-section-number">2.5.1</span> Time of day</h3>
+<p>The chance of an observer detecting a bird when present can be highly dependent on time of day. For example, many species exhibit a peak in detection early in the morning during dawn chorus and a secondary peak early in the evening. With this in mind, the first predictor of detection that we’ll explore is the time of day at which a checklist was started.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># histogram</span>
+g_tod_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird) <span class="op">+</span>
 <span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> time_observations_started) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>, <span class="dt">center =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="st">&quot;grey30&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">3</span>)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,
        <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,
-       <span class="dt">title =</span> <span class="st">&quot;Distribution of observation start times&quot;</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/ebird-explore-timehist-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<p>Birds are typically most active and singing early in the morning and, as you might expect, birders are most likely to go birding in the morning as well. What about detectability, how does it change throughout the day?</p>
-<pre class="sourceCode r"><code class="sourceCode r">det_freq &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="co"># calculate detection frequency for each hour of the day</span>
-<span class="st">  </span><span class="kw">group_by</span>(<span class="dt">hour =</span> <span class="kw">round</span>(time_observations_started)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">detection_frequency =</span> <span class="kw">mean</span>(species_observed)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="co"># drop night hours since there are so few observations</span>
-<span class="st">  </span><span class="kw">filter</span>(hour <span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span>, hour <span class="op">&lt;</span><span class="st"> </span><span class="dv">22</span>)
-<span class="kw">ggplot</span>(det_freq) <span class="op">+</span>
-<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> hour, <span class="dt">y =</span> detection_frequency) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span>
-<span class="st">  </span><span class="kw">scale_fill_brewer</span>(<span class="dt">palette =</span> <span class="st">&quot;Set1&quot;</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">xlim</span>(<span class="dv">0</span>, <span class="dv">24</span>) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,
-       <span class="dt">y =</span> <span class="st">&quot;Frequency of detection on checklists&quot;</span>,
-       <span class="dt">title =</span> <span class="st">&quot;Distribution of detection frequency throughout the day&quot;</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/ebird-explore-timedet-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<p>Wood Thrush appear more frequently on checklists early in the morning and detectability falls off quickly as the day progress. This phenomenon is well know by birders, and explains their tendency to get out as close to sunrise as possible. Of course, these simple explorations don’t account for the role of the various biases and other sources of variation in the data, both of which can affect these patterns. However, simple visualizations like this are a useful way to become familiar with the data prior to employing more rigorous analytical approaches.</p>
-<p>These plots of the spatial and temporal bias and the variation in detectability highlight the variability inherent in eBird data and the importance of accounting for this variability in analyses. Analytical approaches that ignore this variation risk averaging over a heterogeneous and biased set of data, with subsequent implications for the reliability of ecological conclusions.</p>
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of observation start times&quot;</span>)
 
+<span class="co"># histogram of detections</span>
+g_tod_hist_det &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">filter</span>(ebird, species_observed)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> time_observations_started) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>, <span class="dt">center =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="st">&quot;grey30&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dt">by =</span> <span class="dv">3</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Hours since midnight&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;# checklists w/ detections&quot;</span>,
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of start times for checklists with detections&quot;</span>)
+
+<span class="co"># combine</span>
+<span class="kw">grid.arrange</span>(g_tod_hist, g_tod_hist_det)</code></pre>
+<p><img src="ebird-good-practices_files/figure-html/ebird-explore-time-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>The peak frequency of checklist submissions, and of those checklists with detections, occurs between 6 and 9 am. Therefore, further filtering to a subset of time during the day (e.g. 5am to 12pm) will help reduce variability in detection without reducing the total number of observations significantly.</p>
+</div>
+<div id="ebird-explore-duration" class="section level3">
+<h3><span class="header-section-number">2.5.2</span> Checklist duration</h3>
+<p>When we initially extracted the eBird data in Section @ref{ebird-extract}, we restricted observations to those from checklists 5 hours in duration or shorter to reduce variability. Let’s see what sort of variation remains in checklist duration.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># histogram</span>
+g_dur_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> duration_minutes <span class="op">/</span><span class="st"> </span><span class="dv">60</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.5</span>, <span class="dt">center =</span> <span class="fl">0.25</span>, 
+                 <span class="dt">color =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Checklist duration (hours)&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of checklist durations&quot;</span>)
+
+<span class="co"># histogram of detections</span>
+g_dur_hist_det &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">filter</span>(ebird, species_observed)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> duration_minutes <span class="op">/</span><span class="st"> </span><span class="dv">60</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.5</span>, <span class="dt">center =</span> <span class="fl">0.25</span>, 
+                 <span class="dt">color =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Checklist duration (hours)&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;# checklists w/ detections&quot;</span>,
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of durations for checklists with detections&quot;</span>)
+
+<span class="co"># combine</span>
+<span class="kw">grid.arrange</span>(g_dur_hist, g_dur_hist_det)</code></pre>
+<p><img src="ebird-good-practices_files/figure-html/ebird-explore-duration-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>The majority of checklists are half an hour or shorter and there is a rapid decline in the frequency of checklists with increasing duration. Therefore, filtering checklists to less than one hour will reduce variation in detection with checklist duration.</p>
+</div>
+<div id="ebird-explore-distance" class="section level3">
+<h3><span class="header-section-number">2.5.3</span> Distance traveled</h3>
+<p>As with checklist duration, we expect <em>a priori</em> that the greater the distance someone travels, the greater the probability of encountering at least one Wood Thrush. Let’s see if this expectation is met. Note that we have already truncated the data to checklists less than 5 km in length.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># histogram</span>
+g_dist_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> effort_distance_km) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.5</span>, <span class="dt">center =</span> <span class="fl">0.25</span>, 
+                 <span class="dt">color =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Distance travelled (km)&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of distance travelled&quot;</span>)
+
+<span class="co"># histogram of detections</span>
+g_dist_hist_det &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">filter</span>(ebird, species_observed)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> effort_distance_km) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.5</span>, <span class="dt">center =</span> <span class="fl">0.25</span>, 
+                 <span class="dt">color =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Distance travelled (km)&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,
+       <span class="dt">title =</span> <span class="kw">paste</span>(<span class="st">&quot;Distribution of distance travelled&quot;</span>,
+                     <span class="st">&quot;for checklists with detections&quot;</span>))
+
+<span class="co"># combine</span>
+<span class="kw">grid.arrange</span>(g_dist_hist, g_dist_hist_det)</code></pre>
+<p><img src="ebird-good-practices_files/figure-html/ebird-explore-distance-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>As with duration, the majority of observations are from short checklists (less than half a kilometer). One fortunate consequence of this is that most checklists will be contained within a small area within which habitat is not likely to show high variability. In chapter @ref{habitat}, we summarized habitat within circles having a 2.5 km diameter, centered on each checklist, and it appears that the vast majority of checklists willl stay contained within this area. As with other variables, eliminating checklists that are greater than one kilometer will increase the spatial accuracy of the observations and not significantly reduce sample sizes.</p>
+</div>
+<div id="ebird-explore-observers" class="section level3">
+<h3><span class="header-section-number">2.5.4</span> Number of observers</h3>
+<p>Next, let’s consider the number of observers whose observation are being reported in each checklist. We expect that at least up to some number of observers, reporting rates will increase; however, in working with these data we have found cases of declining detection rates for very large groups. Note that the data have been restricted to checklists with 10 or fewer observers, already removing the very largest groups (prior to filtering, some checklists had as many as 230 observers!).</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># histogram</span>
+g_obs_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> number_observers) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>, <span class="dt">center =</span> <span class="dv">1</span>, 
+                 <span class="dt">color =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;# of observers&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of number of observers&quot;</span>)
+
+<span class="co"># histogram of detections</span>
+g_obs_hist_det &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">filter</span>(ebird, species_observed)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> number_observers) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>, <span class="dt">center =</span> <span class="dv">1</span>, 
+                 <span class="dt">color =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey50&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>comma) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;# of observers&quot;</span>,
+       <span class="dt">y =</span> <span class="st">&quot;# checklists&quot;</span>,
+       <span class="dt">title =</span> <span class="kw">paste</span>(<span class="st">&quot;Distribution of number of observers&quot;</span>,
+                     <span class="st">&quot;for checklists with detections&quot;</span>))
+
+<span class="kw">grid.arrange</span>(g_obs_hist, g_obs_hist_det)</code></pre>
+<p><img src="ebird-good-practices_files/figure-html/ebird-explore-observers-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>Due to the very small sample sizes of records with 3 or more observers, reducing the number of checklists from 40,477 to 40,059 records will reduce the need to model the number of observers as a covariate for detection, and not significantly reduce sample size.</p>
+
+</div>
 </div>
 </div>
 <h3>References</h3>

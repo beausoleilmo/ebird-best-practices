@@ -25,7 +25,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink">
 
 
-<meta name="date" content="2019-03-14">
+<meta name="date" content="2019-03-18">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -159,7 +159,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.2" data-path="ebird.html"><a href="ebird.html#ebird-extract"><i class="fa fa-check"></i><b>2.2</b> Data extraction with <code>auk</code></a></li>
 <li class="chapter" data-level="2.3" data-path="ebird.html"><a href="ebird.html#ebird-zf"><i class="fa fa-check"></i><b>2.3</b> Importing and zero-filling</a></li>
 <li class="chapter" data-level="2.4" data-path="ebird.html"><a href="ebird.html#ebird-detect"><i class="fa fa-check"></i><b>2.4</b> Accounting for variation in detectability</a></li>
-<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a></li>
+<li class="chapter" data-level="2.5" data-path="ebird.html"><a href="ebird.html#ebird-explore"><i class="fa fa-check"></i><b>2.5</b> Exploratory analysis and visualization</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="ebird.html"><a href="ebird.html#ebird-explore-time"><i class="fa fa-check"></i><b>2.5.1</b> Time of day</a></li>
+<li class="chapter" data-level="2.5.2" data-path="ebird.html"><a href="ebird.html#ebird-explore-duration"><i class="fa fa-check"></i><b>2.5.2</b> Checklist duration</a></li>
+<li class="chapter" data-level="2.5.3" data-path="ebird.html"><a href="ebird.html#ebird-explore-distance"><i class="fa fa-check"></i><b>2.5.3</b> Distance traveled</a></li>
+<li class="chapter" data-level="2.5.4" data-path="ebird.html"><a href="ebird.html#ebird-explore-observers"><i class="fa fa-check"></i><b>2.5.4</b> Number of observers</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="habitat.html"><a href="habitat.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
 <li class="chapter" data-level="3.1" data-path="habitat.html"><a href="habitat.html#habitat-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
@@ -185,24 +190,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
-<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore"><i class="fa fa-check"></i><b>5.2</b> Exploratory analysis</a><ul>
-<li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-time"><i class="fa fa-check"></i><b>5.2.1</b> Time of day</a></li>
-<li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#checklist-duration-occupancy-explore-duration"><i class="fa fa-check"></i><b>5.2.2</b> Checklist duration {occupancy-explore-duration}</a></li>
-<li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#distance-traveled-occupancy-explore-distance"><i class="fa fa-check"></i><b>5.2.3</b> Distance traveled {occupancy-explore-distance}</a></li>
-<li class="chapter" data-level="5.2.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-observers"><i class="fa fa-check"></i><b>5.2.4</b> Number of observers</a></li>
-<li class="chapter" data-level="5.2.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-explore-cci"><i class="fa fa-check"></i><b>5.2.5</b> Checklist Calibration Index</a></li>
+<li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.3</b> Data preparation</a><ul>
-<li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.3.1</b> Preparing for occupancy modeling</a></li>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.3</b> Spatial subsampling</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.3.1</b> <code>unmarked</code> object</a></li>
 </ul></li>
-<li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.4</b> Spatial subsampling</a><ul>
-<li class="chapter" data-level="5.4.1" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.4.1</b> <code>unmarked</code> object</a></li>
+<li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.4</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.4.1</b> Assessment</a></li>
+<li class="chapter" data-level="5.4.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.4.2</b> Model selection</a></li>
 </ul></li>
-<li class="chapter" data-level="5.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.5</b> Occupancy modeling</a><ul>
-<li class="chapter" data-level="5.5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.5.1</b> Assessment</a></li>
-<li class="chapter" data-level="5.5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.5.2</b> Model selection</a></li>
-</ul></li>
-<li class="chapter" data-level="5.6" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.6</b> Prediction</a></li>
+<li class="chapter" data-level="5.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.5</b> Prediction</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
 <li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
@@ -236,7 +234,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Best Practices for Using eBird Data</h1>
 <p class="author"><em>Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink</em></p>
-<p class="date"><em>2019-03-14</em></p>
+<p class="date"><em>2019-03-18</em></p>
 </div>
 <div id="welcome" class="section level1 unnumbered">
 <h1>Welcome</h1>

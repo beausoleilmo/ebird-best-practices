@@ -36,6 +36,7 @@ Filtering the EDB using `auk` requires three steps. First, reference the EBD and
 library(auk)
 library(lubridate)
 library(sf)
+library(gridExtra)
 library(tidyverse)
 select <- dplyr::select
 
@@ -195,10 +196,15 @@ title("Wood Thrush eBird Observations\nJune 2009-2018, BCR 27")
 
 In this map the spatial bias in eBird data becomes immediately obvious, for example, notice the large number of checklists along the heavily populated Atlantic coast, especially around large cities like Jacksonville, Florida and popular birding areas like the Outer Banks of North Carolina. 
 
-We can also explore some of the effort variables. For example, how is birding effort distributed throughout the day?
+It's also valuable to explore some of the effort variables. In particular, we'll look at the range of effort variables in the data and where the majority of the observations fall. For values of the effort covariates for which we have few observations, our models will likely not perform well.
 
-```{r ebird-explore-timehist}
-ggplot(ebird) +
+### Time of day {#ebird-explore-time}
+
+The chance of an observer detecting a bird when present can be highly dependent on time of day. For example, many species exhibit a peak in detection early in the morning during dawn chorus and a secondary peak early in the evening. With this in mind, the first predictor of detection that we'll explore is the time of day at which a checklist was started. 
+
+```{r ebird-explore-time}
+# histogram
+g_tod_hist <- ggplot(ebird) +
   aes(x = time_observations_started) +
   geom_histogram(binwidth = 1, center = 0, color = "grey30", fill = "grey50") +
   scale_x_continuous(breaks = seq(0, 24, by = 3)) +
@@ -206,29 +212,119 @@ ggplot(ebird) +
   labs(x = "Hours since midnight",
        y = "# checklists",
        title = "Distribution of observation start times")
-```
 
-Birds are typically most active and singing early in the morning and, as you might expect, birders are most likely to go birding in the morning as well. What about detectability, how does it change throughout the day?
-
-```{r ebird-explore-timedet}
-det_freq <- ebird %>% 
-  # calculate detection frequency for each hour of the day
-  group_by(hour = round(time_observations_started)) %>% 
-  summarize(detection_frequency = mean(species_observed)) %>% 
-  ungroup() %>% 
-  # drop night hours since there are so few observations
-  filter(hour > 4, hour < 22)
-ggplot(det_freq) +
-  aes(x = hour, y = detection_frequency) +
-  geom_point() +
-  geom_line() +
-  scale_fill_brewer(palette = "Set1") +
-  xlim(0, 24) + 
+# histogram of detections
+g_tod_hist_det <- ggplot(filter(ebird, species_observed)) +
+  aes(x = time_observations_started) +
+  geom_histogram(binwidth = 1, center = 0, color = "grey30", fill = "grey50") +
+  scale_x_continuous(breaks = seq(0, 24, by = 3)) +
+  scale_y_continuous(labels = scales::comma) +
   labs(x = "Hours since midnight",
-       y = "Frequency of detection on checklists",
-       title = "Distribution of detection frequency throughout the day")
+       y = "# checklists w/ detections",
+       title = "Distribution of start times for checklists with detections")
+
+# combine
+grid.arrange(g_tod_hist, g_tod_hist_det)
 ```
 
-Wood Thrush appear more frequently on checklists early in the morning and detectability falls off quickly as the day progress. This phenomenon is well know by birders, and explains their tendency to get out as close to sunrise as possible. Of course, these simple explorations don't account for the role of the various biases and other sources of variation in the data, both of which can affect these patterns. However, simple visualizations like this are a useful way to become familiar with the data prior to employing more rigorous analytical approaches.
+The peak frequency of checklist submissions, and of those checklists with detections, occurs between 6 and 9 am. Therefore, further filtering to a subset of time during the day (e.g. 5am to 12pm) will help reduce variability in detection without reducing the total number of observations significantly.
 
-These plots of the spatial and temporal bias and the variation in detectability highlight the variability inherent in eBird data and the importance of accounting for this variability in analyses. Analytical approaches that ignore this variation risk averaging over a heterogeneous and biased set of data, with subsequent implications for the reliability of ecological conclusions. 
+### Checklist duration {#ebird-explore-duration}
+
+When we initially extracted the eBird data in Section \@ref{ebird-extract}, we restricted observations to those from checklists 5 hours in duration or shorter to reduce variability. Let's see what sort of variation remains in checklist duration.
+
+```{r ebird-explore-duration}
+# histogram
+g_dur_hist <- ggplot(ebird) +
+  aes(x = duration_minutes / 60) +
+  geom_histogram(binwidth = 0.5, center = 0.25, 
+                 color = "grey20", fill = "grey50") +
+  scale_x_continuous(breaks = 0:5) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "Checklist duration (hours)",
+       y = "# checklists",
+       title = "Distribution of checklist durations")
+
+# histogram of detections
+g_dur_hist_det <- ggplot(filter(ebird, species_observed)) +
+  aes(x = duration_minutes / 60) +
+  geom_histogram(binwidth = 0.5, center = 0.25, 
+                 color = "grey20", fill = "grey50") +
+  scale_x_continuous(breaks = 0:5) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "Checklist duration (hours)",
+       y = "# checklists w/ detections",
+       title = "Distribution of durations for checklists with detections")
+
+# combine
+grid.arrange(g_dur_hist, g_dur_hist_det)
+```
+
+The majority of checklists are half an hour or shorter and there is a rapid decline in the frequency of checklists with increasing duration. Therefore, filtering checklists to less than one hour will reduce variation in detection with checklist duration.
+
+### Distance traveled {#ebird-explore-distance}
+
+As with checklist duration, we expect *a priori* that the greater the distance someone travels, the greater the probability of encountering at least one Wood Thrush. Let's see if this expectation is met. Note that we have already truncated the data to checklists less than 5 km in length.
+
+```{r ebird-explore-distance}
+# histogram
+g_dist_hist <- ggplot(ebird) +
+  aes(x = effort_distance_km) +
+  geom_histogram(binwidth = 0.5, center = 0.25, 
+                 color = "grey20", fill = "grey50") +
+  scale_x_continuous(breaks = 0:5) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "Distance travelled (km)",
+       y = "# checklists",
+       title = "Distribution of distance travelled")
+
+# histogram of detections
+g_dist_hist_det <- ggplot(filter(ebird, species_observed)) +
+  aes(x = effort_distance_km) +
+  geom_histogram(binwidth = 0.5, center = 0.25, 
+                 color = "grey20", fill = "grey50") +
+  scale_x_continuous(breaks = 0:5) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "Distance travelled (km)",
+       y = "# checklists",
+       title = paste("Distribution of distance travelled",
+                     "for checklists with detections"))
+
+# combine
+grid.arrange(g_dist_hist, g_dist_hist_det)
+```
+
+As with duration, the majority of observations are from short checklists (less than half a kilometer). One fortunate consequence of this is that most checklists will be contained within a small area within which habitat is not likely to show high variability. In chapter \@ref{habitat}, we summarized habitat within circles having a 2.5 km diameter, centered on each checklist, and it appears that the vast majority of checklists willl stay contained within this area. As with other variables, eliminating checklists that are greater than one kilometer will increase the spatial accuracy of the observations and not significantly reduce sample sizes.
+
+### Number of observers {#ebird-explore-observers}
+
+Next, let's consider the number of observers whose observation are being reported in each checklist. We expect that at least up to some number of observers, reporting rates will increase; however, in working with these data we have found cases of declining detection rates for very large groups. Note that the data have been restricted to checklists with 10 or fewer observers, already removing the very largest groups (prior to filtering, some checklists had as many as 230 observers!).
+
+```{r ebird-explore-observers}
+# histogram
+g_obs_hist <- ggplot(ebird) +
+  aes(x = number_observers) +
+  geom_histogram(binwidth = 1, center = 1, 
+                 color = "grey20", fill = "grey50") +
+  scale_x_continuous(breaks = 1:10) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "# of observers",
+       y = "# checklists",
+       title = "Distribution of number of observers")
+
+# histogram of detections
+g_obs_hist_det <- ggplot(filter(ebird, species_observed)) +
+  aes(x = number_observers) +
+  geom_histogram(binwidth = 1, center = 1, 
+                 color = "grey20", fill = "grey50") +
+  scale_x_continuous(breaks = 1:10) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "# of observers",
+       y = "# checklists",
+       title = paste("Distribution of number of observers",
+                     "for checklists with detections"))
+
+grid.arrange(g_obs_hist, g_obs_hist_det)
+```
+
+Due to the very small sample sizes of records with 3 or more observers, reducing the number of checklists from `r scales::comma(nrow(ebird))` to `r scales::comma(nrow(filter(ebird, number_observers <= 5)))` records will reduce the need to model the number of observers as a covariate for detection, and not significantly reduce sample size.

@@ -7,13 +7,14 @@ editor_options:
 
 ## Introduction {#occupancy-intro}
 
-In this chapter we'll estimate the **occupancy probability** of Wood Thrush in June in BCR 27. In Chapter \@ref(intro), we noted that it's generally not possible to estimate absolute detectability with semi-structured citizen science data like eBird. This in turn means that estimating absolute ecological metrics like occupancy probability is challenging because detectability is confounding. If an eBirder doesn't record Wood Thrush on a checklist, is that because the species wasn't *present* or because it wasn't *detected*? In general, data gathered through structured surveys are required to estimate occupancy; however, it is possible to *impose* structure on eBird data through filtering to produce a subset data suitable for estimating occupancy. Once we have a structured dataset, we can fit occupancy models that simultaneously model the ecological process of species occurrence *and* the observation process of species detection.
+In this chapter, we'll cover basic steps for estimating **occupancy probability** using data in eBird. In Chapter \@ref(encounter), we used analytical approaches that modeled variation in detectability by inclduing covariates that are known to influence detection rates (e.g. effort). In contrast, occupancy models jointly model the ecological process of species occurrence *and* the observation process of species detection. The aplication of these models typically requires repeated visits to a single site during a relatively short time frame, over which the population can be considered as closed. However, it is possible to *impose* this repeat visit structure on eBird data to generate a subset of data suitable for estimating occupancy. Here, we discuss how to process eBird observations to meet existing criteria for the application of occupancy models. To illustrate our example, we apply single-season occupancy models to estimate occupancy and detection probabilities of Wood Thrush for the month of June in BCR 27. 
 
-This chapter is distinct from the previous chapter on modeling encounter rate in several important ways. First, as already discussed, occupancy models model detection explicitly and make absolute estimates of species occurrence. In contrast, the encouter rate model from Chapter \@ref(encounter) attempted to control for variation in detection, but could only make relative estimates of occurrence (i.e. encounter rate). Second, the random forest model used in Chapter \@ref(encounter) is an example of a [machine learning](https://en.wikipedia.org/wiki/Machine_learning) approach, while the occupancy models used in this chapter are a more traditional statistical approach. This type of stastitical approach looks to draw inferences and test hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions [@bzdokPointsSignificanceStatistics2018]. Finally, random forests can model an extremely rich diversity of associations, including complex interactions between covariates and non-linear effects. Occupancy models are restricted to linear effects and simple interactions. In practice, this means that in this chapter we'll need to make decisions about which predictors to include in our model, informed either by exploratory analysis or *a priori* knowledge of the species. The modeling approach you choose will depend on the specific questions you're asking and which techniques you're more familiar with.
+This chapter is distinct from the previous chapter on modeling encounter rate in two important ways. First, the random forest model used in Chapter \@ref(encounter) is an example of a [machine learning](https://en.wikipedia.org/wiki/Machine_learning) approach, while the occupancy models used in this chapter are a more traditional likelihood approach. This latter type of stastitical approach is best suited for addressing specific questions and hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions [@bzdokPointsSignificanceStatistics2018]. Second, machine learning approaches can accomodate complex interactions between covariates and non-linear effects, often needed to model habitat associations that can vary across large spaial and temporal scales. In contrast, occupancy models are more suitable for exploring linear effects and simpler interactions. In this example, we specifically focus on the mechanics of filtering and formatting the data to fit occupancy models, and less on how to choose which predictors to include for detection and occupancy probabilities. The predictors we do include are informed by our inferences on variable from the random forest model in Chapter \@ref(encounter).
 
-Let's begin by loading all the packages and data we'll need for this chapter. If you worked through the previous chapters, you should have all the data necessary for this chapter. However, you may want to [download the data package]((https://raw.githubusercontent.com/mstrimas/ebird-good-practices/master/data.zip)), and unzip it to your working directory, to ensure you're working with exactly the same data as was used in the creation of this book.  Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an **optional** covariate in these models. Including CCI typical leads to marked improvement of model performance; however, due to the sensitive nature of these data you will need to [download them separately](https://ebird.org/data/download) after agree to the terms and conditions. If you've downloaded these data, put the CCI text file in the `data/` subdirectory of your project.
+If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also [download the data package]((https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip)), and unzip it to your working directory.  Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an **optional** covariate in these models. Including CCI typical leads to marked improvement in model performance; however, due to the sensitive nature of these data you will need to [download them separately](https://ebird.org/data/download) after you agree to the terms and conditions. If you've downloaded these data, put the CCI text file in the `data/` subdirectory of your project.
 
 ```{r occupancy-data}
+#Install packages
 library(auk)
 library(lubridate)
 library(sf)
@@ -24,7 +25,6 @@ library(viridis)
 library(MuMIn)
 library(AICcmodavg)
 library(fields)
-library(gridExtra)
 library(tidyverse)
 # resolve namespace conflicts
 select <- dplyr::select
@@ -73,191 +73,21 @@ ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") %>%
   st_geometry()
 ```
 
-## Exploratory analysis {#occupancy-explore}
-
-Before we begin fitting occupancy models to the Wood Thrush data, let's explore the dataset. This will inform the choice of variables we use as covariates for describing variation in detection probability and help us decide on suitable functional forms for these covariates in our models. This is necessary because occupancy models are parametric models in which we need to describe algebraically the shape of the relaitonships between predictors and response. In contrast, methods such as random forests, used in Chapter \@ref(encounter), identify the forms of the functional relationships as part of fitting models to the data. Furthermore, occupancy models are [linear models](https://en.wikipedia.org/wiki/Linear_model) in which the [logit](https://en.wikipedia.org/wiki/Logit)-transformed probabilities must be a linear combination of the predictors. This linear relationship on the logit-scale implies a [logistic or sigmoid](https://en.wikipedia.org/wiki/Logistic_function) relationship between predictors and untransformed probabilities.
-
-In this section, we'll examine each of the effort covariates using two methods. First, we'll use [GAMs (Generalized Additive Models)](https://en.wikipedia.org/wiki/Generalized_additive_model) to explore the relationships between the probability of reporting Wood Thrush and each of the effort variables. Treating reporting probability as a proxy for detection probability, we can use these relationships to inform how we construct the detection component of the occupancy model. In particular, we'll be looking for sigmoid relationships between detection probability and the covariates. Second, we'll examine the distribution of each of the covariates, focusing especially on regions with few checklists. We'll compare the distribution of the data with the pattern of change in reporting rate (as a surrogate for detection probability) in order to see whether any changes in reporting rate are in these low-data regions. In particular, we'll look for spurious or noisy relationships arising from a shortage of data at some values of the covariate. To address these spurious or non-linear relationships, we can either further subset the data to remove checklist from problematic covariate regions or consider using higher order terms in our occupancy model.
-
-### Time of day {#occupancy-explore-time}
-
-As we saw in Sections \@ref(ebird-explore) and \@ref(encounter-habitat-pi), detectability of birds is highly dependent on time of day. For example, many species exhibit bimodal detectability, with a primary peak early in the morning during dawn chorus and a secondary peak early in the evening. With this in mind, the first predictor of detection that we'll explore is the time of day at which a checklist was started. 
-
-```{r occupancy-explore-time}
-# histogram
-g_tod_hist <- ggplot(ebird_habitat) +
-  aes(x = time_observations_started) +
-  geom_histogram(binwidth = 1, center = 0, color = "grey30", fill = "grey50") +
-  scale_x_continuous(breaks = seq(0, 24, by = 3)) +
-  scale_y_continuous(labels = scales::comma) +
-  labs(x = "Hours since midnight",
-       y = "# checklists",
-       title = "Distribution of observation start times")
-
-# gam
-g_tod_gam <- ggplot(ebird_habitat) +
-  aes(x = time_observations_started, y = species_observed) +
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), 
-              method.args = list(family = "binomial")) +
-  scale_x_continuous(breaks = seq(0, 24, by = 3)) +
-  labs(x = "Hours since midnight",
-       y = "Probability of reporting",
-       title = "Effect of observation start time on Wood Thrush reporting",
-       subtitle = "Binomial GAM fit to eBird observations")
-
-# combine
-grid.arrange(g_tod_hist, g_tod_gam)
-```
-
-The peak frequency of observations occurs between 7 and 8 am; however, between dawn and dusk there are reasonable numbers of checklists, and there should be sufficient data to capture any differences in activity that might cause variation in Wood Thrush detectability. Probability of reporting, and thus very likely probability of detection, declines steadily until the afternoon, at which point there is little change in reporting rate. The confidence limits around this relationship are wider in the early morning and at the end of the day, which is consistent with having few observations at night; however, the smooth monotonic decline in reporting rate suggests that this lack of data isn't giving rise to spurious relationships.
-
-### Checklist duration {occupancy-explore-duration}
-
-When filtering the data in Chapter \@ref{ebird}, we restricted observations to those from checklists 5 hours in duration or shorter to reduce variability. Let's see what sort of variation remains in checklist duration.
-
-```{r occupancy-explore-duration}
-# histogram
-g_dur_hist <- ggplot(ebird_habitat) +
-  aes(x = duration_minutes / 60) +
-  geom_histogram(binwidth = 0.5, center = 0.25, 
-                 color = "grey20", fill = "grey50") +
-  scale_x_continuous(breaks = 0:5) +
-  scale_y_continuous(labels = scales::comma) +
-  labs(x = "Checklist duration (hours)",
-       y = "# checklists",
-       title = "Distribution of checklist durations")
-
-# gam
-g_dur_gam <- ggplot(ebird_habitat) +
-  aes(x = duration_minutes / 60, y = species_observed) +
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 3), 
-              method.args = list(family = "binomial")) +
-  scale_x_continuous(breaks = 0:5) +
-  labs(x = "Checklist duration (hours)",
-       y = "Probability of reporting",
-       title = "Effect of checklist duration on Wood Thrush reporting",
-       subtitle = "Binomial GAM fit to eBird observations")
-
-# combine
-grid.arrange(g_dur_hist, g_dur_gam)
-```
-
-The effect of checklist duration is as one would expect: the longer eBirders spent birding, the more likely they were to report at least one Wood Thrush. The majority of checklists are half an hour or shorter and there is a rapid decline in the frequency of checklists with increasing duration. Given this, we might expect a noisy or spurious relationships between duration and reporting probability for long duration checklists; however, the smooth monotonically increasing relationship suggests that this is not the case.
-
-### Distance traveled {occupancy-explore-distance}
-
-As with checklist duration, we expect *a priori* that the greater the distance someone travels, the greater the probability of encountering at least one Wood Thrush. Let's see if this expectation is met. Note that we have already truncated the data to checklists less than 5 km in length.
-
-```{r occupancy-explore-distance}
-# histogram
-g_dist_hist <- ggplot(ebird_habitat) +
-  aes(x = effort_distance_km) +
-  geom_histogram(binwidth = 0.5, center = 0.25, 
-                 color = "grey20", fill = "grey50") +
-  scale_x_continuous(breaks = 0:5) +
-  scale_y_continuous(labels = scales::comma) +
-  labs(x = "Distance travelled (km)",
-       y = "# checklists",
-       title = "Distribution of distance travelled")
-
-# gam
-g_dist_gam <- ggplot(ebird_habitat) +
-  aes(x = effort_distance_km, y = species_observed) +
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 3), 
-              method.args = list(family = "binomial")) +
-  scale_x_continuous(breaks = 0:5) +
-  labs(x = "Distance travelled (km)",
-       y = "Probability of reporting",
-       title = "Effect of checklist distance on Wood Thrush reporting",
-       subtitle = "Binomial GAM fit to eBird observations")
-
-# combine
-grid.arrange(g_dist_hist, g_dist_gam)
-```
-
-As with duration, the majority of observations are from short checklists (less than half a kilometer). One fortunate consequence of this is that most checklists will be contained within a small area within which habitat is not likely to show high variability. In chapter \@ref{habitat}, we summarized habitat within circles having a 2.5km diameter, centered on each checklist, and it appears that the vast majority of checklists willl stay contained within this area.
-
-In addition, our initial expectations were correct: Wood Thrush are more frequently reported the farther observers travelled. While the uncertainty in the exact relationship is higher at greater travel distances, the predicted increase is monotonic, and so again there is no indication of need to trim away data from any range of travel distances in order to remove potentially spurious relationships from the data.
-
-### Number of observers {#occupancy-explore-observers}
-
-Next, let's consider the number of observers whose observation are being reported in each checklist. We expect that at least up to some number of observers, reporting rates will increase; however, in working with these data we have found cases of declining detection rates for very large groups. Note that the data have been restricted to checklists with 10 or fewer observers, already removing the very largest groups (prior to filtering, some checklists had as many as 230 observers!).
-
-```{r occupancy-explore-observers}
-# histogram
-g_obs_hist <- ggplot(ebird_habitat) +
-  aes(x = number_observers) +
-  geom_histogram(binwidth = 1, center = 1, 
-                 color = "grey20", fill = "grey50") +
-  scale_x_continuous(breaks = 1:10) +
-  scale_y_continuous(labels = scales::comma) +
-  labs(x = "# of observers",
-       y = "# checklists",
-       title = "Distribution of number of observers")
-
-# gam
-g_obs_gam <- ggplot(ebird_habitat) +
-  aes(x = number_observers, y = species_observed) +
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 3), 
-              method.args = list(family = "binomial")) +
-  scale_x_continuous(breaks = c(1, 5, 10)) +
-  labs(x = "# of observers",
-       y = "Probability of reporting",
-       title = "Effect of group size on Wood Thrush reporting",
-       subtitle = "Binomial GAM fit to eBird observations")
-
-grid.arrange(g_obs_hist, g_obs_gam)
-```
-
-There is a quadratic-like pattern of change in reporting rate, with the lowest reporting rates for groups of about 4 or 5 observers. However, the decline from 1 to 5 observers is relatively slight, the uncertainty about the exact pattern is aubstantial, and the increase in reporting rates seen with the larger group sizes is from a range of observers for which there are very few checklists. We could either handle this by including a combination of linear and quadratic terms in the occupancy model, or by removing all records with more than 5 observers. Due to the very small sample sizes of records with 6 or more observers, modeling a quadratic effect of the number of observers could be problematic, and thus we will remove all records with 6 or more observers. This has a minimal effect on sample size, reducing the number of checklists from `r scales::comma(nrow(ebird_habitat))` to `r scales::comma(nrow(filter(ebird_habitat, number_observers <= 5)))` records.
-
-### Checklist Calibration Index {#occupancy-explore-cci}
-
-The Checklist Calibration Index (CCI) is the last effort-related predictor of probability of detection that we'll examine. The CCI is a catch-all index that calibrates observers and checklists against others from similar times and places; essentially it accounts for variation in observer behaviour, equipment, and skill at detecting species [@johnstonEstimatesObserverExpertise2018]. The version of the CCI used in this book is a coarse-resolution integer-value index. We expect *a priori* that there should be a monotonic increase in reporting rates of species with increasing CCI values.
-
-```{r occupancy-explore-cci}
-# histogram
-g_cci_hist <- ggplot(ebird_habitat) +
-  aes(x = checklist_calibration_index) +
-  geom_histogram(binwidth = 1, center = 1, 
-                 color = "grey20", fill = "grey50") +
-  scale_x_continuous(breaks = -5:5) +
-  scale_y_continuous(labels = scales::comma) +
-  labs(x = "# of observers",
-       y = "# checklists",
-       title = "Distribution of CCI values")
-
-# gam
-g_cci_gam <- ggplot(ebird_habitat) +
-  aes(x = checklist_calibration_index, y = species_observed) +
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 3), 
-              method.args = list(family = "binomial")) +
-  scale_x_continuous(breaks = -5:5) +
-  labs(x = "Checklist Calibration Index",
-       y = "Probability of reporting",
-       title = "Effect of CCI on Wood Thrush reporting",
-       subtitle = "Binomial GAM fit to eBird observations")
-
-# combine
-grid.arrange(g_cci_hist, g_cci_gam)
-```
-
-A smooth monotonic increase is exactly what we find, with greatest changes in reporting rates coming from CCI values above -1.
-
 ## Data preparation {#occupancy-data}
 
-Before proceeding with modeling, we need to prepare our data by extracting a subset suitable for occupancy modeling, then performing spatiotemporal subsampling to deal with bias in the data. Let's start by filtering our data based on the exploratory analysis to include only checklists with 5 or fewer observers
+First, we need to extract a subset of eBird data suitable for occupancy modeling, then perform spatiotemporal subsampling to deal with bias in the data. Let's start by filtering our data to include only checklists with 5 or fewer observers, since there are very few observations with greater than 5 observers.
 
 ```{r occupancy-data-obs}
 ebird_filtered <- filter(ebird_habitat, number_observers <= 5)
 ```
 
-### Preparing for occupancy modeling {#occupancy-data-sites}
+In some situations, you may want to further filter the data based on the results of an exploratory analysis similar to the one conducted in Section \@ref{ebird-explore}. However, for the purpose of comparing results among different modeling approaches and best practices, we won't further filter the observations in eBird for our occupancy example.
 
-Occupancy models produce absolute estimates of occurrence by explicity modeling detection. This is made possible by repeat visits to the same site within some period of temporal closure. Because the population size is assumed constant during the period of closure, these repeat visits allow detection to be estimated. Often occupancy models are fit using data from structured ecological surveys specifically collected for these purposes. As discussing in this [Introduction](#occupancy-intro) to this chapter, eBird data do not conform to the structured required for occupancy modeling; however, it is possible to extract a subset of these data that are suitable for occupancy modeling. In particular, we'll define the temporal period of closure as June of a given year, and a site as visits by the same observer to the same location (latitude/longitude) within this period of closure.
+### Data formatting {#occupancy-data-sites}
 
-The `auk` function `filter_repeat_visits()` is designed to extract subsets of eBird data suitable for occupancy modeling. We'll filter to sites with at least 2 visits (`min_obs`) and for those with more than 10 visits (`max_obs`) the function will randomly select 10 visits. Since we only have data from June, using `annual_closure = TRUE` defines the temporal period of closure as the whole month of June for a given year. Finally, `site_vars` specifies the set of variables defining sites: location and observer IDs.
+Now, we can generate detection histories for each location we define as a site. In this example, we define the month of June as the time period that we assume that the population is closed for Wood Thrush, and a site is defined as a location (latitude/longitude) that is visited at least twice by the same observer within our defined period of closure (i.e. the smonth of June).
 
+The `auk` function `filter_repeat_visits()` is designed to extract a subset of eBird data suitable for occupancy modeling. We first filter the data to only sites that have at least 2 visits (`min_obs`).  We then define the maximum length of our detection history (`max_obs`) as 10 visits or checklists. When a specific site has been visited more than 10 times, the function will randomly select 10 checklists from the total number of visits. Since we only have data from June, using `annual_closure = TRUE` defines the temporal period of closure as the whole month of June for a given primary sampling period (i.e. year). Finally, `site_vars` specifies the set of variables that defines a site. In this example, a site is defined jointly by location and observer IDs.
 
 ```{r occupancy-data-sites-repeat}
 occ <- filter_repeat_visits(ebird_filtered, 
@@ -265,18 +95,36 @@ occ <- filter_repeat_visits(ebird_filtered,
                             annual_closure = TRUE,
                             date_var = "observation_date",
                             site_vars = c("locality_id", "observer_id"))
+# entire data set
 nrow(ebird_habitat)
+# reduced data set
 nrow(occ)
+# how many individual sites there are
 n_distinct(occ$site)
 ```
 
-Three new variables are added to the dataset by `filter_repeat_visits()`: `site` is a unique site ID, `closure_id` identifies the period of closer (in this case the year), and `n_observations` is the number of visits to each site. Our data are now suitable for occupancy modeling; however, note that we've made a tradeoff in sample size, dropping from `r scales::comma(nrow(ebird_filtered))` checklists to `r scales::comma(nrow(occ))` checklists over `r scales::comma(n_distinct(occ$site))` sites.
+Three new variables are added to the dataset by `filter_repeat_visits()`: `site` is a unique site ID, `closure_id` identifies the primary period of closure (in this case the year), and `n_observations` is the number of visits to each site. Our data is now formatted and ready to be analyzed using occupancy models. Note that we've made a tradeoff in sample size, dropping from `r scales::comma(nrow(ebird_filtered))` checklists to `r scales::comma(nrow(occ))` checklists over `r scales::comma(n_distinct(occ$site))` sites.
 
-The R package `unmarked`, which we'll be using to model occupancy, requires data in a very particular format. For further details on this format, consult the documentation for the `unmarked` function `formatWide()`. Fortunately, the `auk` function `format_unmarked_occu()` converts data from a format in which each row is an observation (e.g. as in the EBD) to the esoteric format required by `unmarked` in which each row is a site. At this stage we need to specify which variables will be site-level covariates and which will be observation-level covariates. Site or occupancy covariates are those that vary at the level of the site, but are constant across visits, and influence species occupancy. Observation or detectability covariates are those that vary within sites, at the level of the individual observations, and influence detectability.
+We'll fit single-season occupancy models using the `unmarked` R package. For further details on the type of data format required for this package, consult the documentation for the `unmarked` function `formatWide()`. The `auk` function `format_unmarked_occu()` converts data from a vertical format in which each row is an observation (e.g. as in the EBD) to a horizontal detection history required by `unmarked`, where each row is a site. At this stage, we need to specify which variables will be site-level covariates and which will be observation-level covariates. Covariates for each site are specific to each primary sampling period of closure (e.g. month of June), and will influence the ecological process of species occurrence. Covariates collected during each sampling occasion (i.e. checklist) are those that are specific to each sampling occasion and will influence the observational process, or detection probability.
 
-For occupancy covariates, we suggest using the MODIS habitat variables that have the most ecological relevance for your focal species. For Wood Thrush we'll include deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`), which are known nesting habitats, and croplands (`pland_12`) and urban (`pland_13`), which known avoided habitats. We'll include the six effort variables as detectability covariates. 
+For this example, we'll use MODIS habitat variables as covariates for modeling the occupancy probability of Wood Thrush. Based on variable importance measures from Chapter \@ref(encounter), we include deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) as habitat types for which we expect positive relationships with occupancy, and croplands (`pland_12`) and urban (`pland_13`), for which we expect negative relationships. 
+
+For detection probability, we include six variables related to effort and the detection process, as well as deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`).
 
 ```{r occupancy-data-sites-wide}
+# if cci is available, use it as an observation covariate
+obs_covs <- c("time_observations_started", 
+              "duration_minutes", 
+              "effort_distance_km", 
+              "number_observers", 
+              "protocol_type",
+              "pland_04", 
+              "pland_05")
+if ("checklist_calibration_index" %in% names(occ)) {
+  obs_covs <- c(obs_covs, "checklist_calibration_index")
+}
+
+# format for unmarked
 occ_wide <- format_unmarked_occu(occ, 
                                  site_id = "site", 
                                  response = "species_observed",
@@ -290,12 +138,7 @@ occ_wide <- format_unmarked_occu(occ,
                                                "pland_12",
                                                # % urban
                                                "pland_13"),
-                                 obs_covs = c("time_observations_started", 
-                                              "duration_minutes", 
-                                              "effort_distance_km", 
-                                              "number_observers", 
-                                              "protocol_type",
-                                              "checklist_calibration_index"))
+                                 obs_covs = obs_covs)
 ```
 
 ## Spatial subsampling {#encounter-data-sss}
@@ -329,77 +172,94 @@ summary(occ_um)
 
 ## Occupancy modeling {#occupancy-model}
 
-Now that we have a structured dataset with repeated visits, we can use `unmarked` to fit an occupancy model. In this book, we won't delve into the mechanics of occupacy models; however, there is a rich literature on occupancy modeling and readers wishing to learn more about this field may want to consult the book on the topic by MacKenzie et al. [-@mackenzieOccupancyEstimationModeling2017]. Here we simply fit an occupancy model to our data using the `occu()` function, specifying the detection and occupancy covariates, respectively, via a double right-hand sided formula of the form `~ detection covariates ~ occupancy covariates`.
+Now that we have created a data frame with detection histories and covariates, we can use `unmarked` to fit a single-season occupancy model. In this book, we won't delve into the mechanics of occupacy models; however, there is a rich literature on occupancy modeling and readers wishing to learn more about this field may want to consult the book on the topic by MacKenzie et al. [-@mackenzieOccupancyEstimationModeling2017]. Here we simply fit a single-season occupancy model to our data using the `occu()` function, specifying the detection and occupancy covariates, respectively, via a double right-hand sided formula of the form `~ detection covariates ~ occupancy covariates`.
 
- 
 ```{r occupancy-model-fit}
-occ_model <- occu(~ time_observations_started + 
+# use cci in model formula if available
+if ("checklist_calibration_index" %in% names(occ_um@obsCovs)) {
+  mod_formula <- ~ time_observations_started + 
                     duration_minutes + 
                     effort_distance_km + 
                     number_observers + 
                     protocol_type +
-                    checklist_calibration_index
-                  ~ pland_04 + pland_05 + pland_12 + pland_13,
-                  data = occ_um)
+                    checklist_calibration_index +
+                    pland_04 + pland_05 ~ 
+                  pland_04 + pland_05 + pland_12 + pland_13
+} else {
+    mod_formula <- ~ time_observations_started + 
+                    duration_minutes + 
+                    effort_distance_km + 
+                    number_observers + 
+                    protocol_type +
+                    pland_04 + pland_05 ~
+                  pland_04 + pland_05 + pland_12 + pland_13
+}
+
+# fit model
+occ_model <- occu(mod_formula, data = occ_um)
 # look at the regression coefficients from the models
 summary(occ_model)
 ```
 
 ### Assessment {#occupancy-model-assess}
 
-To assess the fit of an occupancy model, we'll compute the MacKenzie and Bailey [-@mackenzieAssessingFitSiteoccupancy2004] goodness-of-fit test. **MORE DETAIL NEEDED HERE ON WHAT THIS TEST IS FOR AND WHAT IT'S DOING. Also, Wes had a comment saying "example- a lot more bootstrap samples should be used (e.g., 1000 to 10,000)", which should be explained.** The function `mb.gof.test()` from the package `AICcmodavg` performs this goodness-of-fit test.
+Occupancy models assume that at at least one model in the set provides an adequate fit to the data. Although few goodness of fit tests exist for occupancy models, we include a section on how to perform the MacKenzie and Bailey [-@mackenzieAssessingFitSiteoccupancy2004] goodness-of-fit test.  This approach calculates a Pearson's chi-square fit statistic to the observed and expected frequencies of detection histories for a given model. For this example, we used the `mb.gof.test()` test function in the `AICcmodavg` package, which can handle occupancy models produced by the `occu()` function in `unmarked`, to calculate the observed and expected frequencies of detection histories. Note that this process requires running simulating a large number of bootstrap samples (1,000 here) and takes a long time to run. You may want to skip this section or reduct `nsim` to a much smaller number in the interest of speed. However, when applying this in practice, you'll want to run the test with the full number of simulations.
 
 ```{r occupancy-model-assess, eval = FALSE, echo = 1:2}
-occ_gof <- mb.gof.test(occ_model, nsim = 10, plot.hist = FALSE)
+occ_gof <- mb.gof.test(occ_model, nsim = 1000, plot.hist = FALSE)
 print(occ_gof)
 saveRDS(occ_gof, "output/woothr_occupancy-model_gof.rds")
 ```
 
 ```{r occupancy-model-assess-actual, echo = FALSE}
-# above block not run because it's slow, load a print here instead
+# read in saved gof test results 
 occ_gof <- readRDS("output/woothr_occupancy-model_gof.rds")
-# print hiding chisq table
+# print chisq table
 gof <- occ_gof
 gof$chisq.table <- NULL
 print(gof)
 ```
 
-**Interpretation of these results should go here.**
+For this example, the probabilitty of getting the calculated Chi-square statistic under a null sampling distribution is indicated by the P-value of `r gof$p.value`, indicating that there is no reason to consider a lack of fit (P-value > 0.1). In addition, we also get an estimate of the overdisperson parameter (c-hat) for the model by dividing the observed chi-square statistic by the mean of the statistics obtained from simulation. In this example, c-hat = `r round(gof$c.hat.est, 2)`, which is very close to c-hat = 1, indicating that the variance is not greater than the mean, and that there is no evidence for overdispersion. 
 
 ### Model selection {#occupancy-model-select}
 
-**Explain why and how we're doing model selection**
+Next, we use a model selection approach to compare and rank our candidate model set. For this example, we created a candidate set using all possible additive combinations of the gobal model we have created using the `dredge()` function. However, we suggest that a more thoughtful approach be considered for specific applications and different types of predictor variables.
 
-```{r occupancy-model-select-dredge}
-#occ_dredge <- dredge(occ_model)
-
-# what about only permuting on habitat covariates?
-# prediction in later step only takes 10 minutes vs. many hours
+```{r occupancy-model-select-dredge-occ, echo = FALSE}
 det_terms <- getAllTerms(occ_model) %>% 
   keep(str_detect, pattern = "^p\\(")
 occ_dredge <- dredge(occ_model, fixed = det_terms)
 ```
 
-**Perhaps two sentences here: one about model selection/averaging in general, the other about the specific 95% rule you're using here.**
+```{r occupancy-model-select-dredge, eval = FALSE}
+# dredge candidate model set
+occ_dredge <- dredge(occ_model)
 
-```{r occupancy-model-select-subset}
-# select models with the most suport for model averaging
-occ_dredge_95 <- get.models(occ_dredge, subset = cumsum(weight) <= 0.95)
+# model comparison
+select(occ_dredge, df, logLik, AICc, delta, weight)
+```
 
+```{r occupancy-model-select-dredge-compare, echo = FALSE}
+# model comparison
+select(occ_dredge, df, logLik, AICc, delta, weight)
+```
+
+A quick look at the dredge object reveals that there is not a clear model, or even set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the model with the lowest AICc value. Given this, we'll average across all models, weighted by AICc, to produce a final model that we'll use for prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the `get.models()` funciton to extract just these models prior to averaging.
+
+```{r occupancy-model-select-average}
 # average models based on model weights 
-occ_avg <- model.avg(occ_dredge_95, fit = TRUE)
+occ_avg <- model.avg(occ_dredge, fit = TRUE)
 
 # model coefficients
 t(occ_avg$coefficients)
 ```
 
-**If we're going to show the coefficients we should explain them, e.g. what is full vs. subset? Also, my understanding was that averaging coefficients was bad and it's better to average predictions. What's going on here, why are we showing coefficients, and is occ_avg a model object that averages predictions?**
-
 ## Prediction {#occupancy-predict}
 
-Now we'll use the model averaged occupancy model to make a map of Wood Thrush encounter rate in BCR 27! In Section \@ref(habitat-prediction), we created a prediction surface consisting of the PLAND habitat covariates summarized on a regular grid of points across BCR 27. In the  section, we'll make predictions of occupancy at these points. Recall that when we [predicted encouter rate](#encounter-predict), we had to include effort variables into this prediction surface. We don't need to do that here because the occupancy submodel doesn't depend on the effort covariates, these only occur in the detection submodel.
+In this section, we'll estimate the distribution of Wood Thrush in BCR 27. Similar to Section \@ref(habitat-prediction), we'll generate a prediction surface using the PLAND habitat covariates summarized on a regular grid of points across BCR 27. For this, we'll use the `predict()` function to estimate occupancy probabilities, standard errors, and confidence intervals. 
 
-**Perhaps a sentence or two about the fact that with occupancy models we can estimate uncertainty (i.e. SE) of the predictions, which is something we don't get out of RF.**
+Recall that when we [predicted encouter rate](#encounter-predict), we had to include effort variables in our prediction surface. We don't need to do that here because the occupancy submodel doesn't depend on the effort covariates, these only occur in the detection submodel.
 
 ```{r occupancy-predict-predict, eval = FALSE, results = "hold", echo = 1:9}
 occ_pred <- predict(occ_avg, 
@@ -436,7 +296,7 @@ writeRaster(r_pred[["occ_se"]],
             overwrite = TRUE)
 ```
 
-Finally, we can map these data!
+Finally, we can map these predictions!
 
 ```{r occupancy-predict-map, fig.asp = 1.236}
 # project predictions
@@ -492,4 +352,3 @@ for (nm in names(r_pred)) {
                                 cex = 1, line = 0))
 }
 ```
-
