@@ -78,7 +78,7 @@ end_year <- min(format(max(ebird$observation_date), "%Y.12.31"),
                 "2017.12.31")
 # download tiles and combine into a single raster for each year
 tifs <- runGdal(product = "MCD12Q1.006", SDSstring = "01", 
-                extent =  = tiles@tileH, tileV = tiles@tileV,
+                tileH = tiles@tileH, tileV = tiles@tileV,
                 begin = begin_year, end = end_year, 
                 outDirPath = "data", job = "modis") %>% 
   pluck("MCD12Q1.006") %>% 

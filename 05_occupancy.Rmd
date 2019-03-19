@@ -7,7 +7,7 @@ editor_options:
 
 ## Introduction {#occupancy-intro}
 
-In this chapter, we'll cover basic steps for estimating **occupancy probability** using data in eBird. In Chapter \@ref(encounter), we used analytical approaches that modeled variation in detectability by inclduing covariates that are known to influence detection rates (e.g. effort). In contrast, occupancy models jointly model the ecological process of species occurrence *and* the observation process of species detection. The aplication of these models typically requires repeated visits to a single site during a relatively short time frame, over which the population can be considered as closed. However, it is possible to *impose* this repeat visit structure on eBird data to generate a subset of data suitable for estimating occupancy. Here, we discuss how to process eBird observations to meet existing criteria for the application of occupancy models. To illustrate our example, we apply single-season occupancy models to estimate occupancy and detection probabilities of Wood Thrush for the month of June in BCR 27. 
+In this chapter, we'll cover basic steps for estimating **occupancy probability** using data from eBird. In Chapter \@ref(encounter), we used analytical approaches that modeled variation in detectability by inclduing covariates that are known to influence detection rates (e.g. effort). In contrast, occupancy models jointly model the ecological process of species occurrence *and* the observation process of species detection. The aplication of these models typically requires repeated visits to a single site during a relatively short time frame, over which the population can be considered as closed. However, it is possible to *impose* this repeat visit structure on eBird data to generate a subset of data suitable for estimating occupancy. Here, we discuss how to process eBird observations to meet existing criteria for the application of occupancy models. To illustrate our example, we apply single-season occupancy models to estimate occupancy and detection probabilities of Wood Thrush for the month of June in BCR 27. 
 
 This chapter is distinct from the previous chapter on modeling encounter rate in two important ways. First, the random forest model used in Chapter \@ref(encounter) is an example of a [machine learning](https://en.wikipedia.org/wiki/Machine_learning) approach, while the occupancy models used in this chapter are a more traditional likelihood approach. This latter type of stastitical approach is best suited for addressing specific questions and hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions [@bzdokPointsSignificanceStatistics2018]. Second, machine learning approaches can accomodate complex interactions between covariates and non-linear effects, often needed to model habitat associations that can vary across large spaial and temporal scales. In contrast, occupancy models are more suitable for exploring linear effects and simpler interactions. In this example, we specifically focus on the mechanics of filtering and formatting the data to fit occupancy models, and less on how to choose which predictors to include for detection and occupancy probabilities. The predictors we do include are informed by our inferences on variable from the random forest model in Chapter \@ref(encounter).
 
@@ -74,7 +74,7 @@ ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") %>%
 
 ## Data preparation {#occupancy-data}
 
-First, we need to extract a subset of eBird data suitable for occupancy modeling, then perform spatiotemporal subsampling to deal with bias in the data. Let's start by filtering our data to include only checklists with 5 or fewer observers, since there are very few observations with greater than 5 observers.
+First, we need to extract a subset of the eBird data suitable for occupancy modeling, then perform spatiotemporal subsampling to deal with bias in the data. Let's start by filtering our data to include only checklists with 5 or fewer observers, since there are very few observations with more than 5 observers.
 
 ```{r occupancy-data-obs}
 ebird_filtered <- filter(ebird_habitat, number_observers <= 5)
@@ -202,7 +202,7 @@ summary(occ_model)
 
 ### Assessment {#occupancy-model-assess}
 
-Occupancy models assume that at at least one model in the set provides an adequate fit to the data. Although few goodness of fit tests exist for occupancy models, we include a section on how to perform the MacKenzie and Bailey [-@mackenzieAssessingFitSiteoccupancy2004] goodness-of-fit test.  This approach calculates a Pearson's chi-square fit statistic to the observed and expected frequencies of detection histories for a given model. For this example, we used the `mb.gof.test()` test function in the `AICcmodavg` package, which can handle occupancy models produced by the `occu()` function in `unmarked`, to calculate the observed and expected frequencies of detection histories. Note that this process requires running simulating a large number of bootstrap samples (1,000 here) and takes a long time to run. You may want to skip this section or reduct `nsim` to a much smaller number in the interest of speed. However, when applying this in practice, you'll want to run the test with the full number of simulations.
+Occupancy models assume that at at least one model in the set provides an adequate fit to the data. Although few goodness of fit tests exist for occupancy models, we include a section on how to perform the MacKenzie and Bailey [-@mackenzieAssessingFitSiteoccupancy2004] goodness-of-fit test.  This approach calculates a Pearson's chi-square fit statistic to the observed and expected frequencies of detection histories for a given model. For this example, we used the `mb.gof.test()` test function in the `AICcmodavg` package, which can handle occupancy models produced by the `occu()` function in `unmarked`, to calculate the observed and expected frequencies of detection histories. Note that this process requires simulating a large number of bootstrap samples (1,000 here) and takes a long time to run. You may want to skip this section or reduce `nsim` to a much smaller number (e.g. 10) in the interest of speed. However, when applying this in practice, you should run the test with the full number of simulations to get accurate results.
 
 ```{r occupancy-model-assess, eval = FALSE, echo = 1:2}
 occ_gof <- mb.gof.test(occ_model, nsim = 1000, plot.hist = FALSE)
@@ -223,7 +223,7 @@ For this example, the probabilitty of getting the calculated Chi-square statisti
 
 ### Model selection {#occupancy-model-select}
 
-Next, we use a model selection approach to compare and rank our candidate model set. For this example, we created a candidate set using all possible additive combinations of the gobal model we have created using the `dredge()` function. However, we suggest that a more thoughtful approach be considered for specific applications and different types of predictor variables.
+Next, we use a model selection approach to compare and rank our candidate model set. For this example, we use the `dredge()` function to explore a candidate set consisting of all possible additive combinations of the gobal model. However, we suggest that a more thoughtful approach be considered for specific applications and different types of predictor variables.
 
 ```{r occupancy-model-select-dredge-occ, echo = FALSE}
 det_terms <- getAllTerms(occ_model) %>% 
@@ -244,7 +244,7 @@ select(occ_dredge, df, logLik, AICc, delta, weight)
 select(occ_dredge, df, logLik, AICc, delta, weight)
 ```
 
-A quick look at the dredge object reveals that there is not a clear model, or even set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the model with the lowest AICc value. Given this, we'll average across all models, weighted by AICc, to produce a final model that we'll use for prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the `get.models()` funciton to extract just these models prior to averaging.
+A quick look at the dredge object reveals that there is not a clear model, or even set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the model with the lowest AICc value. Given this, and the fact that all of our effects are linear and use the same family and link function, we'll average across all models, weighted by AICc, to produce a final model that we'll use for prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the `get.models()` funciton to extract just these models prior to averaging.
 
 ```{r occupancy-model-select-average}
 # average models based on model weights 
