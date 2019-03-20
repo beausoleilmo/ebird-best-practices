@@ -34,7 +34,7 @@ To understand the code examples used throughout this book, some knowledge of the
 
 ### Data package {#intro-setup-data}
 
-The first two chapters of this book focus on obtaining and preparing eBird and habitat data for the modeling that will occur in the remaining chapters. These steps can be time consuming and laborious. If you'd like to skip straight to the analysis, [**download this package of prepared data**](https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip). Unzip this file so that the contents are in the `data/` subdirectory of your RStudio project folder. This will allow you to jump right in to the modeling and ensure that you're using exactly the same data as was used when creating this book.
+The first two chapters of this book focus on obtaining and preparing eBird and habitat data for the modeling that will occur in the remaining chapters. These steps can be time consuming and laborious. If you'd like to skip straight to the analysis, [**download this package of prepared data**](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip). Unzip this file so that the contents are in the `data/` subdirectory of your RStudio project folder. This will allow you to jump right in to the modeling and ensure that you're using exactly the same data as was used when creating this book.
 
 ### Getting eBird data access {#intro-setup-ebird}
 

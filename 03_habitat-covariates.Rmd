@@ -26,7 +26,7 @@ The next section will cover how to access and download MODIS landcover data. Nex
 
 As with most satellite data, MODIS data are provided as [1200 km by 1200 km tiles](https://modis-land.gsfc.nasa.gov/MODLAND_grid.html) for ease of download. Each tile is a [raster GIS dataset](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/what-is-raster-data.htm) consisting of a regular grid of 500 m resolution cells. The surface of the Earth is divided up into a grid of these tiles, each given an ID, for example, h10v12 is the tile from the 10th column and 12th row of the grid. Compiling MODIS data for a given region requires figuring out which set of tiles covers the region, downloading those tiles, combining the tiles together into a single raster dataset, and converting from the native MODIS HDF format, which R can't read, to a standard GeoTIFF format. This needs to be done for each year for which we want habitat data, and can be a time consuming and error prone process. Fortunately, the [R package `MODIS`](https://github.com/MatMatt/MODIS) automates most of these steps. Unfortunately, this package can be challenging to set up and has a confusing user interface. With this in mind, this section will provide detailed instruction for setting up and using the `MODIS` package.
 
-Let's start by figuring out the tile IDs for the tiles that BCR 27 spans. Recall that we prepared a BCR boundary in Section \@ref(intro-setup-gis) of the Introduction; if you haven't already done so, [download the data package](https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip) now to get that boundary. Given a set of spatial features, the `MODIS` package can quickly tell us which MODIS tiles we need.
+Let's start by figuring out the tile IDs for the tiles that BCR 27 spans. Recall that we prepared a BCR boundary in Section \@ref(intro-setup-gis) of the Introduction; if you haven't already done so, [download the data package](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip) now to get that boundary. Given a set of spatial features, the `MODIS` package can quickly tell us which MODIS tiles we need.
 
 ```{r habitat-dl-data}
 library(sf)
@@ -91,9 +91,10 @@ new_names <- format(as.Date(names(tifs)), "%Y") %>%
 file.rename(tifs, new_names)
 ```
 
-If everything ran smoothly, we now have annual GeoTIFFs of MODIS landcover data from 2010 to 2017 that we can load into R.
+If everything ran smoothly, we now have annual GeoTIFFs of MODIS landcover data from 2009 to 2017 that we can load into R.
 
 ```{r habitat-dl-load}
+# load the landcover data
 landcover <- list.files("data/modis", "^modis_mcd12q1_umd", 
                         full.names = TRUE) %>% 
   stack()
@@ -115,40 +116,46 @@ We'll start by finding the full set of unique checklists locations for each year
 
 ```{r habitat-lsm-buffer}
 neighborhood_radius <- 2.5 * ceiling(max(res(landcover)))
-ebird_locs <- ebird %>% 
+ebird_buff <- ebird %>% 
   distinct(year = format(observation_date, "%Y"),
            locality_id, latitude, longitude) %>% 
+  # for 2018 use 2017 landcover data
+  mutate(year_lc = if_else(as.integer(year) > 2017, "2017", year),
+         year_lc = paste0("y", year_lc)) %>% 
+  # convert to spatial features
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
   # transform to modis projection
   st_transform(crs = projection(landcover)) %>% 
   # buffer to create square neighborhood around each point
-  st_buffer(dist = neighborhood_radius, endCapStyle = "SQUARE")
-ebird_locs_year <- split(ebird_locs, ebird_locs$year)
+  st_buffer(dist = neighborhood_radius, endCapStyle = "SQUARE") %>% 
+  # nest by year
+  nest(-year_lc)
+ebird_buff_year <- split(ebird_buff, ebird_buff$year)
 ```
 
 Now, we'll loop over the years and for each square neighborhood extract all the raster values within that neighborhood. We use the `velox` package for this, since it's often orders of magnitude faster than using `raster::extract()`.
 
 ```{r habitat-lsm-extract}
-for (yr in names(ebird_locs_year)) {
-  # for 2018 use 2017 landcover data
-  yr_lc <- ifelse(as.integer(yr) > 2017, "2017", yr) %>% 
-    paste0("y", .)
-  
+# function to calculate pland for all checklists in a given year
+calculate_pland <- function(yr, regions, lc) {
   # create a lookup table to get locality_id from row number
-  locs <- st_set_geometry(ebird_locs_year[[yr]], NULL) %>% 
+  locs <- st_set_geometry(regions, NULL) %>% 
     mutate(id = row_number())
   
   # extract using velox
-  lc_vlx <- velox(landcover[[yr_lc]])
-  ebird_locs_year[[yr]] <- lc_vlx$extract(ebird_locs_year[[yr]], df = TRUE) %>% 
+  lc_vlx <- velox(lc[[yr]])
+  lc_vlx$extract(regions, df = TRUE) %>% 
     # velox doesn't properly name columns, fix that
     set_names(c("id", "landcover")) %>% 
     # join to lookup table to get locality_id
     inner_join(locs, ., by = "id") %>% 
     select(-id)
 }
-# combine years back together
-lc_extract <- bind_rows(ebird_locs_year)
+# iterate over all years calculating pland for all checklists in each
+lc_extract <- ebird_buff %>% 
+  mutate(pland = map2(year_lc, data, calculate_pland, lc = landcover)) %>% 
+  select(pland) %>% 
+  unnest()
 ```
 
 Now we have the set of landcover values within a neighborhood around each checklist location. We can summarize these data within each neighborhood to calculate PLAND: the proportion of the neighborhood within each landcover class. 
@@ -202,8 +209,7 @@ r_cells <- st_buffer(r_centers, dist = neighborhood_radius,
 # extract landcover values within neighborhoods, only need 2017
 lc_vlx <- velox(landcover[["y2017"]])
 lc_extract_pred <- lc_vlx$extract(r_cells, df = TRUE) %>% 
-  set_names(c("id", "landcover")) %>% 
-  filter(!is.na(landcover))
+  set_names(c("id", "landcover"))
 
 # calculate the percent for each landcover class
 pland_pred <- lc_extract_pred %>% 
@@ -211,7 +217,9 @@ pland_pred <- lc_extract_pred %>%
   group_by(id) %>% 
   mutate(pland = n / sum(n)) %>% 
   ungroup() %>% 
-  select(-n)
+  select(-n) %>% 
+  # remove NAs after tallying so pland is relative to total number of cells
+  filter(!is.na(landcover))
 
 # tranform to wide format, filling in implicit missing values with 0s
 pland_pred <- pland_pred %>% 

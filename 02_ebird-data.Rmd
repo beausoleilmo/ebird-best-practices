@@ -72,7 +72,7 @@ if (!file.exists(f_ebd)) {
 }
 ```
 
-These files are now a few megabytes rather than hundreds of gigabytes, which means they can easily be read into R! Don't feel like waiting for `auk_filter()` to run? [Download the data package](https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip) mentioned in the introduction to get a copy of the EBD subset for Wood Thrush in June in BCR27 and proceed to the next section.
+These files are now a few megabytes rather than hundreds of gigabytes, which means they can easily be read into R! Don't feel like waiting for `auk_filter()` to run? [Download the data package](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip) mentioned in the introduction to get a copy of the EBD subset for Wood Thrush in June in BCR27 and proceed to the next section.
 
 ## Importing and zero-filling {#ebird-zf}
 
