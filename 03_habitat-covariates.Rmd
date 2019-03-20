@@ -237,7 +237,7 @@ Keeping these data in a data frame is a compact way to store them and will be re
 
 ```{r habitat-prediction-map}
 forest_cover <- pland_coords %>% 
-  # convert to spatial points
+  # convert to spatial features
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
   st_transform(crs = projection(r)) %>% 
   # rasterize points

@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-19" />
+<meta name="date" content="2019-03-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -190,16 +190,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>5</b> Modeling Occupancy</a><ul>
 <li class="chapter" data-level="5.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-intro"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
 <li class="chapter" data-level="5.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-data"><i class="fa fa-check"></i><b>5.2</b> Data preparation</a><ul>
-<li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Data formatting</a></li>
+<li class="chapter" data-level="5.2.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-data-sites"><i class="fa fa-check"></i><b>5.2.1</b> Extracting occupancy data</a></li>
+<li class="chapter" data-level="5.2.2" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.2.2</b> Spatial subsampling</a></li>
+<li class="chapter" data-level="5.2.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.2.3</b> <code>unmarked</code> object</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#encounter-data-sss"><i class="fa fa-check"></i><b>5.3</b> Spatial subsampling</a><ul>
-<li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#encounter-data-unmarked"><i class="fa fa-check"></i><b>5.3.1</b> <code>unmarked</code> object</a></li>
+<li class="chapter" data-level="5.3" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.3</b> Occupancy modeling</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.3.1</b> Assessment</a></li>
+<li class="chapter" data-level="5.3.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.3.2</b> Model selection</a></li>
 </ul></li>
-<li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-model"><i class="fa fa-check"></i><b>5.4</b> Occupancy modeling</a><ul>
-<li class="chapter" data-level="5.4.1" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-assess"><i class="fa fa-check"></i><b>5.4.1</b> Assessment</a></li>
-<li class="chapter" data-level="5.4.2" data-path="occupancy.html"><a href="occupancy.html#occupancy-model-select"><i class="fa fa-check"></i><b>5.4.2</b> Model selection</a></li>
-</ul></li>
-<li class="chapter" data-level="5.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.5</b> Prediction</a></li>
+<li class="chapter" data-level="5.4" data-path="occupancy.html"><a href="occupancy.html#occupancy-predict"><i class="fa fa-check"></i><b>5.4</b> Prediction</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>6</b> Modeling Relative Abundance</a><ul>
 <li class="chapter" data-level="6.1" data-path="abundance.html"><a href="abundance.html#abundance-intro"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
@@ -234,9 +233,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 5</span> Modeling Occupancy</h1>
 <div id="occupancy-intro" class="section level2">
 <h2><span class="header-section-number">5.1</span> Introduction</h2>
-<p>In this chapter, we’ll cover basic steps for estimating <strong>occupancy probability</strong> using data from eBird. In Chapter <a href="encounter.html#encounter">4</a>, we used analytical approaches that modeled variation in detectability by inclduing covariates that are known to influence detection rates (e.g. effort). In contrast, occupancy models jointly model the ecological process of species occurrence <em>and</em> the observation process of species detection. The aplication of these models typically requires repeated visits to a single site during a relatively short time frame, over which the population can be considered as closed. However, it is possible to <em>impose</em> this repeat visit structure on eBird data to generate a subset of data suitable for estimating occupancy. Here, we discuss how to process eBird observations to meet existing criteria for the application of occupancy models. To illustrate our example, we apply single-season occupancy models to estimate occupancy and detection probabilities of Wood Thrush for the month of June in BCR 27.</p>
-<p>This chapter is distinct from the previous chapter on modeling encounter rate in two important ways. First, the random forest model used in Chapter <a href="encounter.html#encounter">4</a> is an example of a <a href="https://en.wikipedia.org/wiki/Machine_learning">machine learning</a> approach, while the occupancy models used in this chapter are a more traditional likelihood approach. This latter type of stastitical approach is best suited for addressing specific questions and hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions <span class="citation">(Bzdok, Altman, and Krzywinski <a href="#ref-bzdokPointsSignificanceStatistics2018">2018</a>)</span>. Second, machine learning approaches can accomodate complex interactions between covariates and non-linear effects, often needed to model habitat associations that can vary across large spaial and temporal scales. In contrast, occupancy models are more suitable for exploring linear effects and simpler interactions. In this example, we specifically focus on the mechanics of filtering and formatting the data to fit occupancy models, and less on how to choose which predictors to include for detection and occupancy probabilities. The predictors we do include are informed by our inferences on variable from the random forest model in Chapter <a href="encounter.html#encounter">4</a>.</p>
-<p>If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also <a href="(https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip)">download the data package</a>, and unzip it to your working directory. Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an <strong>optional</strong> covariate in these models. Including CCI typical leads to marked improvement in model performance; however, due to the sensitive nature of these data you will need to <a href="https://ebird.org/data/download">download them separately</a> after you agree to the terms and conditions. If you’ve downloaded these data, put the CCI text file in the <code>data/</code> subdirectory of your project.</p>
+<p>In this chapter, we’ll cover the basic steps for estimating <strong>occupancy probability</strong> using data from eBird. In Chapter <a href="encounter.html#encounter">4</a>, we used analytical approaches that modeled variation in detectability by inclduing covariates that are known to influence detection rates (e.g. effort). In contrast, occupancy models jointly model the ecological process of species occurrence <em>and</em> the observation process of species detection. The aplication of these models typically requires repeated visits to a single site during a relatively short time frame, over which the population can be considered closed. However, it is possible to <em>impose</em> this repeat visit structure on eBird data to generate a subset of data suitable for estimating occupancy. Here, we discuss how to process eBird observations to meet existing criteria for the application of occupancy models. To illustrate our example, we apply single-season occupancy models to estimate occupancy and detection probabilities of Wood Thrush for the month of June in BCR 27.</p>
+<p>This chapter is distinct from the previous chapter on modeling encounter rate in two important ways. First, the random forest model used in Chapter <a href="encounter.html#encounter">4</a> is an example of a <a href="https://en.wikipedia.org/wiki/Machine_learning">machine learning</a> approach, while the occupancy models used in this chapter are a more traditional likelihood approach. This latter type of stastitical approach is best suited for addressing specific questions and hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions <span class="citation">(Bzdok, Altman, and Krzywinski <a href="#ref-bzdokPointsSignificanceStatistics2018">2018</a>)</span>. Second, machine learning approaches can accomodate complex interactions between covariates and non-linear effects, often needed to model habitat associations that can vary across large spatial and temporal scales. In contrast, occupancy models are more suitable for exploring linear effects and simpler interactions. In this example, we specifically focus on the mechanics of filtering and formatting the data to fit occupancy models, and less on how to choose which predictors to include for detection and occupancy probabilities. The predictors we do include are informed by our inferences on variable from the random forest model in Chapter <a href="encounter.html#encounter">4</a>.</p>
+<p>If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also <a href="(https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip)">download the data package</a>, and unzip it to your working directory. Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an optional covariate in these models. Including CCI typical leads to marked improvement in model performance; however, due to the sensitive nature of these data you will need to <a href="https://ebird.org/data/download">download them separately</a> after you agree to the terms and conditions. If you’ve downloaded these data, put the CCI text file in the <code>data/</code> subdirectory of your project.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
 <span class="kw">library</span>(lubridate)
 <span class="kw">library</span>(sf)
@@ -298,12 +297,12 @@ ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<sp
 <h2><span class="header-section-number">5.2</span> Data preparation</h2>
 <p>First, we need to extract a subset of the eBird data suitable for occupancy modeling, then perform spatiotemporal subsampling to deal with bias in the data. Let’s start by filtering our data to include only checklists with 5 or fewer observers, since there are very few observations with more than 5 observers.</p>
 <pre class="sourceCode r"><code class="sourceCode r">ebird_filtered &lt;-<span class="st"> </span><span class="kw">filter</span>(ebird_habitat, number_observers <span class="op">&lt;=</span><span class="st"> </span><span class="dv">5</span>)</code></pre>
-<p>In some situations, you may want to further filter the data based on the results of an exploratory analysis similar to the one conducted in Section @ref{ebird-explore}. However, for the purpose of comparing results among different modeling approaches and best practices, we won’t further filter the observations in eBird for our occupancy example.</p>
+<p>In some situations, you may want to further filter the data based on the results of an exploratory analysis similar to the one conducted in Section <a href="ebird.html#ebird-explore">2.5</a>. However, for the purpose of comparing results among different modeling approaches and best practices, we won’t further filter the observations in eBird for our occupancy example.</p>
 <div id="occupancy-data-sites" class="section level3">
-<h3><span class="header-section-number">5.2.1</span> Data formatting</h3>
-<p>Now, we can generate detection histories for each location we define as a site. In this example, we define the month of June as the time period that we assume that the population is closed for Wood Thrush, and a site is defined as a location (latitude/longitude) that is visited at least twice by the same observer within our defined period of closure (i.e. the smonth of June).</p>
-<p>The <code>auk</code> function <code>filter_repeat_visits()</code> is designed to extract a subset of eBird data suitable for occupancy modeling. We first filter the data to only sites that have at least 2 visits (<code>min_obs</code>). We then define the maximum length of our detection history (<code>max_obs</code>) as 10 visits or checklists. When a specific site has been visited more than 10 times, the function will randomly select 10 checklists from the total number of visits. Since we only have data from June, using <code>annual_closure = TRUE</code> defines the temporal period of closure as the whole month of June for a given primary sampling period (i.e. year). Finally, <code>site_vars</code> specifies the set of variables that defines a site. In this example, a site is defined jointly by location and observer IDs.</p>
-<pre class="sourceCode r"><code class="sourceCode r">occ &lt;-<span class="st"> </span><span class="kw">filter_repeat_visits</span>(ebird_filtered, 
+<h3><span class="header-section-number">5.2.1</span> Extracting occupancy data</h3>
+<p>From the eBird data, we can generate detection histories for each location we define as a site. In this example, we define the month of June as the time period over which we assume that the population is closed for Wood Thrush, and a site is defined as a location (<code>locality_id</code> in the data) that is visited at least twice by the same observer within our defined period of closure (i.e. the month of June).</p>
+<p>The <code>auk</code> function <code>filter_repeat_visits()</code> is designed to extract a subset of eBird data suitable for occupancy modeling. We first filter the data to only sites that have at least two visits (<code>min_obs = 2</code>), then define the maximum length of our detection history as 10 visits or checklists (<code>max_obs = 10</code>). When a specific site has been visited more than 10 times, the function will randomly select 10 checklists from the total number of visits. Since we only have data from June, using <code>annual_closure = TRUE</code> defines the temporal period of closure as the whole month of June for a given primary sampling period (i.e. year). Finally, <code>site_vars</code> specifies the set of variables that defines a site. In this example, a site is defined jointly by location and observer IDs.</p>
+<pre class="sourceCode r"><code class="sourceCode r">occ &lt;-<span class="st"> </span><span class="kw">filter_repeat_visits</span>(ebird_filtered <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate_at</span>(<span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>), <span class="op">~</span><span class="st"> </span><span class="kw">round</span>(., <span class="dv">4</span>)), 
                             <span class="dt">min_obs =</span> <span class="dv">2</span>, <span class="dt">max_obs =</span> <span class="dv">10</span>,
                             <span class="dt">annual_closure =</span> <span class="ot">TRUE</span>,
                             <span class="dt">date_var =</span> <span class="st">&quot;observation_date&quot;</span>,
@@ -318,9 +317,9 @@ ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<sp
 <span class="kw">n_distinct</span>(occ<span class="op">$</span>site)
 <span class="co">#&gt; [1] 4167</span></code></pre>
 <p>Three new variables are added to the dataset by <code>filter_repeat_visits()</code>: <code>site</code> is a unique site ID, <code>closure_id</code> identifies the primary period of closure (in this case the year), and <code>n_observations</code> is the number of visits to each site. Our data is now formatted and ready to be analyzed using occupancy models. Note that we’ve made a tradeoff in sample size, dropping from 40,059 checklists to 14,428 checklists over 4,167 sites.</p>
-<p>We’ll fit single-season occupancy models using the <code>unmarked</code> R package. For further details on the type of data format required for this package, consult the documentation for the <code>unmarked</code> function <code>formatWide()</code>. The <code>auk</code> function <code>format_unmarked_occu()</code> converts data from a vertical format in which each row is an observation (e.g. as in the EBD) to a horizontal detection history required by <code>unmarked</code>, where each row is a site. At this stage, we need to specify which variables will be site-level covariates and which will be observation-level covariates. Covariates for each site are specific to each primary sampling period of closure (e.g. month of June), and will influence the ecological process of species occurrence. Covariates collected during each sampling occasion (i.e. checklist) are those that are specific to each sampling occasion and will influence the observational process, or detection probability.</p>
-<p>For this example, we’ll use MODIS habitat variables as covariates for modeling the occupancy probability of Wood Thrush. Based on variable importance measures from Chapter <a href="encounter.html#encounter">4</a>, we include deciduous broadleaf forest (<code>pland_04</code>) and mixed forest (<code>pland_05</code>) as habitat types for which we expect positive relationships with occupancy, and croplands (<code>pland_12</code>) and urban (<code>pland_13</code>), for which we expect negative relationships.</p>
-<p>For detection probability, we include six variables related to effort and the detection process, as well as deciduous broadleaf forest (<code>pland_04</code>) and mixed forest (<code>pland_05</code>).</p>
+<p>We’ll fit single-season occupancy models using the <code>unmarked</code> R package. For further details on the type of data format required for this package, consult the documentation for the <code>unmarked</code> function <code>formatWide()</code>. The <code>auk</code> function <code>format_unmarked_occu()</code> converts data from a vertical format in which each row is an observation (as in the EBD) to a horizontal detection history required by <code>unmarked</code>, where each row is a site. At this stage, we need to specify which variables will be site-level covariates and which will be observation-level covariates. Covariates for each site (<code>site_covs</code>) are specific to each primary sampling period of closure (month of June in this case), and will influence the ecological process of species occurrence. Covariates collected during each sampling occasion (<code>obs_covs</code>) are those that are specific to that sampling occasion (i.e. checklist) and will influence the observational process, or detection probability.</p>
+<p>For this example, we’ll use MODIS habitat variables as covariates for modeling the occupancy probability of Wood Thrush. Based on <a href="encounter.html#encounter-habitat-pi">predictor importance</a> measures from Chapter <a href="encounter.html#encounter">4</a>, we include deciduous broadleaf forest (<code>pland_04</code>) and mixed forest (<code>pland_05</code>) as habitat types for which we expect positive relationships with occupancy, and croplands (<code>pland_12</code>) and urban (<code>pland_13</code>), for which we expect negative relationships.</p>
+<p>For detection probability, we include the six effort variables, since they are related to the detection process. In addition, habitat is known to affect detectability, and many species are harder to detect in densely forested habitats—the same habitats preferred by Wood Thrush. Occupancy models allow us to tease apart the differing effects of habitat on detection and occupancy. With this in mind, we’ll include deciduous broadleaf forest (<code>pland_04</code>) and mixed forest (<code>pland_05</code>) as additional detection covariates.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># if cci is available, use it as an observation covariate</span>
 obs_covs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;time_observations_started&quot;</span>, 
               <span class="st">&quot;duration_minutes&quot;</span>, 
@@ -349,10 +348,9 @@ occ_wide &lt;-<span class="st"> </span><span class="kw">format_unmarked_occu</sp
                                                <span class="st">&quot;pland_13&quot;</span>),
                                  <span class="dt">obs_covs =</span> obs_covs)</code></pre>
 </div>
-</div>
-<div id="encounter-data-sss" class="section level2">
-<h2><span class="header-section-number">5.3</span> Spatial subsampling</h2>
-<p>As discussed in Section <a href="encounter.html#encounter-sss">4.3</a>, spatial subsampling eBird observations reduces spatial bias. We’ll use the same hexagonal subsampling approach as in Chapter <a href="encounter.html#encounter">4</a>; however, here we’ll subsample at the level of sites rather than observations.</p>
+<div id="encounter-data-sss" class="section level3">
+<h3><span class="header-section-number">5.2.2</span> Spatial subsampling</h3>
+<p>As discussed in Section <a href="encounter.html#encounter-sss">4.3</a>, spatial subsampling of eBird observations reduces spatial bias. We’ll use the same hexagonal subsampling approach as in Chapter <a href="encounter.html#encounter">4</a>; however, here we’ll subsample at the level of sites rather than observations.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span>
 dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)
 <span class="co"># get hexagonal cell id for each site</span>
@@ -364,36 +362,37 @@ occ_ss &lt;-<span class="st"> </span>occ_wide_cell <span class="op">%&gt;%</span
 <span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cell)</code></pre>
-<p>This resulted in a 69.0% decrease in the number of sites.</p>
+<p>This resulted in a 69.1% decrease in the number of sites.</p>
+</div>
 <div id="encounter-data-unmarked" class="section level3">
-<h3><span class="header-section-number">5.3.1</span> <code>unmarked</code> object</h3>
+<h3><span class="header-section-number">5.2.3</span> <code>unmarked</code> object</h3>
 <p>Finally, we’ll convert this dataframe of observations into an <code>unmarked</code> object, which is required for fitting occupancy models.</p>
 <pre class="sourceCode r"><code class="sourceCode r">occ_um &lt;-<span class="st"> </span><span class="kw">formatWide</span>(occ_ss, <span class="dt">type =</span> <span class="st">&quot;unmarkedFrameOccu&quot;</span>)
 <span class="kw">summary</span>(occ_um)
 <span class="co">#&gt; unmarkedFrame Object</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; 1290 sites</span>
+<span class="co">#&gt; 1289 sites</span>
 <span class="co">#&gt; Maximum number of observations per site: 10 </span>
-<span class="co">#&gt; Mean number of observations per site: 3.18 </span>
+<span class="co">#&gt; Mean number of observations per site: 3.19 </span>
 <span class="co">#&gt; Sites with at least one detection: 141 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Tabulation of y observations:</span>
 <span class="co">#&gt;    0    1 &lt;NA&gt; </span>
-<span class="co">#&gt; 3875  231 8794 </span>
+<span class="co">#&gt; 3864  245 8781 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Site-level covariates:</span>
 <span class="co">#&gt;  n_observations     latitude      longitude        pland_04    </span>
 <span class="co">#&gt;  Min.   : 2.00   Min.   :29.4   Min.   :-91.4   Min.   :0.000  </span>
 <span class="co">#&gt;  1st Qu.: 2.00   1st Qu.:31.0   1st Qu.:-86.1   1st Qu.:0.000  </span>
 <span class="co">#&gt;  Median : 2.00   Median :32.7   Median :-81.7   Median :0.000  </span>
-<span class="co">#&gt;  Mean   : 3.18   Mean   :33.2   Mean   :-82.3   Mean   :0.067  </span>
+<span class="co">#&gt;  Mean   : 3.19   Mean   :33.2   Mean   :-82.3   Mean   :0.067  </span>
 <span class="co">#&gt;  3rd Qu.: 3.00   3rd Qu.:35.1   3rd Qu.:-78.3   3rd Qu.:0.040  </span>
 <span class="co">#&gt;  Max.   :10.00   Max.   :38.3   Max.   :-75.5   Max.   :1.000  </span>
 <span class="co">#&gt;     pland_05        pland_12        pland_13    </span>
 <span class="co">#&gt;  Min.   :0.000   Min.   :0.000   Min.   :0.000  </span>
 <span class="co">#&gt;  1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000  </span>
 <span class="co">#&gt;  Median :0.000   Median :0.000   Median :0.000  </span>
-<span class="co">#&gt;  Mean   :0.051   Mean   :0.037   Mean   :0.112  </span>
+<span class="co">#&gt;  Mean   :0.051   Mean   :0.036   Mean   :0.112  </span>
 <span class="co">#&gt;  3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.080  </span>
 <span class="co">#&gt;  Max.   :0.960   Max.   :1.000   Max.   :1.000  </span>
 <span class="co">#&gt; </span>
@@ -401,19 +400,19 @@ occ_ss &lt;-<span class="st"> </span>occ_wide_cell <span class="op">%&gt;%</span
 <span class="co">#&gt;  time_observations_started duration_minutes effort_distance_km</span>
 <span class="co">#&gt;  Min.   : 0                Min.   :  1      Min.   :0         </span>
 <span class="co">#&gt;  1st Qu.: 8                1st Qu.: 15      1st Qu.:0         </span>
-<span class="co">#&gt;  Median :10                Median : 31      Median :0         </span>
-<span class="co">#&gt;  Mean   :12                Mean   : 52      Mean   :1         </span>
-<span class="co">#&gt;  3rd Qu.:16                3rd Qu.: 68      3rd Qu.:1         </span>
+<span class="co">#&gt;  Median :10                Median : 33      Median :0         </span>
+<span class="co">#&gt;  Mean   :12                Mean   : 53      Mean   :1         </span>
+<span class="co">#&gt;  3rd Qu.:16                3rd Qu.: 70      3rd Qu.:1         </span>
 <span class="co">#&gt;  Max.   :24                Max.   :300      Max.   :5         </span>
-<span class="co">#&gt;  NA&#39;s   :8794              NA&#39;s   :8794     NA&#39;s   :8794      </span>
+<span class="co">#&gt;  NA&#39;s   :8781              NA&#39;s   :8781     NA&#39;s   :8781      </span>
 <span class="co">#&gt;  number_observers protocol_type         pland_04       pland_05   </span>
-<span class="co">#&gt;  Min.   :1        Length:12900       Min.   :0      Min.   :0     </span>
+<span class="co">#&gt;  Min.   :1        Length:12890       Min.   :0      Min.   :0     </span>
 <span class="co">#&gt;  1st Qu.:1        Class :character   1st Qu.:0      1st Qu.:0     </span>
 <span class="co">#&gt;  Median :1        Mode  :character   Median :0      Median :0     </span>
 <span class="co">#&gt;  Mean   :1                           Mean   :0      Mean   :0     </span>
 <span class="co">#&gt;  3rd Qu.:1                           3rd Qu.:0      3rd Qu.:0     </span>
 <span class="co">#&gt;  Max.   :5                           Max.   :1      Max.   :1     </span>
-<span class="co">#&gt;  NA&#39;s   :8794                        NA&#39;s   :8794   NA&#39;s   :8794  </span>
+<span class="co">#&gt;  NA&#39;s   :8781                        NA&#39;s   :8781   NA&#39;s   :8781  </span>
 <span class="co">#&gt;  checklist_calibration_index</span>
 <span class="co">#&gt;  Min.   :-4                 </span>
 <span class="co">#&gt;  1st Qu.:-1                 </span>
@@ -421,12 +420,12 @@ occ_ss &lt;-<span class="st"> </span>occ_wide_cell <span class="op">%&gt;%</span
 <span class="co">#&gt;  Mean   : 0                 </span>
 <span class="co">#&gt;  3rd Qu.: 1                 </span>
 <span class="co">#&gt;  Max.   : 2                 </span>
-<span class="co">#&gt;  NA&#39;s   :8794</span></code></pre>
+<span class="co">#&gt;  NA&#39;s   :8781</span></code></pre>
 </div>
 </div>
 <div id="occupancy-model" class="section level2">
-<h2><span class="header-section-number">5.4</span> Occupancy modeling</h2>
-<p>Now that we have created a data frame with detection histories and covariates, we can use <code>unmarked</code> to fit a single-season occupancy model. In this book, we won’t delve into the mechanics of occupacy models; however, there is a rich literature on occupancy modeling and readers wishing to learn more about this field may want to consult the book on the topic by MacKenzie et al. <span class="citation">(<a href="#ref-mackenzieOccupancyEstimationModeling2017">2017</a>)</span>. Here we simply fit a single-season occupancy model to our data using the <code>occu()</code> function, specifying the detection and occupancy covariates, respectively, via a double right-hand sided formula of the form <code>~ detection covariates ~ occupancy covariates</code>.</p>
+<h2><span class="header-section-number">5.3</span> Occupancy modeling</h2>
+<p>Now that we’ve created a data frame with detection histories and covariates, we can use <code>unmarked</code> to fit a single-season occupancy model. In this book, we won’t delve into the mechanics of occupacy models; however, there is a rich literature on occupancy modeling and readers wishing to learn more about this field may want to consult the book on the topic by MacKenzie et al. <span class="citation">(<a href="#ref-mackenzieOccupancyEstimationModeling2017">2017</a>)</span>. Here we simply fit a single-season occupancy model to our data using the <code>occu()</code> function, specifying the detection and occupancy covariates, respectively, via a double right-hand sided formula of the form <code>~ detection covariates ~ occupancy covariates</code>.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># use cci in model formula if available</span>
 <span class="cf">if</span> (<span class="st">&quot;checklist_calibration_index&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">names</span>(occ_um<span class="op">@</span>obsCovs)) {
   mod_formula &lt;-<span class="st"> </span><span class="er">~</span><span class="st"> </span>time_observations_started <span class="op">+</span><span class="st"> </span>
@@ -457,32 +456,32 @@ occ_model &lt;-<span class="st"> </span><span class="kw">occu</span>(mod_formula
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Occupancy (logit-scale):</span>
 <span class="co">#&gt;             Estimate    SE       z  P(&gt;|z|)</span>
-<span class="co">#&gt; (Intercept)   -1.802 0.179 -10.049 9.24e-24</span>
-<span class="co">#&gt; pland_04       2.407 0.778   3.094 1.97e-03</span>
-<span class="co">#&gt; pland_05       6.289 1.585   3.968 7.25e-05</span>
-<span class="co">#&gt; pland_12       0.246 0.768   0.321 7.48e-01</span>
-<span class="co">#&gt; pland_13      -1.337 0.670  -1.996 4.59e-02</span>
+<span class="co">#&gt; (Intercept)   -1.914 0.176 -10.888 1.32e-27</span>
+<span class="co">#&gt; pland_04       3.293 1.196   2.753 5.90e-03</span>
+<span class="co">#&gt; pland_05       4.413 1.727   2.556 1.06e-02</span>
+<span class="co">#&gt; pland_12       0.586 0.697   0.841 4.00e-01</span>
+<span class="co">#&gt; pland_13      -2.002 0.796  -2.516 1.19e-02</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Detection (logit-scale):</span>
-<span class="co">#&gt;                             Estimate      SE       z  P(&gt;|z|)</span>
-<span class="co">#&gt; (Intercept)                 -1.66684 0.39480 -4.2220 2.42e-05</span>
-<span class="co">#&gt; time_observations_started   -0.04350 0.02069 -2.1024 3.55e-02</span>
-<span class="co">#&gt; duration_minutes             0.00899 0.00199  4.5181 6.24e-06</span>
-<span class="co">#&gt; effort_distance_km          -0.00562 0.09708 -0.0579 9.54e-01</span>
-<span class="co">#&gt; number_observers             0.26518 0.16853  1.5735 1.16e-01</span>
-<span class="co">#&gt; protocol_typeTraveling       0.67222 0.25619  2.6239 8.69e-03</span>
-<span class="co">#&gt; checklist_calibration_index  0.58500 0.12483  4.6865 2.78e-06</span>
-<span class="co">#&gt; pland_04                    -0.16888 0.59161 -0.2855 7.75e-01</span>
-<span class="co">#&gt; pland_05                    -1.10098 0.52040 -2.1156 3.44e-02</span>
+<span class="co">#&gt;                             Estimate      SE      z  P(&gt;|z|)</span>
+<span class="co">#&gt; (Intercept)                 -1.18549 0.39356 -3.012 2.59e-03</span>
+<span class="co">#&gt; time_observations_started   -0.02741 0.02044 -1.341 1.80e-01</span>
+<span class="co">#&gt; duration_minutes             0.00747 0.00193  3.878 1.05e-04</span>
+<span class="co">#&gt; effort_distance_km          -0.01626 0.09280 -0.175 8.61e-01</span>
+<span class="co">#&gt; number_observers             0.16102 0.17068  0.943 3.45e-01</span>
+<span class="co">#&gt; protocol_typeTraveling       0.49752 0.25422  1.957 5.03e-02</span>
+<span class="co">#&gt; checklist_calibration_index  0.63732 0.12471  5.110 3.21e-07</span>
+<span class="co">#&gt; pland_04                    -1.18714 0.68339 -1.737 8.24e-02</span>
+<span class="co">#&gt; pland_05                    -0.58061 0.71395 -0.813 4.16e-01</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; AIC: 1338 </span>
-<span class="co">#&gt; Number of sites: 1290</span>
+<span class="co">#&gt; AIC: 1388 </span>
+<span class="co">#&gt; Number of sites: 1289</span>
 <span class="co">#&gt; optim convergence code: 0</span>
 <span class="co">#&gt; optim iterations: 80 </span>
 <span class="co">#&gt; Bootstrap iterations: 0</span></code></pre>
 <div id="occupancy-model-assess" class="section level3">
-<h3><span class="header-section-number">5.4.1</span> Assessment</h3>
-<p>Occupancy models assume that at at least one model in the set provides an adequate fit to the data. Although few goodness of fit tests exist for occupancy models, we include a section on how to perform the MacKenzie and Bailey <span class="citation">(<a href="#ref-mackenzieAssessingFitSiteoccupancy2004">2004</a>)</span> goodness-of-fit test. This approach calculates a Pearson’s chi-square fit statistic to the observed and expected frequencies of detection histories for a given model. For this example, we used the <code>mb.gof.test()</code> test function in the <code>AICcmodavg</code> package, which can handle occupancy models produced by the <code>occu()</code> function in <code>unmarked</code>, to calculate the observed and expected frequencies of detection histories. Note that this process requires simulating a large number of bootstrap samples (1,000 here) and takes a long time to run. You may want to skip this section or reduce <code>nsim</code> to a much smaller number (e.g. 10) in the interest of speed. However, when applying this in practice, you should run the test with the full number of simulations to get accurate results.</p>
+<h3><span class="header-section-number">5.3.1</span> Assessment</h3>
+<p>Occupancy models assume that at at least one model in the set provides an adequate fit to the data. Although few goodness-of-fit tests exist for occupancy models, we’ll demonstrate how to perform the MacKenzie and Bailey <span class="citation">(<a href="#ref-mackenzieAssessingFitSiteoccupancy2004">2004</a>)</span> goodness-of-fit test. This approach calculates a Pearson’s chi-square fit statistic from the observed and expected frequencies of detection histories for a given model. For this example, we’ll use the <code>mb.gof.test()</code> test function in the <code>AICcmodavg</code> package, which can handle occupancy models produced by the <code>occu()</code> function in <code>unmarked</code>, to calculate the observed and expected frequencies of detection histories. Note that this process requires simulating a large number of bootstrap samples (1,000 here) and therefore takes a long time to run. You may want to skip this section or reduce <code>nsim</code> to a much smaller number (e.g. 10) in the interest of speed. However, when applying this in practice, you should run the test with the full number of simulations to get accurate results.</p>
 <pre class="sourceCode r"><code class="sourceCode r">occ_gof &lt;-<span class="st"> </span><span class="kw">mb.gof.test</span>(occ_model, <span class="dt">nsim =</span> <span class="dv">1000</span>, <span class="dt">plot.hist =</span> <span class="ot">FALSE</span>)
 <span class="kw">print</span>(occ_gof)</code></pre>
 <pre><code>#&gt; 
@@ -497,58 +496,58 @@ occ_model &lt;-<span class="st"> </span><span class="kw">occu</span>(mod_formula
 #&gt;   330  1256  1661  2199 49998 
 #&gt; 
 #&gt; Estimate of c-hat = 0.97</code></pre>
-<p>For this example, the probabilitty of getting the calculated Chi-square statistic under a null sampling distribution is indicated by the P-value of 0.324, indicating that there is no reason to consider a lack of fit (P-value &gt; 0.1). In addition, we also get an estimate of the overdisperson parameter (c-hat) for the model by dividing the observed chi-square statistic by the mean of the statistics obtained from simulation. In this example, c-hat = 0.97, which is very close to c-hat = 1, indicating that the variance is not greater than the mean, and that there is no evidence for overdispersion.</p>
+<p>For this example, the probability of getting the calculated chi-square statistic under a null sampling distribution is indicated by the p-value of 0.324, indicating that there is no reason to consider a lack of fit (p &gt; 0.1). In addition, we also get an estimate of the overdisperson parameter (c-hat) for the model by dividing the observed chi-square statistic by the mean of the statistics obtained from simulation. In this example, c-hat = 0.97, which is very close to c-hat = 1, indicating that the variance is not greater than the mean, and that there is no evidence for overdispersion.</p>
 </div>
 <div id="occupancy-model-select" class="section level3">
-<h3><span class="header-section-number">5.4.2</span> Model selection</h3>
-<p>Next, we use a model selection approach to compare and rank our candidate model set. For this example, we use the <code>dredge()</code> function to explore a candidate set consisting of all possible additive combinations of the gobal model. However, we suggest that a more thoughtful approach be considered for specific applications and different types of predictor variables.</p>
+<h3><span class="header-section-number">5.3.2</span> Model selection</h3>
+<p>Next, we use a model selection approach to compare and rank our candidate model set. For this example, we use the <code>dredge()</code> function to explore a candidate set consisting of all possible additive combinations of the global model. However, we suggest that a more thoughtful approach be considered for specific applications and different types of predictor variables.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># dredge candidate model set</span>
 occ_dredge &lt;-<span class="st"> </span><span class="kw">dredge</span>(occ_model)
 
 <span class="co"># model comparison</span>
 <span class="kw">select</span>(occ_dredge, df, logLik, AICc, delta, weight)</code></pre>
 <pre><code>#&gt;    df logLik AICc delta   weight
-#&gt; 12 13   -655 1337  0.00 5.90e-01
-#&gt; 16 14   -655 1339  1.94 2.24e-01
-#&gt; 4  12   -658 1340  3.06 1.28e-01
-#&gt; 8  13   -658 1341  4.73 5.56e-02
-#&gt; 11 12   -662 1348 11.62 1.77e-03
-#&gt; 15 13   -662 1350 13.65 6.42e-04
-#&gt; 3  11   -666 1355 18.03 7.18e-05
-#&gt; 7  12   -666 1357 20.03 2.65e-05
-#&gt; 10 12   -670 1365 28.03 4.84e-07
-#&gt; 14 13   -670 1367 30.03 1.78e-07
-#&gt; 2  11   -676 1374 36.97 5.53e-09
-#&gt; 6  12   -676 1376 38.97 2.04e-09
-#&gt; 9  11   -678 1379 41.99 4.50e-10
-#&gt; 13 12   -678 1380 43.54 2.07e-10
-#&gt; 1  10   -687 1394 56.88 2.62e-13
-#&gt; 5  11   -687 1396 58.83 9.92e-14</code></pre>
-<p>A quick look at the dredge object reveals that there is not a clear model, or even set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the model with the lowest AICc value. Given this, and the fact that all of our effects are linear and use the same family and link function, we’ll average across all models, weighted by AICc, to produce a final model that we’ll use for prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the <code>get.models()</code> funciton to extract just these models prior to averaging.</p>
+#&gt; 12 13   -680 1387  0.00 6.47e-01
+#&gt; 16 14   -680 1388  1.38 3.25e-01
+#&gt; 4  12   -685 1394  7.45 1.56e-02
+#&gt; 8  13   -684 1395  7.99 1.19e-02
+#&gt; 11 12   -689 1402 15.41 2.91e-04
+#&gt; 10 12   -689 1402 15.79 2.41e-04
+#&gt; 15 13   -689 1404 17.35 1.10e-04
+#&gt; 14 13   -689 1404 17.68 9.35e-05
+#&gt; 3  11   -696 1414 27.81 5.93e-07
+#&gt; 2  11   -697 1416 29.03 3.21e-07
+#&gt; 7  12   -696 1416 29.28 2.83e-07
+#&gt; 6  12   -696 1417 30.31 1.70e-07
+#&gt; 9  11   -699 1421 34.16 2.48e-08
+#&gt; 13 12   -699 1423 36.15 9.13e-09
+#&gt; 1  10   -711 1442 55.75 5.07e-13
+#&gt; 5  11   -711 1444 57.72 1.89e-13</code></pre>
+<p>A quick look at the dredge object reveals that there is not a clear model, or even set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the model with the lowest AICc value. Given this, and the fact that all of our effects are linear and use the same family and link function, we’ll average across all models, weighted by AICc, to produce a final model that we’ll use for prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the <code>get.models()</code> function to extract just these models prior to averaging.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># average models based on model weights </span>
 occ_avg &lt;-<span class="st"> </span><span class="kw">model.avg</span>(occ_dredge, <span class="dt">fit =</span> <span class="ot">TRUE</span>)
 
 <span class="co"># model coefficients</span>
 <span class="kw">t</span>(occ_avg<span class="op">$</span>coefficients)
 <span class="co">#&gt;                                    full   subset</span>
-<span class="co">#&gt; psi(Int)                       -1.81851 -1.81851</span>
-<span class="co">#&gt; psi(pland_04)                   2.43398  2.44010</span>
-<span class="co">#&gt; psi(pland_05)                   6.38399  6.38400</span>
-<span class="co">#&gt; psi(pland_13)                  -1.10658 -1.35544</span>
-<span class="co">#&gt; p(Int)                         -1.67222 -1.67222</span>
-<span class="co">#&gt; p(checklist_calibration_index)  0.58865  0.58865</span>
-<span class="co">#&gt; p(duration_minutes)             0.00896  0.00896</span>
-<span class="co">#&gt; p(effort_distance_km)          -0.00451 -0.00451</span>
-<span class="co">#&gt; p(number_observers)             0.26783  0.26783</span>
-<span class="co">#&gt; p(pland_04)                    -0.16929 -0.16929</span>
-<span class="co">#&gt; p(pland_05)                    -1.11056 -1.11056</span>
-<span class="co">#&gt; p(protocol_typeTraveling)       0.67231  0.67231</span>
-<span class="co">#&gt; p(time_observations_started)   -0.04339 -0.04339</span>
-<span class="co">#&gt; psi(pland_12)                   0.08141  0.29096</span></code></pre>
+<span class="co">#&gt; psi(Int)                       -1.89037 -1.89037</span>
+<span class="co">#&gt; psi(pland_04)                   3.24042  3.24173</span>
+<span class="co">#&gt; psi(pland_05)                   4.37863  4.38010</span>
+<span class="co">#&gt; psi(pland_13)                  -1.99325 -2.04954</span>
+<span class="co">#&gt; p(Int)                         -1.19796 -1.19796</span>
+<span class="co">#&gt; p(checklist_calibration_index)  0.64226  0.64226</span>
+<span class="co">#&gt; p(duration_minutes)             0.00746  0.00746</span>
+<span class="co">#&gt; p(effort_distance_km)          -0.01517 -0.01517</span>
+<span class="co">#&gt; p(number_observers)             0.16150  0.16150</span>
+<span class="co">#&gt; p(pland_04)                    -1.17862 -1.17862</span>
+<span class="co">#&gt; p(pland_05)                    -0.58028 -0.58028</span>
+<span class="co">#&gt; p(protocol_typeTraveling)       0.50084  0.50084</span>
+<span class="co">#&gt; p(time_observations_started)   -0.02681 -0.02681</span>
+<span class="co">#&gt; psi(pland_12)                   0.20095  0.59629</span></code></pre>
 </div>
 </div>
 <div id="occupancy-predict" class="section level2">
-<h2><span class="header-section-number">5.5</span> Prediction</h2>
+<h2><span class="header-section-number">5.4</span> Prediction</h2>
 <p>In this section, we’ll estimate the distribution of Wood Thrush in BCR 27. Similar to Section <a href="habitat.html#habitat-prediction">3.4</a>, we’ll generate a prediction surface using the PLAND habitat covariates summarized on a regular grid of points across BCR 27. For this, we’ll use the <code>predict()</code> function to estimate occupancy probabilities, standard errors, and confidence intervals.</p>
 <p>Recall that when we <a href="encounter.html#encounter-predict">predicted encouter rate</a>, we had to include effort variables in our prediction surface. We don’t need to do that here because the occupancy submodel doesn’t depend on the effort covariates, these only occur in the detection submodel.</p>
 <pre class="sourceCode r"><code class="sourceCode r">occ_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(occ_avg, 
@@ -560,10 +559,12 @@ pred_occ &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_su
                       <span class="dt">occ_prob =</span> occ_pred<span class="op">$</span>fit, 
                       <span class="dt">occ_se =</span> occ_pred<span class="op">$</span>se.fit) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">select</span>(latitude, longitude, occ_prob, occ_se)</code></pre>
-<p>Next, we’ll convert this data frame to spatial points using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
+<p>Next, we’ll convert this data frame to spatial feaatures using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
 <pre class="sourceCode r"><code class="sourceCode r">r_pred &lt;-<span class="st"> </span>pred_occ <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># convert to spatial features</span>
 <span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># rasterize</span>
 <span class="st">  </span><span class="kw">rasterize</span>(r)
 r_pred &lt;-<span class="st"> </span>r_pred[[<span class="kw">c</span>(<span class="st">&quot;occ_prob&quot;</span>, <span class="st">&quot;occ_se&quot;</span>)]]
 

@@ -489,12 +489,14 @@ pred_er <- bind_cols(pred_surface_eff, encounter_rate = pred_rf_cal) %>%
   select(latitude, longitude, encounter_rate)
 ```
 
-Next, we'll convert this data frame to spatial points using `sf`, then rasterize the points using the prediction surface raster template.
+Next, we'll convert this data frame to spatial features using `sf`, then rasterize the points using the prediction surface raster template.
 
 ```{r encounter-predict-rasterize}
 r_pred <- pred_er %>% 
+  # convert to spatial features
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
   st_transform(crs = projection(r)) %>% 
+  # rasterize
   rasterize(r)
 r_pred <- r_pred[[-1]]
 
