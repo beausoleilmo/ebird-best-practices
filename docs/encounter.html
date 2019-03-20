@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 4 Modeling Encounter Rate | Best Practices for Using eBird Data</title>
-  <meta name="description" content="Best practices for using eBird data to estimate species distributions">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
+  <meta name="generator" content="bookdown  and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 4 Modeling Encounter Rate | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Best practices for using eBird data to estimate species distributions" />
   
 
-<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink">
+<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-19">
+<meta name="date" content="2019-03-19" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="habitat.html">
@@ -333,7 +332,7 @@ hexagons &lt;-<span class="st"> </span><span class="kw">dgcellstogrid</span>(dgg
 <span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> pts, <span class="dt">size =</span> <span class="fl">0.5</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> pts_ss, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-sss-toy-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/encounter-sss-toy-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>Now let’s apply exactly the same approach to subsampling the real eBird checklists.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span>
 dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)
@@ -413,7 +412,7 @@ both_pts &lt;-<span class="st"> </span><span class="kw">list</span>(<span class=
     <span class="kw">title</span>(<span class="st">&quot;After subsampling&quot;</span>)
   }
 }</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-sss-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/encounter-sss-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>For Wood Thrush, subsampling the detections and non-detections independently is sufficient for dealing with class imbalance; however, for species that are extremely rare, it may be worthwhile retaining all detections or even oversampling detections.</p>
 </div>
 <div id="encounter-rf" class="section level2">
@@ -472,7 +471,7 @@ cal_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(calibrati
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;RF prediction&quot;</span>,
        <span class="dt">y =</span> <span class="st">&quot;Calibrated prediction&quot;</span>,
        <span class="dt">title =</span> <span class="st">&quot;Calibration model&quot;</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-rf-cal-cal-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/encounter-rf-cal-cal-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>The calibrated random forest model is now the combination of the original random forest model and the calibration model.</p>
 </div>
 <div id="encounter-rf-assess" class="section level3">
@@ -577,7 +576,7 @@ rf_assessment &lt;-<span class="st"> </span><span class="kw">tibble</span>(
 <span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),
         <span class="dt">panel.grid.major.x =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;#cccccc&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>))</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-habitat-pi-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/encounter-habitat-pi-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>The most important predictors of detection/non-detection are generally effort variables. Indeed, that’s the case here: CCI, start time, date, and checklist duration are all important predictors. The top environmetal predictors are the proportion of woody savanna (UMD landcover class 8) and deciduous broadleaf forests (class 4). Note that high importance doesn’t tell us the direction of the relationship with detection, for that we’ll have to look at partial dependence plots.</p>
 </div>
 <div id="encounter-habitat-pd" class="section level3">
@@ -608,7 +607,7 @@ pd &lt;-<span class="st"> </span>top_pred<span class="op">$</span>predictor <spa
 <span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),
         <span class="dt">axis.line =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>),
         <span class="dt">axis.ticks  =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>))</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-habitat-pd-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/encounter-habitat-pd-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>There are a range of interesting responses here. As seen in Section <a href="ebird.html#ebird-explore">2.5</a>, the encounter rate for Wood Thrush peaks early in the morning when they’re most likely to be singing, then quickly drops off in the middle of the day, before slightly increasing in the evening. The CCI seems to show a threshold effect; there’s a jump from 10% to 30% encounter rate around a CCI of 2. Wood Thrush can be hard to see, but have a prominent and distinctive call, emblematic of North America’s eastern hardwood forest, and perhaps less experienced birders aren’t able to recognize this call. Some other predictors show a more smoothly increasing relationship with encounter rate, for example, as the landscape contains more deciduous forest (<code>pland_04</code>), the encounter rate increases.</p>
 </div>
 </div>
@@ -623,6 +622,8 @@ pd_time &lt;-<span class="st"> </span><span class="kw">partial_dependence</span>
                               <span class="co"># use the entire training dataset for estimation</span>
                               <span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">24</span> <span class="op">*</span><span class="st"> </span><span class="dv">6</span>, <span class="kw">nrow</span>(ebird_split<span class="op">$</span>train)), 
                               <span class="dt">data =</span> ebird_split<span class="op">$</span>train)
+<span class="co">#&gt; Predicting.. Progress: 98%. Estimated remaining time: 0 seconds.</span>
+<span class="co">#&gt; Aggregating predictions.. Progress: 98%. Estimated remaining time: 0 seconds.</span>
 
 <span class="co"># histogram</span>
 g_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_split<span class="op">$</span>train) <span class="op">+</span>
@@ -646,7 +647,7 @@ g_pd &lt;-<span class="st"> </span><span class="kw">ggplot</span>(pd_time) <span
 
 <span class="co"># combine</span>
 <span class="kw">grid.arrange</span>(g_hist, g_pd)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-predict-time-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/encounter-predict-time-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>As expected, the peak of detectibility is occurring at start times near midnight, which is an artifact of the low data density at night. Let’s instead look for the peak time within hours of the day that contain at least 1% of the training data.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># hours with at least 1% of checklists</span>
 search_hours &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span>
@@ -731,7 +732,7 @@ lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="
            <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,
                               <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,
                               <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/encounter-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 
 </div>
 </div>

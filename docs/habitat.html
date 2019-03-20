@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 3 Habitat Covariates | Best Practices for Using eBird Data</title>
-  <meta name="description" content="Best practices for using eBird data to estimate species distributions">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
+  <meta name="generator" content="bookdown  and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 Habitat Covariates | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Best practices for using eBird data to estimate species distributions" />
   
 
-<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink">
+<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-19">
+<meta name="date" content="2019-03-19" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="ebird.html">
@@ -333,7 +332,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 </tbody>
 </table>
-<p>For a wide range of studies, this MODIS landcover dataset will be suitable for generating habitat covariates; however, there may be particular cases where the study species, habitat, or ecological question requires different, or more specialized, data. For example, shorebird distribution modeling would benefit from data on the <a href="https://www.intertidal.app">extent of tidal flats</a>, seabirds distributions are often influenced by <a href="https://eatlas.org.au/data/uuid/80301676-97fb-4bdf-b06c-e961e5c0cb0b">ocean depth</a>, and in many regions <a href="https://github.com/jhollist/elevatr">elevation</a> plays a critical role is shaping species distributions. Regardless of which habitat data you decide to use for your project, this Chapter should provide a template for how to prepare these data as covariates for modeling species distributions.</p>
+<p>For a wide range of studies, this MODIS landcover dataset will be suitable for generating habitat covariates; however, there may be particular cases where the study species, habitat, or ecological question requires different, or more specialized, data. For example, shorebird distribution modeling would benefit from data on the <a href="https://www.intertidal.app">extent of tidal flats</a>, seabirds distributions are often influenced by <a href="https://eatlas.org.au/data/uuid/80301676-97fb-4bdf-b06c-e961e5c0cb0b">ocean depth</a>, and in many regions <a href="https://github.com/jhollist/elevatr">elevation</a> plays a critical role in shaping species distributions. Regardless of which habitat data you decide to use for your project, this chapter should provide a template for how to prepare these data as covariates for modeling species distributions.</p>
 <p>The next section will cover how to access and download MODIS landcover data. Next, we’ll demonstrate how to summarize these data within a neighborhood around each checklist location. Finally, we’ll calculate a set of covariates over a regular grid, which we’ll use to make predictions of species distributions throughout our study area. If you want to skip this section and jump straight to the modeling, you can download the data package, which includes all the prepared MODIS data that we’ll use in the remainder of this book.</p>
 </div>
 <div id="habitat-dl" class="section level2">
@@ -369,10 +368,10 @@ tiles<span class="op">@</span>tile
 <li><strong>Windows:</strong> install <a href="http://trac.osgeo.org/osgeo4w/">OSGeo4W</a>, a suite of open source geospatial tools that includes GDAL. In R, run <code>MODIS:::checkTools(&quot;GDAL&quot;)</code>, which will search your system for GDAL and suggest a command such as <code>MODIS::MODISoptions(gdalPath = &quot;c:/OSGeo4W64/bin&quot;)</code> that will make GDAL available to the <code>MODIS</code> package. Run this command and, when it asks, agree to making the settings permanent.</li>
 </ul>
 <p>Finally, run <code>MODIS:::checkTools(&quot;GDAL&quot;)</code> to check that GDAL is installed and that the <code>MODIS</code> package can find it. If GDAL can’t be found, you’ll need to manually locate it and use <code>MODIS::MODISoptions(gdalPath = &quot;path/to/gdal/&quot;)</code> to tell the <code>MODIS</code> package where it is.</p>
-<p>Once all the setup steps have been completed, we can start downloading some data! The <code>MODIS</code> function <code>runGdal()</code> downloads and processes MODIS tiles in a single GeoTIFF for each year. Note that at the time of writing, landcover data from 2018 haven’t been prepared yet, so we’ll use 2017 data for both 2017 and 2018. The key arguments to <code>runGdal()</code> are:</p>
+<p>Once all the setup steps have been completed, we can start downloading some data! The <code>MODIS</code> function <code>runGdal()</code> downloads and processes MODIS tiles into a single GeoTIFF for each year. Note that at the time of writing, landcover data from 2018 haven’t been prepared yet, so we’ll use 2017 data for both 2017 and 2018. The key arguments to <code>runGdal()</code> are:</p>
 <ul>
 <li><code>product</code>: is the specific MODIS product to download. For a full list of available datasets use <code>MODIS::getProduct()</code>.</li>
-<li><code>SDSstring</code>: a string specifying which bands to extract, with zeros for bands to drop and 1 for bands to keep. Most MODIS products have multiple bands stored in a single raster file, for example, reflectances in different wavelength ranges or, in our case, landcover using different landcover classification systems. The <a href="https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mcd12q1_v006">documention for the MCD12Q1 dataset</a> shows that there are 13 bands in the downloaded files, and we’re interested in band 2, which uses the UMD landcover classification.</li>
+<li><code>SDSstring</code>: a string specifying which bands to extract, with zeros for bands to drop and 1 for bands to keep. Most MODIS products have multiple bands stored in a single raster file, for example, reflectances in different wavelength ranges or, in our case, landcover using different landcover classification systems. The <a href="https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mcd12q1_v006">documentation for the MCD12Q1 dataset</a> shows that there are 13 bands in the downloaded files, and we’re interested in band 2, which contains the UMD landcover classification.</li>
 <li><code>tileH</code> and <code>tileV</code>: the vertical and horizontal tile numbers as returned by <code>getTile()</code>.</li>
 <li><code>begin</code> and <code>end</code>: the start and end dates of of the time period from which to extract data. Although the landcover data are only available annually, we need to specify full dates because some other products are available on a more granular basis.</li>
 <li><code>outDirPath</code>: directory to store processed MODIS data.</li>
@@ -420,7 +419,7 @@ landcover
 <h2><span class="header-section-number">3.3</span> Landscape metrics</h2>
 <p>At this point we could use the MODIS landcover data directly, simply extracting the landcover class for each checklist location. However, we instead advocate summarizing the landcover data within a neighborhood around the checklist locations. As discussed in Section <a href="intro.html#intro-intro">1.1</a>, checklist locations are not precise, so it’s more appropriate to use the habitat in the surrounding area, rather than only at the checklist location. More fundamentally, organisms interact with their environment not at a single point, but at the scale of a landscape, so it’s important to include habitat information characterizing a suitably-sized landscape around the observation location.</p>
 <p>There are a variety of <strong>landscape metrics</strong> that can be used to characterize the composition (what habitat is available) and configuration (how that habitat is arranged spatially) of landscapes. The simplest metric of landscape composition is the percentage of the landscape in each landcover class (PLAND in the parlance of <a href="https://www.umass.edu/landeco/research/fragstats/fragstats.html">FRAGSTATS</a>). For a broad range of scenarios, PLAND is a reliable choice for calculating habitat covariates in distribution modeling. Based on our experience working with eBird data, an approximately 2.5 km by 2.5 km square neighborhood (5 by 5 MODIS cells) centered on the checklist location is sufficient to account for the spatial precision in the data when the maximum distance of travelling counts has been limited to 5 km, while being a relevant ecological scale for many bird species.</p>
-<p>We’ll start by finding the full set of unique checklists locations for each year in the eBird data. Then we convert these locations to spatial <code>sf</code> features and project them to the Sinusoidal equal area projection used by MODIS. We’ll buffer these points to create square polygons around each location that are the size of a 5 by 5 grid of MODIS landcover cells. Finally, we split the neighborhoods up by year so we can match to MODIS landcover data from the corresponding year.</p>
+<p>We’ll start by finding the full set of unique checklists locations for each year in the eBird data. Then we convert these locations to spatial <code>sf</code> features and project them to the sinusoidal equal area projection used by MODIS. We’ll buffer these points to create square polygons around each location that are the size of a 5 by 5 grid of MODIS landcover cells. Finally, we split the neighborhoods up by year so we can match to MODIS landcover data from the corresponding year.</p>
 <pre class="sourceCode r"><code class="sourceCode r">neighborhood_radius &lt;-<span class="st"> </span><span class="fl">2.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">ceiling</span>(<span class="kw">max</span>(<span class="kw">res</span>(landcover)))
 ebird_locs &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">distinct</span>(<span class="dt">year =</span> <span class="kw">format</span>(observation_date, <span class="st">&quot;%Y&quot;</span>),
@@ -474,7 +473,7 @@ pland &lt;-<span class="st"> </span>pland <span class="op">%&gt;%</span><span cl
 </div>
 <div id="habitat-prediction" class="section level2">
 <h2><span class="header-section-number">3.4</span> Prediction surface</h2>
-<p>After fitting species distribution models, the goal is typically to make predictions throughout the study area. To do this, we’ll need a regular grid of habitat covariates over which to make predictions. In this section, we’ll create such a prediction surface for BCR 27 using the MODIS landcover data from 2017. To start, we’ll need a template raster with cells equal in size to the neighborhoods we defined in the previous section: 6 by 6 MODIS landcover cells. We can use <code>raster::aggregate()</code> to achieve this. We’ll also use <code>raster::rasterize()</code> to assign the value 1 to all cells within BCR 27 and leave all cells outside BCR 27 empty.</p>
+<p>After fitting species distribution models, the goal is typically to make predictions throughout the study area. To do this, we’ll need a regular grid of habitat covariates over which to make predictions. In this section, we’ll create such a prediction surface for BCR 27 using the MODIS landcover data from 2017. To start, we’ll need a template raster with cells equal in size to the neighborhoods we defined in the previous section: 5 by 5 MODIS landcover cells. We can use <code>raster::aggregate()</code> to achieve this. We’ll also use <code>raster::rasterize()</code> to assign the value 1 to all cells within BCR 27 and leave all cells outside BCR 27 empty.</p>
 <pre class="sourceCode r"><code class="sourceCode r">agg_factor &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>neighborhood_radius <span class="op">/</span><span class="st"> </span><span class="kw">res</span>(landcover))
 r &lt;-<span class="st"> </span><span class="kw">raster</span>(landcover) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">aggregate</span>(agg_factor) 
@@ -547,19 +546,22 @@ pland_coords &lt;-<span class="st"> </span><span class="kw">st_transform</span>(
 <span class="co">#&gt; $ pland_15  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></code></pre>
 <p>Keeping these data in a data frame is a compact way to store them and will be required once we make model predictions in later chapters. However, we can always use the raster template to convert these PLAND metrics into a spatial format, for example, if we want to map them. Let’s look at how this works for landcover class 4: deciduous broadleaf forest.</p>
 <pre class="sourceCode r"><code class="sourceCode r">forest_cover &lt;-<span class="st"> </span>pland_coords <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># convert to spatial points</span>
 <span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># rasterize points</span>
 <span class="st">  </span><span class="kw">rasterize</span>(r, <span class="dt">field =</span> <span class="st">&quot;pland_04&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co"># project to albers equal-area for mapping</span>
 <span class="st">  </span><span class="kw">projectRaster</span>(<span class="dt">crs =</span> <span class="kw">st_crs</span>(<span class="dv">102003</span>)<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="co"># trim off empty edges</span>
+<span class="st">  </span><span class="co"># trim off empty edges of raster</span>
 <span class="st">  </span><span class="kw">trim</span>()
 
+<span class="co"># make a map</span>
 <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="dv">2</span>, <span class="fl">0.25</span>))
 <span class="kw">plot</span>(forest_cover, <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="kw">viridis</span>(<span class="dv">10</span>),
      <span class="dt">main =</span> <span class="st">&quot;Proportion of Deciduous Broadleaf Forest</span><span class="ch">\n</span><span class="st">2017 MODIS Landcover&quot;</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/habitat-prediction-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<p>We’ve completed all the data preparation and the remaining chapters will focus on using these data to predict species distributions.</p>
+<p><img src="ebird-best-practices_files/figure-html/habitat-prediction-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>This completes the data preparation and the remaining chapters will focus on using these data to predict species distributions.</p>
 
 </div>
 </div>

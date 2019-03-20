@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 Modeling Relative Abundance | Best Practices for Using eBird Data</title>
-  <meta name="description" content="Best practices for using eBird data to estimate species distributions">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
+  <meta name="generator" content="bookdown  and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 Modeling Relative Abundance | Best Practices for Using eBird Data" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Best practices for using eBird data to estimate species distributions" />
   
 
-<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink">
+<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-19">
+<meta name="date" content="2019-03-19" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="occupancy.html">
@@ -376,7 +375,7 @@ pos_counts &lt;-<span class="st"> </span><span class="kw">keep</span>(ebird_ss<s
 <span class="co">#&gt; estimated sd:  1.3 </span>
 <span class="co">#&gt; estimated skewness:  5.83 </span>
 <span class="co">#&gt; estimated kurtosis:  61.6</span></code></pre>
-<p><img src="ebird-good-practices_files/figure-html/abundance-model-dist-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/abundance-model-dist-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>For the data that include zeros (top row), the wood thrush shows an extremely zero-inflated and skewed distribution. There are a large number of zero-counts (checklists with no wood thrush detections). The Cullen &amp; Frey graph shows that the observed distribution of counts including zeros (the blue dot) is far from the normal, Poisson and negative binomial distributions. It is closest to the negative binomial distribution.</p>
 <p>For the counts only (bottom row), the wood thrush data still show a highly skewed distribution, with lots of checklists with low numbers and only a few checklists with &gt;5 woodthrush. The Cullen &amp; Frey graph indicates that even without zeros the data are far from complying with a standard distribution.</p>
 <p>These plots and conclusions are only indicative - they provide some information about what we can expect for distributions at the next step. Overall for wood thrush we can conclude that the counts are highly skewed with many zero observations.</p>
@@ -503,7 +502,7 @@ plot_gam &lt;-<span class="st"> </span><span class="cf">function</span>(m, <span
          <span class="dt">ziplss =</span> <span class="st">&quot;abundance&quot;</span>)
 <span class="kw">plot_gam</span>(m_nb, <span class="dt">title =</span> <span class="st">&quot;Negative Binomial GAM&quot;</span>)
 <span class="kw">plot_gam</span>(m_tw, <span class="dt">title =</span> <span class="st">&quot;Tweedie Distributed GAM&quot;</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/abundance-model-assess-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-assess-plot-2.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-assess-plot-3.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-good-practices_files/figure-html/abundance-model-assess-plot-4.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/abundance-model-assess-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-best-practices_files/figure-html/abundance-model-assess-plot-2.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-best-practices_files/figure-html/abundance-model-assess-plot-3.png" width="\textwidth" style="display: block; margin: auto;" /><img src="ebird-best-practices_files/figure-html/abundance-model-assess-plot-4.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>If these relationships seem too wiggly to be biologically realistic, you should reduce the degrees of freedom for the smooth until a biologically feasible relationship is achieved. In this case, the relationships appear to be reasonable. Next we’ll proceed with a formal cross-validation of the three models. Recall from Section <a href="encounter.html#encounter-rf-assess">4.4.2</a> that this involves making predictions for the test dataset, which wasn’t used to fit the models, then assessing how well these predictions relate to the actual observed counts in the test dataset.</p>
 <p>Care needs to be taken when making predictions from the zero-inflated Poisson model since it has two components: the probability of presence and expected count given presence. As a result, the <code>predict()</code> function returns a two column matrix with the count and probability respectively, both on the scale of the link functions. So, we need to back-transform these values, then multiply them to get the predicted counts.</p>
 <pre class="sourceCode r"><code class="sourceCode r">obs_count &lt;-<span class="st"> </span><span class="kw">select</span>(ebird_split<span class="op">$</span>test, <span class="dt">obs =</span> observation_count)
@@ -552,7 +551,7 @@ mx &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Observed count&quot;</span>,
        <span class="dt">y =</span> <span class="st">&quot;Predicted count&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>family, <span class="dt">nrow =</span> <span class="dv">1</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/encounter-rf-assess-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/encounter-rf-assess-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>We see that most of the observed counts are underestimated by the predictions, as most points and the blue line are below the gray <span class="math inline">\(y = x\)</span> line. We also see that most of the checklists observe no wood thrush. Although most predictions for these are also zero (blue line is at 0), there are still a lot of places with predicted Wood Thrush where none were observed. There are also a large number of observations in that problematic region of underestimation by an order of magnitude or more. How many of these cases are there?</p>
 <pre class="sourceCode r"><code class="sourceCode r">test_pred <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -659,7 +658,7 @@ t_peak &lt;-<span class="st"> </span>pred_tod<span class="op">$</span>time_obser
        <span class="dt">y =</span> <span class="st">&quot;Predicted relative abundance&quot;</span>,
        <span class="dt">title =</span> <span class="st">&quot;Effect of observation start time on Wood Thrush reporting&quot;</span>,
        <span class="dt">subtitle =</span> <span class="st">&quot;Peak detectability shown as dashed blue line&quot;</span>)</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/abundance-predict-peak-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/abundance-predict-peak-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>So, the peak time of day for detecting Wood Thrush is around 4:15 AM. Let’s generate the prediction surface and make predictions at all the points. In addition to relative abundance, we’ll estimate standard error and 95% confidence limits.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add effort covariates to prediction surface</span>
 pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span>
@@ -770,7 +769,7 @@ r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(
                                 <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,
                                 <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))
 }</code></pre>
-<p><img src="ebird-good-practices_files/figure-html/abundance-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ebird-best-practices_files/figure-html/abundance-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 
 </div>
 </div>
