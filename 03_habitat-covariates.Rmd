@@ -130,7 +130,6 @@ ebird_buff <- ebird %>%
   st_buffer(dist = neighborhood_radius, endCapStyle = "SQUARE") %>% 
   # nest by year
   nest(-year_lc)
-ebird_buff_year <- split(ebird_buff, ebird_buff$year)
 ```
 
 Now, we'll loop over the years and for each square neighborhood extract all the raster values within that neighborhood. We use the `velox` package for this, since it's often orders of magnitude faster than using `raster::extract()`.

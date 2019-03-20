@@ -337,7 +337,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="habitat-dl" class="section level2">
 <h2><span class="header-section-number">3.2</span> Downloading MODIS data</h2>
 <p>As with most satellite data, MODIS data are provided as <a href="https://modis-land.gsfc.nasa.gov/MODLAND_grid.html">1200 km by 1200 km tiles</a> for ease of download. Each tile is a <a href="http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/what-is-raster-data.htm">raster GIS dataset</a> consisting of a regular grid of 500 m resolution cells. The surface of the Earth is divided up into a grid of these tiles, each given an ID, for example, h10v12 is the tile from the 10th column and 12th row of the grid. Compiling MODIS data for a given region requires figuring out which set of tiles covers the region, downloading those tiles, combining the tiles together into a single raster dataset, and converting from the native MODIS HDF format, which R can’t read, to a standard GeoTIFF format. This needs to be done for each year for which we want habitat data, and can be a time consuming and error prone process. Fortunately, the <a href="https://github.com/MatMatt/MODIS">R package <code>MODIS</code></a> automates most of these steps. Unfortunately, this package can be challenging to set up and has a confusing user interface. With this in mind, this section will provide detailed instruction for setting up and using the <code>MODIS</code> package.</p>
-<p>Let’s start by figuring out the tile IDs for the tiles that BCR 27 spans. Recall that we prepared a BCR boundary in Section <a href="intro.html#intro-setup-gis">1.3.6</a> of the Introduction; if you haven’t already done so, <a href="https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip">download the data package</a> now to get that boundary. Given a set of spatial features, the <code>MODIS</code> package can quickly tell us which MODIS tiles we need.</p>
+<p>Let’s start by figuring out the tile IDs for the tiles that BCR 27 spans. Recall that we prepared a BCR boundary in Section <a href="intro.html#intro-setup-gis">1.3.6</a> of the Introduction; if you haven’t already done so, <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip">download the data package</a> now to get that boundary. Given a set of spatial features, the <code>MODIS</code> package can quickly tell us which MODIS tiles we need.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(sf)
 <span class="kw">library</span>(raster)
 <span class="kw">library</span>(MODIS)
@@ -394,8 +394,9 @@ new_names &lt;-<span class="st"> </span><span class="kw">format</span>(<span cla
 <span class="st">  </span><span class="kw">sprintf</span>(<span class="st">&quot;modis_mcd12q1_umd_%s.tif&quot;</span>, .) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">file.path</span>(<span class="kw">dirname</span>(tifs), .)
 <span class="kw">file.rename</span>(tifs, new_names)</code></pre>
-<p>If everything ran smoothly, we now have annual GeoTIFFs of MODIS landcover data from 2010 to 2017 that we can load into R.</p>
-<pre class="sourceCode r"><code class="sourceCode r">landcover &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="st">&quot;data/modis&quot;</span>, <span class="st">&quot;^modis_mcd12q1_umd&quot;</span>, 
+<p>If everything ran smoothly, we now have annual GeoTIFFs of MODIS landcover data from 2009 to 2017 that we can load into R.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the landcover data</span>
+landcover &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="st">&quot;data/modis&quot;</span>, <span class="st">&quot;^modis_mcd12q1_umd&quot;</span>, 
                         <span class="dt">full.names =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">stack</span>()
 <span class="co"># label layers with year</span>
@@ -420,36 +421,41 @@ landcover
 <p>There are a variety of <strong>landscape metrics</strong> that can be used to characterize the composition (what habitat is available) and configuration (how that habitat is arranged spatially) of landscapes. The simplest metric of landscape composition is the percentage of the landscape in each landcover class (PLAND in the parlance of <a href="https://www.umass.edu/landeco/research/fragstats/fragstats.html">FRAGSTATS</a>). For a broad range of scenarios, PLAND is a reliable choice for calculating habitat covariates in distribution modeling. Based on our experience working with eBird data, an approximately 2.5 km by 2.5 km square neighborhood (5 by 5 MODIS cells) centered on the checklist location is sufficient to account for the spatial precision in the data when the maximum distance of travelling counts has been limited to 5 km, while being a relevant ecological scale for many bird species.</p>
 <p>We’ll start by finding the full set of unique checklists locations for each year in the eBird data. Then we convert these locations to spatial <code>sf</code> features and project them to the sinusoidal equal area projection used by MODIS. We’ll buffer these points to create square polygons around each location that are the size of a 5 by 5 grid of MODIS landcover cells. Finally, we split the neighborhoods up by year so we can match to MODIS landcover data from the corresponding year.</p>
 <pre class="sourceCode r"><code class="sourceCode r">neighborhood_radius &lt;-<span class="st"> </span><span class="fl">2.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">ceiling</span>(<span class="kw">max</span>(<span class="kw">res</span>(landcover)))
-ebird_locs &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span class="st"> </span>
+ebird_buff &lt;-<span class="st"> </span>ebird <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">distinct</span>(<span class="dt">year =</span> <span class="kw">format</span>(observation_date, <span class="st">&quot;%Y&quot;</span>),
            locality_id, latitude, longitude) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># for 2018 use 2017 landcover data</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year_lc =</span> <span class="kw">if_else</span>(<span class="kw">as.integer</span>(year) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2017</span>, <span class="st">&quot;2017&quot;</span>, year),
+         <span class="dt">year_lc =</span> <span class="kw">paste0</span>(<span class="st">&quot;y&quot;</span>, year_lc)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># convert to spatial features</span>
 <span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co"># transform to modis projection</span>
 <span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(landcover)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co"># buffer to create square neighborhood around each point</span>
-<span class="st">  </span><span class="kw">st_buffer</span>(<span class="dt">dist =</span> neighborhood_radius, <span class="dt">endCapStyle =</span> <span class="st">&quot;SQUARE&quot;</span>)
-ebird_locs_year &lt;-<span class="st"> </span><span class="kw">split</span>(ebird_locs, ebird_locs<span class="op">$</span>year)</code></pre>
+<span class="st">  </span><span class="kw">st_buffer</span>(<span class="dt">dist =</span> neighborhood_radius, <span class="dt">endCapStyle =</span> <span class="st">&quot;SQUARE&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># nest by year</span>
+<span class="st">  </span><span class="kw">nest</span>(<span class="op">-</span>year_lc)</code></pre>
 <p>Now, we’ll loop over the years and for each square neighborhood extract all the raster values within that neighborhood. We use the <code>velox</code> package for this, since it’s often orders of magnitude faster than using <code>raster::extract()</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="cf">for</span> (yr <span class="cf">in</span> <span class="kw">names</span>(ebird_locs_year)) {
-  <span class="co"># for 2018 use 2017 landcover data</span>
-  yr_lc &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">as.integer</span>(yr) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2017</span>, <span class="st">&quot;2017&quot;</span>, yr) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">    </span><span class="kw">paste0</span>(<span class="st">&quot;y&quot;</span>, .)
-  
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># function to calculate pland for all checklists in a given year</span>
+calculate_pland &lt;-<span class="st"> </span><span class="cf">function</span>(yr, regions, lc) {
   <span class="co"># create a lookup table to get locality_id from row number</span>
-  locs &lt;-<span class="st"> </span><span class="kw">st_set_geometry</span>(ebird_locs_year[[yr]], <span class="ot">NULL</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+  locs &lt;-<span class="st"> </span><span class="kw">st_set_geometry</span>(regions, <span class="ot">NULL</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">id =</span> <span class="kw">row_number</span>())
   
   <span class="co"># extract using velox</span>
-  lc_vlx &lt;-<span class="st"> </span><span class="kw">velox</span>(landcover[[yr_lc]])
-  ebird_locs_year[[yr]] &lt;-<span class="st"> </span>lc_vlx<span class="op">$</span><span class="kw">extract</span>(ebird_locs_year[[yr]], <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+  lc_vlx &lt;-<span class="st"> </span><span class="kw">velox</span>(lc[[yr]])
+  lc_vlx<span class="op">$</span><span class="kw">extract</span>(regions, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="co"># velox doesn&#39;t properly name columns, fix that</span>
 <span class="st">    </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;landcover&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="co"># join to lookup table to get locality_id</span>
 <span class="st">    </span><span class="kw">inner_join</span>(locs, ., <span class="dt">by =</span> <span class="st">&quot;id&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>id)
 }
-<span class="co"># combine years back together</span>
-lc_extract &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(ebird_locs_year)</code></pre>
+<span class="co"># iterate over all years calculating pland for all checklists in each</span>
+lc_extract &lt;-<span class="st"> </span>ebird_buff <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pland =</span> <span class="kw">map2</span>(year_lc, data, calculate_pland, <span class="dt">lc =</span> landcover)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(pland) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">unnest</span>()</code></pre>
 <p>Now we have the set of landcover values within a neighborhood around each checklist location. We can summarize these data within each neighborhood to calculate PLAND: the proportion of the neighborhood within each landcover class.</p>
 <pre class="sourceCode r"><code class="sourceCode r">pland &lt;-<span class="st"> </span>lc_extract <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co"># count landcovers</span>
@@ -492,8 +498,7 @@ r_cells &lt;-<span class="st"> </span><span class="kw">st_buffer</span>(r_center
 <span class="co"># extract landcover values within neighborhoods, only need 2017</span>
 lc_vlx &lt;-<span class="st"> </span><span class="kw">velox</span>(landcover[[<span class="st">&quot;y2017&quot;</span>]])
 lc_extract_pred &lt;-<span class="st"> </span>lc_vlx<span class="op">$</span><span class="kw">extract</span>(r_cells, <span class="dt">df =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;landcover&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(landcover))
+<span class="st">  </span><span class="kw">set_names</span>(<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;landcover&quot;</span>))
 
 <span class="co"># calculate the percent for each landcover class</span>
 pland_pred &lt;-<span class="st"> </span>lc_extract_pred <span class="op">%&gt;%</span><span class="st"> </span>
@@ -501,7 +506,9 @@ pland_pred &lt;-<span class="st"> </span>lc_extract_pred <span class="op">%&gt;%
 <span class="st">  </span><span class="kw">group_by</span>(id) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pland =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n)
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># remove NAs after tallying so pland is relative to total number of cells</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(landcover))
 
 <span class="co"># tranform to wide format, filling in implicit missing values with 0s</span>
 pland_pred &lt;-<span class="st"> </span>pland_pred <span class="op">%&gt;%</span><span class="st"> </span>

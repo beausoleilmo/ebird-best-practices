@@ -238,7 +238,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="encounter-data" class="section level2">
 <h2><span class="header-section-number">4.2</span> Data preparation</h2>
-<p>Let’s get started by loading the necessary packages and data. If you worked through the previous chapters, you should have all the data necessary for this chapter. However, you may want to <a href="https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip">download the data package</a>, and unzip it to your working directory, to ensure you’re working with exactly the same data as was used in the creation of this book. Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an optional covariate in these models. Including CCI typical leads to marked improvement in model performance; however, due to the sensitive nature of these data you will need to <a href="https://ebird.org/data/download">download them separately</a> after agreeing to the terms and conditions. If you’ve downloaded these data, put the CCI text file in the <code>data/</code> subdirectory of your project.</p>
+<p>Let’s get started by loading the necessary packages and data. If you worked through the previous chapters, you should have all the data necessary for this chapter. However, you may want to <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip">download the data package</a>, and unzip it to your working directory, to ensure you’re working with exactly the same data as was used in the creation of this book. Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an optional covariate in these models. Including CCI typical leads to marked improvement in model performance; however, due to the sensitive nature of these data you will need to <a href="https://ebird.org/data/download">download them separately</a> after agreeing to the terms and conditions. If you’ve downloaded these data, put the CCI text file in the <code>data/</code> subdirectory of your project.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(sf)
 <span class="kw">library</span>(raster)
 <span class="kw">library</span>(dggridR)
@@ -621,8 +621,6 @@ pd_time &lt;-<span class="st"> </span><span class="kw">partial_dependence</span>
                               <span class="co"># use the entire training dataset for estimation</span>
                               <span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">24</span> <span class="op">*</span><span class="st"> </span><span class="dv">6</span>, <span class="kw">nrow</span>(ebird_split<span class="op">$</span>train)), 
                               <span class="dt">data =</span> ebird_split<span class="op">$</span>train)
-<span class="co">#&gt; Predicting.. Progress: 94%. Estimated remaining time: 2 seconds.</span>
-<span class="co">#&gt; Aggregating predictions.. Progress: 84%. Estimated remaining time: 5 seconds.</span>
 
 <span class="co"># histogram</span>
 g_hist &lt;-<span class="st"> </span><span class="kw">ggplot</span>(ebird_split<span class="op">$</span>train) <span class="op">+</span>
