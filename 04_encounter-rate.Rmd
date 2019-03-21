@@ -471,7 +471,7 @@ Based on this analysis, the best time for viewing Wood Thrush is at `r human_tim
 ```{r encounter-predict-effort}
 # add effort covariates to prediction 
 pred_surface_eff <- pred_surface %>% 
-  mutate(observation_date = ymd("2016-06-15"),
+  mutate(observation_date = ymd("2017-06-15"),
          time_observations_started = t_peak,
          duration_minutes = 60,
          effort_distance_km = 1,

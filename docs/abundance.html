@@ -561,9 +561,9 @@ mx &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">
 <span class="co">#&gt; # A tibble: 3 x 3</span>
 <span class="co">#&gt;   family                    n    pct</span>
 <span class="co">#&gt;   &lt;fct&gt;                 &lt;int&gt;  &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 Zero-inflated Poisson   131 0.0632</span>
-<span class="co">#&gt; 2 Negative Binomial        67 0.0323</span>
-<span class="co">#&gt; 3 Tweedie                  70 0.0338</span></code></pre>
+<span class="co">#&gt; 1 Zero-inflated Poisson   136 0.0656</span>
+<span class="co">#&gt; 2 Negative Binomial        71 0.0343</span>
+<span class="co">#&gt; 3 Tweedie                  66 0.0319</span></code></pre>
 <p>Based on this metric, it appears that the zero-inflated Poisson model is performing worst in terms of underestimation. Let’s examine some of the cross-validation metrics: deviance explained, mean-squared error (MSE), and Spearman’s rank correlation.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># deviance explained</span>
 de &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">summary</span>(m_ziplss)<span class="op">$</span>dev.expl,
@@ -591,21 +591,21 @@ gam_assessment &lt;-<span class="st"> </span>test_pred <span class="op">%&gt;%</
 <tbody>
 <tr class="odd">
 <td align="left">Zero-inflated Poisson</td>
-<td align="right">0.373</td>
-<td align="right">0.252</td>
+<td align="right">0.377</td>
+<td align="right">0.244</td>
 <td align="right">0.164</td>
 </tr>
 <tr class="even">
 <td align="left">Negative Binomial</td>
-<td align="right">0.372</td>
-<td align="right">0.275</td>
-<td align="right">0.254</td>
+<td align="right">0.369</td>
+<td align="right">0.263</td>
+<td align="right">0.253</td>
 </tr>
 <tr class="odd">
 <td align="left">Tweedie</td>
-<td align="right">0.365</td>
-<td align="right">0.271</td>
-<td align="right">0.232</td>
+<td align="right">0.368</td>
+<td align="right">0.260</td>
+<td align="right">0.230</td>
 </tr>
 </tbody>
 </table>

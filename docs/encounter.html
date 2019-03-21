@@ -534,20 +534,20 @@ rf_assessment &lt;-<span class="st"> </span><span class="kw">tibble</span>(
 <tbody>
 <tr class="odd">
 <td align="left">RF</td>
-<td align="right">0.088</td>
-<td align="right">0.552</td>
-<td align="right">0.870</td>
-<td align="right">0.808</td>
-<td align="right">0.342</td>
 <td align="right">0.089</td>
+<td align="right">0.539</td>
+<td align="right">0.861</td>
+<td align="right">0.796</td>
+<td align="right">0.318</td>
+<td align="right">0.090</td>
 </tr>
 <tr class="even">
 <td align="left">Calibrated RF</td>
-<td align="right">0.116</td>
-<td align="right">0.295</td>
-<td align="right">0.944</td>
-<td align="right">0.808</td>
-<td align="right">0.271</td>
+<td align="right">0.117</td>
+<td align="right">0.307</td>
+<td align="right">0.939</td>
+<td align="right">0.796</td>
+<td align="right">0.274</td>
 <td align="right">0.109</td>
 </tr>
 </tbody>
@@ -661,7 +661,7 @@ t_peak &lt;-<span class="st"> </span>pd_time <span class="op">%&gt;%</span><span
 <p>Based on this analysis, the best time for viewing Wood Thrush is at 5:09 AM. Now we can add the effort variables to the prediction surface.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add effort covariates to prediction </span>
 pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_date =</span> <span class="kw">ymd</span>(<span class="st">&quot;2016-06-15&quot;</span>),
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_date =</span> <span class="kw">ymd</span>(<span class="st">&quot;2017-06-15&quot;</span>),
          <span class="dt">time_observations_started =</span> t_peak,
          <span class="dt">duration_minutes =</span> <span class="dv">60</span>,
          <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,

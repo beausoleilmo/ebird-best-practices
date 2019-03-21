@@ -456,28 +456,28 @@ occ_model &lt;-<span class="st"> </span><span class="kw">occu</span>(mod_formula
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Occupancy (logit-scale):</span>
 <span class="co">#&gt;             Estimate    SE       z  P(&gt;|z|)</span>
-<span class="co">#&gt; (Intercept)   -1.914 0.176 -10.888 1.32e-27</span>
-<span class="co">#&gt; pland_04       3.293 1.196   2.753 5.90e-03</span>
-<span class="co">#&gt; pland_05       4.413 1.727   2.556 1.06e-02</span>
-<span class="co">#&gt; pland_12       0.586 0.697   0.841 4.00e-01</span>
-<span class="co">#&gt; pland_13      -2.002 0.796  -2.516 1.19e-02</span>
+<span class="co">#&gt; (Intercept)   -1.939 0.172 -11.263 1.99e-29</span>
+<span class="co">#&gt; pland_04       2.969 1.111   2.673 7.53e-03</span>
+<span class="co">#&gt; pland_05       4.632 1.627   2.846 4.43e-03</span>
+<span class="co">#&gt; pland_12       0.605 0.693   0.872 3.83e-01</span>
+<span class="co">#&gt; pland_13      -1.988 0.794  -2.505 1.22e-02</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Detection (logit-scale):</span>
-<span class="co">#&gt;                             Estimate      SE      z  P(&gt;|z|)</span>
-<span class="co">#&gt; (Intercept)                 -1.18549 0.39356 -3.012 2.59e-03</span>
-<span class="co">#&gt; time_observations_started   -0.02741 0.02044 -1.341 1.80e-01</span>
-<span class="co">#&gt; duration_minutes             0.00747 0.00193  3.878 1.05e-04</span>
-<span class="co">#&gt; effort_distance_km          -0.01626 0.09280 -0.175 8.61e-01</span>
-<span class="co">#&gt; number_observers             0.16102 0.17068  0.943 3.45e-01</span>
-<span class="co">#&gt; protocol_typeTraveling       0.49752 0.25422  1.957 5.03e-02</span>
-<span class="co">#&gt; checklist_calibration_index  0.63732 0.12471  5.110 3.21e-07</span>
-<span class="co">#&gt; pland_04                    -1.18714 0.68339 -1.737 8.24e-02</span>
-<span class="co">#&gt; pland_05                    -0.58061 0.71395 -0.813 4.16e-01</span>
+<span class="co">#&gt;                             Estimate      SE       z  P(&gt;|z|)</span>
+<span class="co">#&gt; (Intercept)                 -1.08470 0.39483 -2.7472 6.01e-03</span>
+<span class="co">#&gt; time_observations_started   -0.02964 0.02056 -1.4417 1.49e-01</span>
+<span class="co">#&gt; duration_minutes             0.00751 0.00195  3.8568 1.15e-04</span>
+<span class="co">#&gt; effort_distance_km          -0.00127 0.09506 -0.0134 9.89e-01</span>
+<span class="co">#&gt; number_observers             0.13358 0.17132  0.7797 4.36e-01</span>
+<span class="co">#&gt; protocol_typeTraveling       0.44427 0.25440  1.7463 8.08e-02</span>
+<span class="co">#&gt; checklist_calibration_index  0.59939 0.12392  4.8369 1.32e-06</span>
+<span class="co">#&gt; pland_04                    -0.96265 0.71943 -1.3381 1.81e-01</span>
+<span class="co">#&gt; pland_05                    -0.67993 0.65596 -1.0365 3.00e-01</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; AIC: 1388 </span>
+<span class="co">#&gt; AIC: 1390 </span>
 <span class="co">#&gt; Number of sites: 1289</span>
 <span class="co">#&gt; optim convergence code: 0</span>
-<span class="co">#&gt; optim iterations: 80 </span>
+<span class="co">#&gt; optim iterations: 77 </span>
 <span class="co">#&gt; Bootstrap iterations: 0</span></code></pre>
 <div id="occupancy-model-assess" class="section level3">
 <h3><span class="header-section-number">5.3.1</span> Assessment</h3>
@@ -507,43 +507,43 @@ occ_dredge &lt;-<span class="st"> </span><span class="kw">dredge</span>(occ_mode
 <span class="co"># model comparison</span>
 <span class="kw">select</span>(occ_dredge, df, logLik, AICc, delta, weight)</code></pre>
 <pre><code>#&gt;    df logLik AICc delta   weight
-#&gt; 12 13   -680 1387  0.00 6.47e-01
-#&gt; 16 14   -680 1388  1.38 3.25e-01
-#&gt; 4  12   -685 1394  7.45 1.56e-02
-#&gt; 8  13   -684 1395  7.99 1.19e-02
-#&gt; 11 12   -689 1402 15.41 2.91e-04
-#&gt; 10 12   -689 1402 15.79 2.41e-04
-#&gt; 15 13   -689 1404 17.35 1.10e-04
-#&gt; 14 13   -689 1404 17.68 9.35e-05
-#&gt; 3  11   -696 1414 27.81 5.93e-07
-#&gt; 2  11   -697 1416 29.03 3.21e-07
-#&gt; 7  12   -696 1416 29.28 2.83e-07
-#&gt; 6  12   -696 1417 30.31 1.70e-07
-#&gt; 9  11   -699 1421 34.16 2.48e-08
-#&gt; 13 12   -699 1423 36.15 9.13e-09
-#&gt; 1  10   -711 1442 55.75 5.07e-13
-#&gt; 5  11   -711 1444 57.72 1.89e-13</code></pre>
+#&gt; 12 13   -681 1389  0.00 6.41e-01
+#&gt; 16 14   -681 1390  1.33 3.30e-01
+#&gt; 4  12   -686 1396  7.37 1.61e-02
+#&gt; 8  13   -685 1396  7.88 1.25e-02
+#&gt; 11 12   -689 1403 14.17 5.38e-04
+#&gt; 15 13   -689 1405 16.07 2.07e-04
+#&gt; 10 12   -691 1406 17.08 1.25e-04
+#&gt; 14 13   -691 1408 18.96 4.90e-05
+#&gt; 3  11   -696 1415 26.31 1.24e-06
+#&gt; 7  12   -696 1416 27.73 6.10e-07
+#&gt; 2  11   -698 1419 30.34 1.65e-07
+#&gt; 6  12   -698 1420 31.61 8.77e-08
+#&gt; 9  11   -700 1423 33.94 2.73e-08
+#&gt; 13 12   -700 1425 35.96 9.97e-09
+#&gt; 1  10   -712 1444 55.24 6.48e-13
+#&gt; 5  11   -712 1446 57.19 2.44e-13</code></pre>
 <p>A quick look at the dredge object reveals that there is not a clear model, or even set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the model with the lowest AICc value. Given this, and the fact that all of our effects are linear and use the same family and link function, we’ll average across all models, weighted by AICc, to produce a final model that we’ll use for prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the <code>get.models()</code> function to extract just these models prior to averaging.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># average models based on model weights </span>
 occ_avg &lt;-<span class="st"> </span><span class="kw">model.avg</span>(occ_dredge, <span class="dt">fit =</span> <span class="ot">TRUE</span>)
 
 <span class="co"># model coefficients</span>
 <span class="kw">t</span>(occ_avg<span class="op">$</span>coefficients)
-<span class="co">#&gt;                                    full   subset</span>
-<span class="co">#&gt; psi(Int)                       -1.89037 -1.89037</span>
-<span class="co">#&gt; psi(pland_04)                   3.24042  3.24173</span>
-<span class="co">#&gt; psi(pland_05)                   4.37863  4.38010</span>
-<span class="co">#&gt; psi(pland_13)                  -1.99325 -2.04954</span>
-<span class="co">#&gt; p(Int)                         -1.19796 -1.19796</span>
-<span class="co">#&gt; p(checklist_calibration_index)  0.64226  0.64226</span>
-<span class="co">#&gt; p(duration_minutes)             0.00746  0.00746</span>
-<span class="co">#&gt; p(effort_distance_km)          -0.01517 -0.01517</span>
-<span class="co">#&gt; p(number_observers)             0.16150  0.16150</span>
-<span class="co">#&gt; p(pland_04)                    -1.17862 -1.17862</span>
-<span class="co">#&gt; p(pland_05)                    -0.58028 -0.58028</span>
-<span class="co">#&gt; p(protocol_typeTraveling)       0.50084  0.50084</span>
-<span class="co">#&gt; p(time_observations_started)   -0.02681 -0.02681</span>
-<span class="co">#&gt; psi(pland_12)                   0.20095  0.59629</span></code></pre>
+<span class="co">#&gt;                                     full    subset</span>
+<span class="co">#&gt; psi(Int)                       -1.916089 -1.916089</span>
+<span class="co">#&gt; psi(pland_04)                   2.922477  2.924661</span>
+<span class="co">#&gt; psi(pland_05)                   4.596419  4.597220</span>
+<span class="co">#&gt; psi(pland_13)                  -1.977705 -2.035802</span>
+<span class="co">#&gt; p(Int)                         -1.096517 -1.096517</span>
+<span class="co">#&gt; p(checklist_calibration_index)  0.604441  0.604441</span>
+<span class="co">#&gt; p(duration_minutes)             0.007494  0.007494</span>
+<span class="co">#&gt; p(effort_distance_km)          -0.000105 -0.000105</span>
+<span class="co">#&gt; p(number_observers)             0.133860  0.133860</span>
+<span class="co">#&gt; p(pland_04)                    -0.954926 -0.954926</span>
+<span class="co">#&gt; p(pland_05)                    -0.679792 -0.679792</span>
+<span class="co">#&gt; p(protocol_typeTraveling)       0.447396  0.447396</span>
+<span class="co">#&gt; p(time_observations_started)   -0.029042 -0.029042</span>
+<span class="co">#&gt; psi(pland_12)                   0.210509  0.614722</span></code></pre>
 </div>
 </div>
 <div id="occupancy-predict" class="section level2">
