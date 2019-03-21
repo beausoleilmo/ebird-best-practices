@@ -107,7 +107,7 @@ summarize(
 
 Throughout this book, we'll be producing maps of species distributions. To provide context for these distributions, we'll need GIS data for political boundaries. [Natural Earth](https://www.naturalearthdata.com/) is the best source for a range of tightly integrated vector and raster GIS data for producing professional cartographic maps. The R package, [`rnaturalearth`](https://github.com/ropensci/rnaturalearth) provides a convenient method for accessing these data from within R. We'll also need [Bird Conservation Region (BCR)](http://nabci-us.org/resources/bird-conservation-regions/) boundaries, which are available through [Bird Studies Canada](https://www.birdscanada.org/research/gislab/index.jsp?targetpg=bcr&targetpg=bcr).
 
-In the following code, we download and prepare a variety of GIS layers, then save them all within a [GeoPackage](https://www.geopackage.org/) in the `data/` subdirectory of the project. This will allow us to load these data in later chapters as they're needed.
+In the following code, we download and prepare a variety of GIS layers, then save them all within a [GeoPackage](https://www.geopackage.org/) in the `data/` subdirectory of the project. This will allow us to load these data in later chapters as they're needed. Note that calls to `ne_download()` often produce warnings suggesting that you've used the incorrect "category"; these can safely be ignored.
 
 ```{r intro-setup-gis, eval = FALSE}
 library(sf)
@@ -146,7 +146,7 @@ ne_country_lines <- ne_download(scale = 50, category = "cultural",
   st_geometry()
 ne_country_lines <- st_intersects(ne_country_lines, ne_land, sparse = FALSE) %>%
   as.logical() %>%
-  {ne_country_lines[., ]}
+  {ne_country_lines[.]}
 # states, north america
 ne_state_lines <- ne_download(scale = 50, category = "cultural",
                               type = "admin_1_states_provinces_lines",

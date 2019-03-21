@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-20" />
+<meta name="date" content="2019-03-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -382,7 +382,7 @@ begin_year &lt;-<span class="st"> </span><span class="kw">format</span>(<span cl
 end_year &lt;-<span class="st"> </span><span class="kw">min</span>(<span class="kw">format</span>(<span class="kw">max</span>(ebird<span class="op">$</span>observation_date), <span class="st">&quot;%Y.12.31&quot;</span>), 
                 <span class="st">&quot;2017.12.31&quot;</span>)
 <span class="co"># download tiles and combine into a single raster for each year</span>
-tifs &lt;-<span class="st"> </span><span class="kw">runGdal</span>(<span class="dt">product =</span> <span class="st">&quot;MCD12Q1.006&quot;</span>, <span class="dt">SDSstring =</span> <span class="st">&quot;01&quot;</span>, 
+tifs &lt;-<span class="st"> </span><span class="kw">runGdal</span>(<span class="dt">product =</span> <span class="st">&quot;MCD12Q1&quot;</span>, <span class="dt">collection =</span> <span class="st">&quot;006&quot;</span>, <span class="dt">SDSstring =</span> <span class="st">&quot;01&quot;</span>, 
                 <span class="dt">tileH =</span> tiles<span class="op">@</span>tileH, <span class="dt">tileV =</span> tiles<span class="op">@</span>tileV,
                 <span class="dt">begin =</span> begin_year, <span class="dt">end =</span> end_year, 
                 <span class="dt">outDirPath =</span> <span class="st">&quot;data&quot;</span>, <span class="dt">job =</span> <span class="st">&quot;modis&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>

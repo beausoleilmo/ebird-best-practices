@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-20" />
+<meta name="date" content="2019-03-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -329,7 +329,7 @@ mtcars_grouped &lt;-<span class="st"> </span><span class="kw">group_by</span>(mt
 <div id="intro-setup-gis" class="section level3">
 <h3><span class="header-section-number">1.3.6</span> GIS data</h3>
 <p>Throughout this book, we’ll be producing maps of species distributions. To provide context for these distributions, we’ll need GIS data for political boundaries. <a href="https://www.naturalearthdata.com/">Natural Earth</a> is the best source for a range of tightly integrated vector and raster GIS data for producing professional cartographic maps. The R package, <a href="https://github.com/ropensci/rnaturalearth"><code>rnaturalearth</code></a> provides a convenient method for accessing these data from within R. We’ll also need <a href="http://nabci-us.org/resources/bird-conservation-regions/">Bird Conservation Region (BCR)</a> boundaries, which are available through <a href="https://www.birdscanada.org/research/gislab/index.jsp?targetpg=bcr&amp;targetpg=bcr">Bird Studies Canada</a>.</p>
-<p>In the following code, we download and prepare a variety of GIS layers, then save them all within a <a href="https://www.geopackage.org/">GeoPackage</a> in the <code>data/</code> subdirectory of the project. This will allow us to load these data in later chapters as they’re needed.</p>
+<p>In the following code, we download and prepare a variety of GIS layers, then save them all within a <a href="https://www.geopackage.org/">GeoPackage</a> in the <code>data/</code> subdirectory of the project. This will allow us to load these data in later chapters as they’re needed. Note that calls to <code>ne_download()</code> often produce warnings suggesting that you’ve used the incorrect “category”; these can safely be ignored.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(sf)
 <span class="kw">library</span>(rnaturalearth)
 <span class="kw">library</span>(dplyr)
@@ -366,7 +366,7 @@ ne_country_lines &lt;-<span class="st"> </span><span class="kw">ne_download</spa
 <span class="st">  </span><span class="kw">st_geometry</span>()
 ne_country_lines &lt;-<span class="st"> </span><span class="kw">st_intersects</span>(ne_country_lines, ne_land, <span class="dt">sparse =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">as.logical</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span>{ne_country_lines[., ]}
+<span class="st">  </span>{ne_country_lines[.]}
 <span class="co"># states, north america</span>
 ne_state_lines &lt;-<span class="st"> </span><span class="kw">ne_download</span>(<span class="dt">scale =</span> <span class="dv">50</span>, <span class="dt">category =</span> <span class="st">&quot;cultural&quot;</span>,
                               <span class="dt">type =</span> <span class="st">&quot;admin_1_states_provinces_lines&quot;</span>,
