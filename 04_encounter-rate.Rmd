@@ -8,7 +8,7 @@ editor_options:
 
 ## Introduction {#encouter-intro}
 
-In this chapter we'll estimate the **encounter rate** of Wood Thrush on eBird checklists in June in BCR 27. We define encounter rate as measuring the probability of an expert eBirder encountering a species on a standard eBird checklist, so that the calculated encounter rates approximate the actual occurrence rates of Wood Thrush. The ecological metric we're ultimately interested in is the probability that a species occurs at a site (i.e. the occupancy probability). This is usually not possible with semi-structured citizen science data like those from eBird because we typically can't estimate *absolute* detectability. However, by accounting for much of the variation in detectability by including effort covariaters in our model, the remaining unaccounted detectability will be more consistent across sites [@guillera-arroitaMySpeciesDistribution2015]. Therefore, the encounter rate metric will be relative to occupancy up to a constant of detectability, allowing us to compare species distributions across space and time.
+In this chapter we'll estimate the **encounter rate** of Wood Thrush on eBird checklists in June in BCR 27. We define encounter rate as measuring the probability of an expert eBirder encountering a species on a standard eBird checklist, so that the calculated encounter rates approximate the actual occurrence rates of Wood Thrush. The ecological metric we're ultimately interested in is the probability that a species occurs at a site (i.e. the occupancy probability). This is usually not possible with semi-structured citizen science data like those from eBird because we typically can't estimate *absolute* detectability. However, by accounting for much of the variation in detectability by including effort covariates in our model, the remaining unaccounted detectability will be more consistent across sites [@guillera-arroitaMySpeciesDistribution2015]. Therefore, the encounter rate metric will be relative to occupancy up to a constant of detectability, allowing us to compare species distributions across space and time.
 
 [**Random forests**](https://en.wikipedia.org/wiki/Random_forest) are a general purpose machine learning method applicable to a wide range of [classification](https://en.wikipedia.org/wiki/Statistical_classification) and [regression](https://en.wikipedia.org/wiki/Regression_analysis) problems, including the task at hand: identifying predictors that classify reporting and non-reporting of a species on eBird checklists. In addition to good predictive performance, random forests are reasonably easy to use and have several efficient implementations in R. Prior to fitting a random forest model, we'll demonstrate how to address issues of [class imbalance and spatial bias](#intro-intro) using spatial subsampling on a regular grid. After fitting the model, we'll assess its performance using a subset of data put aside for testing, and calibrate the model to ensure predictions are accurate. Finally, we'll predict encounter rates throughout the study area and produce maps of these predictions.
 
@@ -165,7 +165,7 @@ pct_after <- count(ebird_ss, species_observed) %>%
   scales::percent()
 ```
 
-So, the subsampling *decreased* the overall number of checklists by a factor of about four, but *increased* the prevalance of detections from `r pct_before` to `r pct_after`. This increase in detections will help the random forest model distinguish where birds are being observed; however, we will need to account for this change in prevalence by calibrating our model, which will be covered in Section \@ref(encounter-rf-cal). Let's look at how the subsampling affects the spatial distribution of the observations.
+So, the subsampling *decreased* the overall number of checklists by a factor of about four, but *increased* the prevalence of detections from `r pct_before` to `r pct_after`. This increase in detections will help the random forest model distinguish where birds are being observed; however, we will need to account for this change in prevalence by calibrating our model, which will be covered in Section \@ref(encounter-rf-cal). Let's look at how the subsampling affects the spatial distribution of the observations.
 
 ```{r encounter-sss-map, fig.asp = 1.236}
 # convert checklists to spatial features
@@ -248,8 +248,6 @@ rf <- ranger(formula =  species_observed ~ .,
              importance = "impurity",
              data = ebird_split$train)
 ```
-
-We've found that predictions from `ranger` can be sensitive to the particular checklists that are selection in the spatial subsampling and test/train split steps. To ensure this is not an issue, we suggest running several iterations of this code, using different sets of samples. The random sampling can be controlled by trying different values for the [ranomd seed](https://en.wikipedia.org/wiki/Random_seed) set at the [start of the chapter](#encounter-data) with `set.seed(1)`.
 
 ### Calibration {#encounter-rf-cal}
 
@@ -334,9 +332,6 @@ rf_assessment <- tibble(
   brier = c(brier(rf_pred_test$obs, rf_pred_test$fit)$bs, 
             brier(rf_pred_test$obs, rf_pred_test$cal)$bs)
 )
-```
-
-```{r encounter-rf-assess-print, echo = FALSE}
 knitr::kable(rf_assessment, digits = 3)
 ```
 
@@ -367,11 +362,11 @@ ggplot(pi)+
         panel.grid.major.x = element_line(colour = "#cccccc", size = 0.5))
 ```
 
-The most important predictors of detection/non-detection are generally effort variables. Indeed, that's the case here: CCI, start time, date, and checklist duration are all important predictors. The top environmetal predictors are the proportion of woody savanna (`pland_08`) and deciduous broadleaf forest (`pland_04`). Note that high importance doesn't tell us the direction of the relationship with detection, for that we'll have to look at partial dependence plots.
+The most important predictors of detection/non-detection are generally effort variables. Indeed, that's the case here: CCI, start time, date, and checklist duration are all important predictors. The top environmental predictors are the proportion of woody savanna (`pland_08`) and deciduous broadleaf forest (`pland_04`). Note that high importance doesn't tell us the direction of the relationship with detection, for that we'll have to look at partial dependence plots.
 
 ### Partial dependence {#encounter-habitat-pd}
 
-**Partial dependence** plots show the marginal effect of a given predictor on encounter rate averaged across the other predictors. These plots are generated by predicting encounter rate at a regular sequence of points across the full range of values of a given predictor. At each predictor value, predictions of encounter rate are made for a random subsample of the training dataset with the focal predictor fixed, but all other predictors left as is. The encounter rate predictions are then averaged across all the checklists in the training dataset giving an estimate of the average encounter rate at a specific value of the focal predictor. Fortunately, the R package `edarf` has a function to calculate partial dependence from random forest models. Let's look at partial dependence plots for the most important predictors.
+**Partial dependence** plots show the marginal effect of a given predictor on encounter rate averaged across the other predictors. These plots are generated by predicting encounter rate at a regular sequence of points across the full range of values of a given predictor. At each predictor value, predictions of encounter rate are made for a random subsample of the training dataset with the focal predictor fixed, but all other predictors left as is. The encounter rate predictions are then averaged across all the checklists in the training dataset giving an estimate of the average encounter rate at a specific value of the focal predictor. This is a cumbersome process, but fortunately the R package `edarf` has a function to calculate partial dependence from random forest models. Let's look at partial dependence plots for the most important predictors.
 
 ```{r encounter-habitat-pd}
 # top 9 predictors other than date
@@ -442,7 +437,7 @@ g_pd <- ggplot(pd_time) +
 grid.arrange(g_hist, g_pd)
 ```
 
-As expected, the peak of detectibility is occurring at start times near midnight, which is an artifact of the low data density at night. Let's instead look for the peak time within hours of the day that contain at least 1% of the training data.
+As expected, the peak of detectability occurs at start times near midnight, which is an artifact of the low data density at night. Let's instead look for the peak time within hours of the day that contain at least 1% of the training data.
 
 ```{r encounter-predict-peak}
 # hours with at least 1% of checklists
@@ -457,6 +452,7 @@ t_peak <- pd_time %>%
   filter(floor(time_observations_started) %in% search_hours$hour) %>% 
   top_n(1, wt = desc(time_observations_started)) %>% 
   pull(time_observations_started)
+t_peak
 ```
 
 ```{r encounter-predict-readable, echo = FALSE}
@@ -501,7 +497,11 @@ r_pred <- pred_er %>%
 r_pred <- r_pred[[-1]]
 
 # save the raster
-writeRaster(r_pred, "output/rf-model_encounter-rate_woothr.tif", 
+tif_dir <- "output"
+if (!dir.exists(tif_dir)) {
+  dir.create(tif_dir)
+}
+writeRaster(r_pred, file.path(tif_dir, "rf-model_encounter-rate_woothr.tif"), 
             overwrite = TRUE)
 ```
 

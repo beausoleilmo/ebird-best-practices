@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-21" />
+<meta name="date" content="2019-03-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -372,7 +372,7 @@ tiles<span class="op">@</span>tile
 <li><code>product</code>: is the specific MODIS product to download. For a full list of available datasets use <code>MODIS::getProduct()</code>.</li>
 <li><code>SDSstring</code>: a string specifying which bands to extract, with zeros for bands to drop and 1 for bands to keep. Most MODIS products have multiple bands stored in a single raster file, for example, reflectances in different wavelength ranges or, in our case, landcover using different landcover classification systems. The <a href="https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mcd12q1_v006">documentation for the MCD12Q1 dataset</a> shows that there are 13 bands in the downloaded files, and we’re interested in band 2, which contains the UMD landcover classification.</li>
 <li><code>tileH</code> and <code>tileV</code>: the vertical and horizontal tile numbers as returned by <code>getTile()</code>.</li>
-<li><code>begin</code> and <code>end</code>: the start and end dates of of the time period from which to extract data. Although the landcover data are only available annually, we need to specify full dates because some other products are available on a more granular basis.</li>
+<li><code>begin</code> and <code>end</code>: the start and end dates of the time period from which to extract data. Although the landcover data are only available annually, we need to specify full dates because some other products are available on a more granular basis.</li>
 <li><code>outDirPath</code>: directory to store processed MODIS data.</li>
 <li><code>job</code>: a name for this task, which will become the sub-directory of <code>outDirPath</code> within which the processed data are stored.</li>
 </ul>

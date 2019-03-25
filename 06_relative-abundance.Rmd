@@ -486,11 +486,15 @@ r_pred <- pred %>%
 r_pred <- r_pred[[-1]]
 
 # save the rasters
+tif_dir <- "output"
+if (!dir.exists(tif_dir)) {
+  dir.create(tif_dir)
+}
 writeRaster(r_pred[["abd"]], 
-            filename = "output/abundance-model_abundance_woothr.tif",
+            filename = file.path(tif_dir, "abundance-model_abd_woothr.tif"),
             overwrite = TRUE)
 writeRaster(r_pred[["abd_se"]], 
-            filename = "output/abundance-model_se_woothr.tif", 
+            filename = file.path(tif_dir, "abundance-model_se_woothr.tif"), 
             overwrite = TRUE)
 ```
 

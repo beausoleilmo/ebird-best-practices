@@ -66,7 +66,7 @@ Once all the setup steps have been completed, we can start downloading some data
 - `product`: is the specific MODIS product to download. For a full list of available datasets use `MODIS::getProduct()`.
 - `SDSstring`: a string specifying which bands to extract, with zeros for bands to drop and 1 for bands to keep. Most MODIS products have multiple bands stored in a single raster file, for example, reflectances in different wavelength ranges or, in our case, landcover using different landcover classification systems. The [documentation for the MCD12Q1 dataset](https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mcd12q1_v006) shows that there are 13 bands in the downloaded files, and we're interested in band 2, which contains the UMD landcover classification.
 - `tileH` and `tileV`: the vertical and horizontal tile numbers as returned by `getTile()`.
-- `begin` and `end`: the start and end dates of of the time period from which to extract data. Although the landcover data are only available annually, we need to specify full dates because some other products are available on a more granular basis.
+- `begin` and `end`: the start and end dates of the time period from which to extract data. Although the landcover data are only available annually, we need to specify full dates because some other products are available on a more granular basis.
 - `outDirPath`: directory to store processed MODIS data.
 - `job`: a name for this task, which will become the sub-directory of `outDirPath` within which the processed data are stored.
 

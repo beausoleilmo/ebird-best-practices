@@ -30,7 +30,7 @@ If you're not interested in these taxonomic nuances, `auk` will handle the taxon
 
 eBird contains an impressive amount of data (nearly 600 million bird observations!); however, this makes the EBD particularly challenging to work with due to its sheer size (over 200 GB!). Text files of this size can't be opened in R, Excel, or most other software. Fortunately, the R package `auk` has been specifically designed to extract subsets of data from the EBD for analysis using the Unix command line text processing utility AWK. The goal when using `auk` should always be to subset the full EBD down to a manageable size, small enough that it can be imported into R for further processing or analysis. In our case, that will mean extracting Wood Thrush records from BCR 27 in June.
 
-Filtering the EDB using `auk` requires three steps. First, reference the EBD and SED using the function `auk_ebd()`. If you've followed the instruction in the [Introduction](#intro) for [downloading eBird data](#intro-setup-ebird), you'll have these files on your computer and will have pointed `auk` to the directory they're stored in using `auk_set_ebd_path()`. If you intend to zero-fill the data, you'll need to pass both the EBD and SED to `auk_ebd()`, this ensures that the same set of filters is applied to both files so they contain the same population of checklists. It's critical that the EBD and SED are both from the same release of the eBird data.
+Filtering the EDB using `auk` requires three steps. First, reference the EBD and SED using the function `auk_ebd()`. If you've followed the instruction in the [Introduction](#intro) for [downloading eBird data](#intro-setup-ebird), you'll have these files on your computer and will have pointed `auk` to the directory they're stored in using `auk_set_ebd_path()`. If you intend to zero-fill the data, you'll need to pass both the EBD and SED to `auk_ebd()`, this ensures that the same set of filters is applied to both files so they contain the same population of checklists. **It is critical that the EBD and SED are both from the same release of the eBird data.**
 
 ```{r ebird-extract-ebd}
 library(auk)
@@ -63,16 +63,22 @@ ebd_filters
 Note that printing the object `ebd_filters` shows what filters have been set. At this point, we've only defined the filters, not applied them to the EBD. The last step is to use `auk_filter()` to compile the filters into an AWK script and run it to produce two output files: one for the EBD and one for the SED. **This step typically takes several hours to run since the files are so large.** As a result, it's wise to wrap this in an `if` statement, so it's only run once.
 
 ```{r ebird-extract-filter}
+
 # output files
-f_ebd <- "data/ebd_woothr_june_bcr27.txt"
-f_sampling <- "data/ebd_june_bcr27_sampling.txt"
+data_dir <- "data"
+if (!dir.exists(data_dir)) {
+  dir.create(data_dir)
+}
+f_ebd <- file.path(data_dir, "ebd_woothr_june_bcr27.txt")
+f_sampling <- file.path(data_dir, "ebd_june_bcr27_sampling.txt")
+
 # only run if the files don't already exist
 if (!file.exists(f_ebd)) {
   auk_filter(ebd_filters, file = f_ebd, file_sampling = f_sampling)
 }
 ```
 
-These files are now a few megabytes rather than hundreds of gigabytes, which means they can easily be read into R! Don't feel like waiting for `auk_filter()` to run? [Download the data package](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip) mentioned in the introduction to get a copy of the EBD subset for Wood Thrush in June in BCR27 and proceed to the next section.
+These files are now a few megabytes rather than hundreds of gigabytes, which means they can easily be read into R! Don't feel like waiting for `auk_filter()` to run? [Download the data package](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip) mentioned in the introduction to get a copy of the EBD subset for Wood Thrush in June in BCR27 and proceed to the next section; just make sure you load the packages in the first code chunk before proceeding.
 
 ## Importing and zero-filling {#ebird-zf}
 
@@ -82,7 +88,7 @@ The previous step left us with two tab separated text files, one for the EBD and
 ebd_zf <- auk_zerofill(f_ebd, f_sampling, collapse = TRUE)
 ```
 
-When any of the read functions from `auk` are used, two important processing steps occur by default behind the scenes. First, eBird observations can be made at levels below species (e.g. subspecies) or above species (e.g. hybrids); however, for most uses we'll want observations at the species level. [`auk_rollup()`](https://cornelllabofornithology.github.io/auk/reference/auk_rollup.html) is applied by default when [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html) is used, and it drops all observations not identifiable to a species and rolls up all observations reported below species to the species level. eBird also allows for [group checklists](https://help.ebird.org/customer/en/portal/articles/1010555-understanding-the-ebird-checklist-sharing-process), those shared by multiple users. These checklists lead to duplication or near duplication of records within the dataset and the function [`auk_unique()`](https://cornelllabofornithology.github.io/auk/reference/auk_unique.html), applied by default by [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html), addresses this by only keeping one independent copy of each checklist. Finally, by default [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html) retuns a compact representation of the data, consisting of a list of two data frames, one with checklist data and the other with observation data; the use of `collapse = TRUE` combines these into a single data frame, which will be easier to work with.
+When any of the read functions from `auk` are used, two important processing steps occur by default behind the scenes. First, eBird observations can be made at levels below species (e.g. subspecies) or above species (e.g. a bird that was only identified as Duck sp.); however, for most uses we'll want observations at the species level. [`auk_rollup()`](https://cornelllabofornithology.github.io/auk/reference/auk_rollup.html) is applied by default when [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html) is used, and it drops all observations not identifiable to a species and rolls up all observations reported below species to the species level. eBird also allows for [group checklists](https://help.ebird.org/customer/en/portal/articles/1010555-understanding-the-ebird-checklist-sharing-process), those shared by multiple users. These checklists lead to duplication or near duplication of records within the dataset and the function [`auk_unique()`](https://cornelllabofornithology.github.io/auk/reference/auk_unique.html), applied by default by [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html), addresses this by only keeping one independent copy of each checklist. Finally, by default [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html) returns a compact representation of the data, consisting of a list of two data frames, one with checklist data and the other with observation data; the use of `collapse = TRUE` combines these into a single data frame, which will be easier to work with.
 
 Before continuing, we'll transform some of the variables to a more useful form for modelling. We convert time to a decimal value between 0 and 24, and we force the distance travelled to 0 for stationary checklists. Notably, eBirders have the option of entering an "X" rather than a count for a species, to indicate that the species was present, but they didn't keep track of how many were observed. During the modeling stage, we'll want the `observation_count` variable stored as an integer and we'll convert "X" to `NA` to allow this.
 
@@ -210,7 +216,7 @@ The chance of an observer detecting a bird when present can be highly dependent 
 g_tod_hist <- ggplot(ebird) +
   aes(x = time_observations_started) +
   geom_histogram(binwidth = 1, center = 0, color = "grey30", fill = "grey50") +
-  scale_x_continuous(breaks = seq(0, 24, by = 3)) +
+  scale_x_continuous(breaks = seq(0, 24, by = 3), limits = c(0, 24)) +
   scale_y_continuous(labels = scales::comma) +
   labs(x = "Hours since midnight",
        y = "# checklists",
@@ -220,7 +226,7 @@ g_tod_hist <- ggplot(ebird) +
 g_tod_hist_det <- ggplot(filter(ebird, species_observed)) +
   aes(x = time_observations_started) +
   geom_histogram(binwidth = 1, center = 0, color = "grey30", fill = "grey50") +
-  scale_x_continuous(breaks = seq(0, 24, by = 3)) +
+  scale_x_continuous(breaks = seq(0, 24, by = 3), limits = c(0, 24)) +
   scale_y_continuous(labels = scales::comma) +
   labs(x = "Hours since midnight",
        y = "# checklists w/ detections",
@@ -234,7 +240,7 @@ The peak frequency of checklist submissions, and of those checklists with detect
 
 ### Checklist duration {#ebird-explore-duration}
 
-When we initially extracted the eBird data in Section \@ref{ebird-extract}, we restricted observations to those from checklists 5 hours in duration or shorter to reduce variability. Let's see what sort of variation remains in checklist duration.
+When we initially extracted the eBird data in Section \@ref(ebird-extract), we restricted observations to those from checklists 5 hours in duration or shorter to reduce variability. Let's see what sort of variation remains in checklist duration.
 
 ```{r ebird-explore-duration}
 # histogram
@@ -297,7 +303,7 @@ g_dist_hist_det <- ggplot(filter(ebird, species_observed)) +
 grid.arrange(g_dist_hist, g_dist_hist_det)
 ```
 
-As with duration, the majority of observations are from short checklists (less than half a kilometer). One fortunate consequence of this is that most checklists will be contained within a small area within which habitat is not likely to show high variability. In chapter \@ref{habitat}, we summarized habitat within circles having a 2.5 km diameter, centered on each checklist, and it appears that the vast majority of checklists willl stay contained within this area. As with other variables, eliminating checklists that are greater than one kilometer will increase the spatial accuracy of the observations and not significantly reduce sample sizes.
+As with duration, the majority of observations are from short checklists (less than half a kilometer). One fortunate consequence of this is that most checklists will be contained within a small area within which habitat is not likely to show high variability. In chapter \@ref{habitat}, we summarized habitat within circles having a 2.5 km diameter, centered on each checklist, and it appears that the vast majority of checklists will stay contained within this area. As with other variables, eliminating checklists that are greater than one kilometer will increase the spatial accuracy of the observations and not significantly reduce sample sizes.
 
 ### Number of observers {#ebird-explore-observers}
 

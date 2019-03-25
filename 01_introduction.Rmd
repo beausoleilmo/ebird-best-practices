@@ -114,7 +114,12 @@ library(sf)
 library(rnaturalearth)
 library(dplyr)
 
-f_ne <- "data/gis-data.gpkg"
+# file to save spatial data
+gpkg_dir <- "data"
+if (!dir.exists(gpkg_dir)) {
+  dir.create(gpkg_dir)
+}
+f_ne <- file.path(gpkg_dir, "gis-data.gpkg")
 
 # download bcrs
 tmp_dir <- tempdir()

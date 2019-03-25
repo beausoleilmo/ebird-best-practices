@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-21" />
+<meta name="date" content="2019-03-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -695,11 +695,15 @@ pred &lt;-<span class="st"> </span><span class="kw">predict</span>(pred_model, <
 r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]
 
 <span class="co"># save the rasters</span>
+tif_dir &lt;-<span class="st"> &quot;output&quot;</span>
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(tif_dir)) {
+  <span class="kw">dir.create</span>(tif_dir)
+}
 <span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;abd&quot;</span>]], 
-            <span class="dt">filename =</span> <span class="st">&quot;output/abundance-model_abundance_woothr.tif&quot;</span>,
+            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;abundance-model_abd_woothr.tif&quot;</span>),
             <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)
 <span class="kw">writeRaster</span>(r_pred[[<span class="st">&quot;abd_se&quot;</span>]], 
-            <span class="dt">filename =</span> <span class="st">&quot;output/abundance-model_se_woothr.tif&quot;</span>, 
+            <span class="dt">filename =</span> <span class="kw">file.path</span>(tif_dir, <span class="st">&quot;abundance-model_se_woothr.tif&quot;</span>), 
             <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre>
 <p>Finally, let’s make a map! For the relative abundance map, we’ll treat very small values of relative abundance as zero.</p>
 <p>The values shown on this map are the expected number of Wood Thrush seen by an expert eBirder conducting a 1 hour, 1 km checklist for which counting started at about 4:15 AM. As detectability is not perfect, we expect true Wood Thrush abundance to be higher than these values, but without estimating detectability it is difficult to say how much higher. Also remember at this point that there was a lot of variation in eBird counts that wasn’t explained by our covariates. So this map shows the best estimate of relative abundance, given the model and variables selected for modeling.</p>
