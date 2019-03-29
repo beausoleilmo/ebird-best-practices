@@ -36,6 +36,11 @@ projection <- raster::projection
 
 set.seed(1)
 
+# setup output directory for saved results
+if (!dir.exists("output")) {
+  dir.create("output")
+}
+
 # ebird data
 ebird <- read_csv("data/ebd_woothr_june_bcr27_zf.csv") %>% 
   # year required to join to habitat data
@@ -286,7 +291,7 @@ The calibrated random forest model is now the combination of the original random
 
 ### Assessment {#encounter-rf-assess}
 
-Now we'll assess the calibrated random forest model with the 20% test dataset. We'll use a range of performance metrics to compare the predictions to the actual observations: mean squared error (MSE), sensitivity, specificity, AUC, Kappa, and Brier score. Several of these metrics require the raw predicted probabilities to be classified into detection/non-detection. We'll do this using a threshold, chosen to maximize the Kappa statistic.
+To assess model quality, we'll validate the model’s ability to predict the observed patterns of occupancy using independent validation data (i.e. the 20% test data set). We'll use a range of performance metrics to compare the predictions to the actual observations: mean squared error (MSE), sensitivity, specificity, AUC, and Kappa. Several of these metrics require the raw predicted probabilities to be classified into detection/non-detection. We'll do this using a threshold, chosen to maximize the Kappa statistic.
 
 ```{r encounter-rf-assess}
 # predict on test data using calibrated model
@@ -328,9 +333,7 @@ rf_assessment <- tibble(
   sensitivity = c(metrics_fit$sensitivity, metrics_cal$sensitivity),
   specificity = c(metrics_fit$specificity, metrics_cal$specificity),
   auc = c(metrics_fit$AUC, metrics_cal$AUC),
-  kappa = c(metrics_fit$Kappa, metrics_cal$Kappa),
-  brier = c(brier(rf_pred_test$obs, rf_pred_test$fit)$bs, 
-            brier(rf_pred_test$obs, rf_pred_test$cal)$bs)
+  kappa = c(metrics_fit$Kappa, metrics_cal$Kappa)
 )
 knitr::kable(rf_assessment, digits = 3)
 ```

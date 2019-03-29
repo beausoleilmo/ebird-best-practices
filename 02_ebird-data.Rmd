@@ -41,6 +41,11 @@ library(tidyverse)
 # resolve namespace conflicts
 select <- dplyr::select
 
+# setup data directory
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+
 ebd <- auk_ebd("ebd_relDec-2018.txt", 
                file_sampling = "ebd_sampling_relDec-2018.txt")
 ```
@@ -60,10 +65,9 @@ ebd_filters <- ebd %>%
 ebd_filters
 ```
 
-Note that printing the object `ebd_filters` shows what filters have been set. At this point, we've only defined the filters, not applied them to the EBD. The last step is to use `auk_filter()` to compile the filters into an AWK script and run it to produce two output files: one for the EBD and one for the SED. **This step typically takes several hours to run since the files are so large.** As a result, it's wise to wrap this in an `if` statement, so it's only run once.
+Note that printing the object `ebd_filters` shows what filters have been set. At this point, we've only defined the filters, not applied them to the EBD. The last step is to use `auk_filter()` to compile the filters into an AWK script and run it to produce two output files: one for the EBD and one for the SED. **This step typically takes several hours to run since the files are so large.** As a result, it's wise to wrap this in an `if` statement, so it's only run once. As noted in the [Introduction](intro-setup-software), Windows users will need to [install Cygwin](https://www.cygwin.com/) for this next step to work.
 
 ```{r ebird-extract-filter}
-
 # output files
 data_dir <- "data"
 if (!dir.exists(data_dir)) {

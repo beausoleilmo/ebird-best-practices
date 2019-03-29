@@ -24,7 +24,7 @@ The next section will cover how to access and download MODIS landcover data. Nex
 
 ## Downloading MODIS data {#habitat-dl}
 
-As with most satellite data, MODIS data are provided as [1200 km by 1200 km tiles](https://modis-land.gsfc.nasa.gov/MODLAND_grid.html) for ease of download. Each tile is a [raster GIS dataset](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/what-is-raster-data.htm) consisting of a regular grid of 500 m resolution cells. The surface of the Earth is divided up into a grid of these tiles, each given an ID, for example, h10v12 is the tile from the 10th column and 12th row of the grid. Compiling MODIS data for a given region requires figuring out which set of tiles covers the region, downloading those tiles, combining the tiles together into a single raster dataset, and converting from the native MODIS HDF format, which R can't read, to a standard GeoTIFF format. This needs to be done for each year for which we want habitat data, and can be a time consuming and error prone process. Fortunately, the [R package `MODIS`](https://github.com/MatMatt/MODIS) automates most of these steps. Unfortunately, this package can be challenging to set up and has a confusing user interface. With this in mind, this section will provide detailed instruction for setting up and using the `MODIS` package.
+As with most satellite data, MODIS data are provided as [1200 km by 1200 km tiles](https://modis-land.gsfc.nasa.gov/MODLAND_grid.html) for ease of download. Each tile is a [raster GIS dataset](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/what-is-raster-data.htm) consisting of a regular grid of 500 m resolution cells. The surface of the Earth is divided up into a grid of these tiles, each given an ID, for example, h10v12 is the tile from the 10th column and 12th row of the grid. Compiling MODIS data for a given region requires figuring out which set of tiles covers the region, downloading those tiles, combining the tiles together into a single raster dataset, and converting from the native MODIS HDF format, which R can't read, to a standard GeoTIFF format. This needs to be done for each year for which we want habitat data, and can be a time consuming and error prone process. Fortunately, the [R package `MODIS`](https://github.com/MatMatt/MODIS) automates most of these steps. Unfortunately, this package can be challenging and confusing to get working. With this in mind, this section will provide detailed instruction for setting up and using the `MODIS` package.
 
 Let's start by figuring out the tile IDs for the tiles that BCR 27 spans. Recall that we prepared a BCR boundary in Section \@ref(intro-setup-gis) of the Introduction; if you haven't already done so, [download the data package](https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip) now to get that boundary. Given a set of spatial features, the `MODIS` package can quickly tell us which MODIS tiles we need.
 
@@ -51,15 +51,28 @@ tiles@tile
 
 So, we'll need to download these three tiles for each of the 10 years from 2009-2018: `r cat(paste0(tiles@tile, collapse = ", "))`.
 
-### Download using R {#habitat-dl-r}
+### `MODIS` setup {#habit-dl-setup}
 
-Before we start using `MODIS` for the first time, a bit of setup is required. First, [sign up for a NASA Earthdata account](https://urs.earthdata.nasa.gov/users/new) to get access to MODIS, and other NASA data. Then use `MODIS::EarthdataLogin(usr = "username", pwd = "password")`, with the username and password you just created, to store your login credentials so the `MODIS` package can access them. Next, install [GDAL](https://www.gdal.org/), an open source library for working with geospatial data that's needed for processing the MODIS tiles. The steps for installing GDAL are system dependent:
+Before we start using `MODIS` for the first time, a bit of setup is required. First, [sign up for a NASA Earthdata account](https://urs.earthdata.nasa.gov/users/new) to get access to MODIS, and other NASA data. Then use `MODIS::EarthdataLogin(usr = "username", pwd = "password")`, with the username and password you just created, to store your login credentials so the `MODIS` package can access them.
 
-- **Mac OS X:** install the Homebrew package manager, then run `brew install gdal` in the terminal.
-- **Linux:** run `sudo apt-get install gdal-bin` in the terminal.
+Next, we need to install [GDAL](https://www.gdal.org/), an open source library for working with geospatial data that's needed for processing the MODIS tiles. The steps for installing GDAL are system dependent:
+
+- **Mac OS X:** First, check if GDAL is installed with HDF4 support by running `gdal-config --formats` in Terminal. If you see `hdf4` in the list, you're don't need to do anything else! If not, [install the Homebrew](https://brew.sh/) package manager by following the [instructions on the website](https://brew.sh/). Then, run the following commands in Terminal to install GDAL:
+
+```
+brew tap osgeo/osgeo4mac
+brew install hdf4 
+brew link --overwrite hdf4 
+brew install osgeo-gdal
+brew link --force osgeo-gdal
+```
+
 - **Windows:** install [OSGeo4W](http://trac.osgeo.org/osgeo4w/), a suite of open source geospatial tools that includes GDAL. In R, run `MODIS:::checkTools("GDAL")`, which will search your system for GDAL and suggest a command such as `MODIS::MODISoptions(gdalPath = "c:/OSGeo4W64/bin")` that will make GDAL available to the `MODIS` package. Run this command and, when it asks, agree to making the settings permanent.
+- **Linux:** run `sudo apt-get install gdal-bin` in the terminal.
 
 Finally, run `MODIS:::checkTools("GDAL")` to check that GDAL is installed and that the `MODIS` package can find it. If GDAL can't be found, you'll need to manually locate it and use `MODIS::MODISoptions(gdalPath = "path/to/gdal/")` to tell the `MODIS` package where it is.
+
+### Download using R {#habitat-dl-r}
 
 Once all the setup steps have been completed, we can start downloading some data! The `MODIS` function `runGdal()` downloads and processes MODIS tiles into a single GeoTIFF for each year. Note that at the time of writing, landcover data from 2018 haven't been prepared yet, so we'll use 2017 data for both 2017 and 2018. The key arguments to `runGdal()` are:
 
@@ -105,6 +118,14 @@ landcover <- names(landcover) %>%
   setNames(landcover, .)
 landcover
 ```
+
+### Troubleshooting {#habitat-dl-trouble}
+
+If the call to `runGDAL()` didn't work for you, don't worry, you're not alone! It's challenging to get the `MODIS` package working and errors are common when you're first trying to get it set up. The most common error is not having GDAL installed correctly, which will give an error like `GDAL not installed or configured`. Either you don't have GDAL at all or you have it, but it doesn't have support for HDF4 files (this is the native format for MODIS data). Try following the [above instructions](habit-dl-setup) again. If it still doesn't work, consult the instructions on the `MODIStsp` website for [installing GDAL](http://ropensci.github.io/MODIStsp/articles/installation.html#installing-gdal-1-11-1). 
+
+Another error you may see is: `Make sure either 'wget' or 'curl' is available in order to download data from LP DAAC or NSIDC.`. This should only arise on version of Windows before Windows 10. If you see this error, you'll need to install `curl`, which is used by R to download the MODIS tiles. There is a StackOverflow question with [excellent instructions](https://stackoverflow.com/questions/9507353/how-do-i-install-and-use-curl-on-windows) for installing `curl` and getting it setup on your system.
+
+If these tips haven't solved your particular problem, head over to the GitHub repository and file an issue. We'll help you get things working *and* you'll help us improve this troubleshooting section! **When you file an issue, please provide the output of `sessionInfo()` so we know a little bit about your system setup.**
 
 ## Landscape metrics {#habitat-lsm}
 

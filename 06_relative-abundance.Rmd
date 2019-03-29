@@ -37,6 +37,11 @@ projection <- raster::projection
 
 set.seed(1)
 
+# setup output directory for saved results
+if (!dir.exists("output")) {
+  dir.create("output")
+}
+
 # ebird data
 ebird <- read_csv("data/ebd_woothr_june_bcr27_zf.csv") %>% 
   mutate(year = year(observation_date),

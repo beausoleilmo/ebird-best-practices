@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-25" />
+<meta name="date" content="2019-03-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -168,7 +168,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3" data-path="habitat.html"><a href="habitat.html"><i class="fa fa-check"></i><b>3</b> Habitat Covariates</a><ul>
 <li class="chapter" data-level="3.1" data-path="habitat.html"><a href="habitat.html#habitat-intro"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
 <li class="chapter" data-level="3.2" data-path="habitat.html"><a href="habitat.html#habitat-dl"><i class="fa fa-check"></i><b>3.2</b> Downloading MODIS data</a><ul>
-<li class="chapter" data-level="3.2.1" data-path="habitat.html"><a href="habitat.html#habitat-dl-r"><i class="fa fa-check"></i><b>3.2.1</b> Download using R</a></li>
+<li class="chapter" data-level="3.2.1" data-path="habitat.html"><a href="habitat.html#habit-dl-setup"><i class="fa fa-check"></i><b>3.2.1</b> <code>MODIS</code> setup</a></li>
+<li class="chapter" data-level="3.2.2" data-path="habitat.html"><a href="habitat.html#habitat-dl-r"><i class="fa fa-check"></i><b>3.2.2</b> Download using R</a></li>
+<li class="chapter" data-level="3.2.3" data-path="habitat.html"><a href="habitat.html#habitat-dl-trouble"><i class="fa fa-check"></i><b>3.2.3</b> Troubleshooting</a></li>
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="habitat.html"><a href="habitat.html#habitat-lsm"><i class="fa fa-check"></i><b>3.3</b> Landscape metrics</a></li>
 <li class="chapter" data-level="3.4" data-path="habitat.html"><a href="habitat.html#habitat-prediction"><i class="fa fa-check"></i><b>3.4</b> Prediction surface</a></li>
@@ -281,7 +283,7 @@ auk<span class="op">::</span><span class="kw">auk_set_ebd_path</span>(<span clas
 <p>The examples in this book use a variety of R packages for accessing eBird data, working with spatial data, data processing and manipulation, and model fitting. To install all the packages necessary to work through this book, run the following code:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)
 remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;mstrimas/ebppackages&quot;</span>)</code></pre>
-<p>Note that several of the spatial packages require dependencies. If installing these packages fails, consult the <a href="https://r-spatial.github.io/sf/#installing">instructions for installing dependencies on the <code>sf</code> package website</a>. Finally, <strong>ensure all R packages are updated</strong> to the most recent by clicking on the Update button on the Packages tab in RStudio.</p>
+<p>Note that several of the spatial packages require dependencies. If installing these packages fails, consult the <a href="https://r-spatial.github.io/sf/#installing">instructions for installing dependencies on the <code>sf</code> package website</a>. Finally, <strong>ensure all R packages are updated</strong> to their most recent version by clicking on the Update button on the Packages tab in RStudio.</p>
 </div>
 <div id="intro-setup-tidyverse" class="section level3">
 <h3><span class="header-section-number">1.3.5</span> Tidyverse</h3>
