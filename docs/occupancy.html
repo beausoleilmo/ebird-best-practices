@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-03-29" />
+<meta name="date" content="2019-04-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -237,7 +237,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">5.1</span> Introduction</h2>
 <p>In this chapter, we’ll cover the basic steps for estimating <strong>occupancy probability</strong> using data from eBird. In Chapter <a href="encounter.html#encounter">4</a>, we used analytical approaches that modeled variation in detectability by including covariates that are known to influence detection rates (e.g. effort). In contrast, occupancy models jointly model the ecological process of species occurrence <em>and</em> the observation process of species detection. The application of these models typically requires repeated visits to a single site during a relatively short time frame, over which the population can be considered closed. However, it is possible to <em>impose</em> this repeat visit structure on eBird data to generate a subset of data suitable for estimating occupancy. Here, we discuss how to process eBird observations to meet existing criteria for the application of occupancy models. To illustrate our example, we apply single-season occupancy models to estimate occupancy and detection probabilities of Wood Thrush for the month of June in BCR 27.</p>
 <p>This chapter is distinct from the previous chapter on modeling encounter rate in two important ways. First, the random forest model used in Chapter <a href="encounter.html#encounter">4</a> is an example of a <a href="https://en.wikipedia.org/wiki/Machine_learning">machine learning</a> approach, while the occupancy models used in this chapter are a more traditional likelihood approach. This latter type of statistical approach is best suited for addressing specific questions and hypotheses, while the goal of machine learning is primarily to identify patterns and make predictions <span class="citation">(Bzdok, Altman, and Krzywinski <a href="#ref-bzdokPointsSignificanceStatistics2018">2018</a>)</span>. Second, machine learning approaches can accommodate complex interactions between covariates and non-linear effects, often needed to model habitat associations that can vary across large spatial and temporal scales. In contrast, occupancy models are more suitable for exploring linear effects and simpler interactions. In this example, we specifically focus on the mechanics of filtering and formatting the data to fit occupancy models, and less on how to choose which predictors to include for detection and occupancy probabilities. The predictors we do include are informed by our inferences on variable from the random forest model in Chapter <a href="encounter.html#encounter">4</a>.</p>
-<p>If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip">download the data package</a>, and unzip it to your working directory. Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an optional covariate in these models. Including CCI typical leads to marked improvement in model performance; however, due to the sensitive nature of these data you will need to <a href="https://ebird.org/data/download">download them separately</a> after you agree to the terms and conditions. If you’ve downloaded these data, put the CCI text file in the <code>data/</code> subdirectory of your project.</p>
+<p>If you worked through the previous chapters, you should have all the data necessary for this chapter. You can also <a href="https://github.com/mstrimas/ebird-best-practices/raw/master/data/data.zip">download the data package</a>, and unzip it to your working directory. Note that the Checklist Calibration Index (CCI), which calibrates observers and checklists against others from similar times and places, is an optional covariate in these models. Including CCI typical leads to marked improvement in model performance; however, we are still working on the best way of publicly releasing these data, so they are not currently available. This section will be updated soon with download instructions once they become available.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
 <span class="kw">library</span>(lubridate)
 <span class="kw">library</span>(sf)
@@ -507,65 +507,68 @@ occ_model &lt;-<span class="st"> </span><span class="kw">occu</span>(mod_formula
 </div>
 <div id="occupancy-model-select" class="section level3">
 <h3><span class="header-section-number">5.3.2</span> Model selection</h3>
-<p>Next, we use a model selection approach to compare and rank our candidate model set. For this example, we use the <code>dredge()</code> function to explore a candidate set consisting of all possible additive combinations of the global model. However, we suggest that a more thoughtful approach be considered for specific applications and different types of predictor variables.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># dredge candidate model set</span>
-occ_dredge &lt;-<span class="st"> </span><span class="kw">dredge</span>(occ_model)
+<p>Next, we use a model selection approach to compare and rank our candidate model set. For this example, we use the <code>dredge()</code> function, which evaluates a set of candidate models generated by using different combinations of the terms in the global model. Ideally, we would explore all possible additive combinations of the global model; however, this would result in <span class="math inline">\(2^{12}=4096\)</span> models to evaluate, since the global model has 12 terms. It’s not feasible to evaluate such a large candidate set in a reasonable amout of time, so we’ll only explore a subset of possible models in this example. In particular, we’ll lock in the effort variables, since we know from prior experience that these are almost always important.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get list of all possible terms, then subset to those we want to keep</span>
+det_terms &lt;-<span class="st"> </span><span class="kw">getAllTerms</span>(occ_model) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">discard</span>(str_detect, <span class="dt">pattern =</span> <span class="st">&quot;pland_&quot;</span>)
+
+<span class="co"># dredge, fixing the effort covariates</span>
+occ_dredge &lt;-<span class="st"> </span><span class="kw">dredge</span>(occ_model, <span class="dt">fixed =</span> det_terms)
 
 <span class="co"># model comparison</span>
-<span class="kw">select</span>(occ_dredge, df, logLik, AICc, delta, weight)</code></pre>
-<pre><code>#&gt;    df logLik AICc delta   weight
-#&gt; 12 13   -681 1389  0.00 6.41e-01
-#&gt; 16 14   -681 1390  1.33 3.30e-01
-#&gt; 4  12   -686 1396  7.37 1.61e-02
-#&gt; 8  13   -685 1396  7.88 1.25e-02
-#&gt; 11 12   -689 1403 14.17 5.38e-04
-#&gt; 15 13   -689 1405 16.07 2.07e-04
-#&gt; 10 12   -691 1406 17.08 1.25e-04
-#&gt; 14 13   -691 1408 18.96 4.90e-05
-#&gt; 3  11   -696 1415 26.31 1.24e-06
-#&gt; 7  12   -696 1416 27.73 6.10e-07
-#&gt; 2  11   -698 1419 30.34 1.65e-07
-#&gt; 6  12   -698 1420 31.61 8.77e-08
-#&gt; 9  11   -700 1423 33.94 2.73e-08
-#&gt; 13 12   -700 1425 35.96 9.97e-09
-#&gt; 1  10   -712 1444 55.24 6.48e-13
-#&gt; 5  11   -712 1446 57.19 2.44e-13</code></pre>
-<p>A quick look at the dredge object reveals that there is not a clear model, or even set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the model with the lowest AICc value. Given this, and the fact that all of our effects are linear and use the same family and link function, we’ll average across all models, weighted by AICc, to produce a final model that we’ll use for prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the <code>get.models()</code> function to extract just these models prior to averaging.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># average models based on model weights </span>
-occ_avg &lt;-<span class="st"> </span><span class="kw">model.avg</span>(occ_dredge, <span class="dt">fit =</span> <span class="ot">TRUE</span>)
+<span class="kw">select</span>(occ_dredge, df, logLik, AICc, delta, weight) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">top_n</span>(<span class="dv">10</span>)
+<span class="co">#&gt;    df logLik AICc delta  weight</span>
+<span class="co">#&gt; 1  12   -682 1387 0.000 0.21881</span>
+<span class="co">#&gt; 2  11   -683 1387 0.248 0.19326</span>
+<span class="co">#&gt; 3  12   -682 1388 1.142 0.12360</span>
+<span class="co">#&gt; 4  13   -681 1389 1.316 0.11333</span>
+<span class="co">#&gt; 5  13   -681 1389 1.353 0.11122</span>
+<span class="co">#&gt; 6  12   -682 1389 1.642 0.09625</span>
+<span class="co">#&gt; 7  13   -682 1390 2.495 0.06284</span>
+<span class="co">#&gt; 8  14   -681 1390 2.645 0.05831</span>
+<span class="co">#&gt; 9  11   -687 1395 8.059 0.00389</span>
+<span class="co">#&gt; 10 12   -686 1396 8.563 0.00302</span></code></pre>
+<p>The corrected <a href="https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc">Akaike Information Criterion (AICc)</a> measures the quality of each model, relative to the other models in the candidate set, corrected for the number of parameters. Lower values indicate models of higher quality. Delta is the difference between the AICc values for the given model and that for the top model (i.e. the one with the lowest AICc). Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data.</p>
+<p>A quick look at the dredge object reveals that there is not a clear model, or even set of models, that are most likely to have generated our data. This is evident from the low AIC weight for the model with the lowest AICc value. Given this, and the fact that all of our effects are linear and use the same family and link function, we’ll average across all models, weighted by AICc, to produce a final model that we’ll use for prediction. However, there may be scenarios in which there is a clear set of high performing models, in which case you can use the <code>get.models()</code> function to extract just these models prior to averaging. For the sake of efficiency, we’ll only average the top models, which we’ll define as those cumulatively comprising 95% of the weights. This won’t impact the results since the models with lower support have such small weights and therefore contribute little to the predictions.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># select models with the most suport for model averaging</span>
+occ_dredge_<span class="dv">95</span> &lt;-<span class="st"> </span><span class="kw">get.models</span>(occ_dredge, <span class="dt">subset =</span> <span class="kw">cumsum</span>(weight) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.95</span>)
+
+<span class="co"># average models based on model weights </span>
+occ_avg &lt;-<span class="st"> </span><span class="kw">model.avg</span>(occ_dredge_<span class="dv">95</span>, <span class="dt">fit =</span> <span class="ot">TRUE</span>)
 
 <span class="co"># model coefficients</span>
 <span class="kw">t</span>(occ_avg<span class="op">$</span>coefficients)
-<span class="co">#&gt;                                     full    subset</span>
-<span class="co">#&gt; psi(Int)                       -1.916089 -1.916089</span>
-<span class="co">#&gt; psi(pland_04)                   2.922477  2.924661</span>
-<span class="co">#&gt; psi(pland_05)                   4.596419  4.597220</span>
-<span class="co">#&gt; psi(pland_13)                  -1.977705 -2.035802</span>
-<span class="co">#&gt; p(Int)                         -1.096517 -1.096517</span>
-<span class="co">#&gt; p(checklist_calibration_index)  0.604441  0.604441</span>
-<span class="co">#&gt; p(duration_minutes)             0.007494  0.007494</span>
-<span class="co">#&gt; p(effort_distance_km)          -0.000105 -0.000105</span>
-<span class="co">#&gt; p(number_observers)             0.133860  0.133860</span>
-<span class="co">#&gt; p(pland_04)                    -0.954926 -0.954926</span>
-<span class="co">#&gt; p(pland_05)                    -0.679792 -0.679792</span>
-<span class="co">#&gt; p(protocol_typeTraveling)       0.447396  0.447396</span>
-<span class="co">#&gt; p(time_observations_started)   -0.029042 -0.029042</span>
-<span class="co">#&gt; psi(pland_12)                   0.210509  0.614722</span></code></pre>
+<span class="co">#&gt;                                    full   subset</span>
+<span class="co">#&gt; psi(Int)                       -1.84270 -1.84270</span>
+<span class="co">#&gt; psi(pland_04)                   2.56201  2.56201</span>
+<span class="co">#&gt; psi(pland_05)                   3.82764  3.82764</span>
+<span class="co">#&gt; psi(pland_13)                  -2.10094 -2.10094</span>
+<span class="co">#&gt; p(Int)                         -1.20907 -1.20907</span>
+<span class="co">#&gt; p(pland_04)                    -0.50089 -1.03860</span>
+<span class="co">#&gt; p(checklist_calibration_index)  0.57268  0.57268</span>
+<span class="co">#&gt; p(duration_minutes)             0.00739  0.00739</span>
+<span class="co">#&gt; p(effort_distance_km)           0.00453  0.00453</span>
+<span class="co">#&gt; p(number_observers)             0.14347  0.14347</span>
+<span class="co">#&gt; p(protocol_typeTraveling)       0.46834  0.46834</span>
+<span class="co">#&gt; p(time_observations_started)   -0.02888 -0.02888</span>
+<span class="co">#&gt; p(pland_05)                    -0.23889 -0.73260</span>
+<span class="co">#&gt; psi(pland_12)                   0.17322  0.58912</span></code></pre>
 </div>
 </div>
 <div id="occupancy-predict" class="section level2">
 <h2><span class="header-section-number">5.4</span> Prediction</h2>
-<p>In this section, we’ll estimate the distribution of Wood Thrush in BCR 27. Similar to Section <a href="habitat.html#habitat-prediction">3.4</a>, we’ll generate a prediction surface using the PLAND habitat covariates summarized on a regular grid of points across BCR 27. For this, we’ll use the <code>predict()</code> function to estimate occupancy probabilities, standard errors, and confidence intervals.</p>
+<p>In this section, we’ll estimate the distribution of Wood Thrush in BCR 27. Similar to Section <a href="habitat.html#habitat-prediction">3.4</a>, we’ll generate a prediction surface using the PLAND habitat covariates summarized on a regular grid of points across BCR 27. For this, we’ll use the <code>predict()</code> function to estimate occupancy probabilities, standard errors, and confidence intervals. When we use <code>predict()</code> on the output of <code>get.models()</code> it will make predictions for each of the selected models, then average the predictions using the AIC weights to produce the final prediction.</p>
 <p>Recall that when we <a href="encounter.html#encounter-predict">predicted encouter rate</a>, we had to include effort variables in our prediction surface. We don’t need to do that here because the occupancy submodel doesn’t depend on the effort covariates, these only occur in the detection submodel.</p>
-<pre class="sourceCode r"><code class="sourceCode r">occ_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(occ_avg, 
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>({
+occ_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(occ_avg, 
                     <span class="dt">newdata =</span> <span class="kw">as.data.frame</span>(pred_surface), 
                     <span class="dt">type =</span> <span class="st">&quot;state&quot;</span>)
 
 <span class="co"># add to prediction surface</span>
 pred_occ &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface, 
                       <span class="dt">occ_prob =</span> occ_pred<span class="op">$</span>fit, 
-                      <span class="dt">occ_se =</span> occ_pred<span class="op">$</span>se.fit) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(latitude, longitude, occ_prob, occ_se)</code></pre>
+                      <span class="dt">occ_se =</span> occ_pred<span class="op">$</span>se.fit) <span class="op">%&gt;%</span><span class="st"> </span></code></pre>
 <p>Next, we’ll convert this data frame to spatial feaatures using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
 <pre class="sourceCode r"><code class="sourceCode r">r_pred &lt;-<span class="st"> </span>pred_occ <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co"># convert to spatial features</span>
