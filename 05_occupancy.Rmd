@@ -42,11 +42,11 @@ ebird <- read_csv("data/ebd_woothr_june_bcr27_zf.csv") %>%
          # occupancy modeling requires an integer response
          species_observed = as.integer(species_observed))
 
-# modis habitat covariates
+# modis land cover covariates
 habitat <- read_csv("data/modis_pland_location-year.csv") %>% 
   mutate(year = as.integer(year))
 
-# combine ebird and habitat data
+# combine ebird and modis data
 ebird_habitat <- inner_join(ebird, habitat, by = c("locality_id", "year"))
 
 # optional checklist calibration index
@@ -94,7 +94,7 @@ From the eBird data, we can generate detection histories for each location we de
 The `auk` function `filter_repeat_visits()` is designed to extract a subset of eBird data suitable for occupancy modeling. We first filter the data to only sites that have at least two visits (`min_obs = 2`), then define the maximum length of our detection history as 10 visits or checklists (`max_obs = 10`). When a specific site has been visited more than 10 times, the function will randomly select 10 checklists from the total number of visits. Since we only have data from June, using `annual_closure = TRUE` defines the temporal period of closure as the whole month of June within each year. Using this structure, the occurrence rate is allowed to change at sites between years. Finally, `site_vars` specifies the set of variables that defines a site. In this example, a site is defined jointly by location and observer IDs.
 
 ```{r occupancy-data-sites-repeat}
-occ <- filter_repeat_visits(ebird_filtered %>% mutate_at(c("latitude", "longitude"), ~ round(., 4)), 
+occ <- filter_repeat_visits(ebird_filtered, 
                             min_obs = 2, max_obs = 10,
                             annual_closure = TRUE,
                             date_var = "observation_date",
