@@ -265,7 +265,11 @@ In this section, we'll estimate the distribution of Wood Thrush in BCR 27. Simil
 Recall that when we [predicted encouter rate](#encounter-predict), we had to include effort variables in our prediction surface. We don't need to do that here because the occupancy submodel doesn't depend on the effort covariates, these only occur in the detection submodel.
 
 ```{r occupancy-predict-predict, eval = FALSE, results = "hold", echo = 1:9}
-system.time({
+
+if (.Platform$OS == "unix") {
+  Sys.time()
+} else {system.time()}
+
 occ_pred <- predict(occ_avg, 
                     newdata = as.data.frame(pred_surface), 
                     type = "state")
