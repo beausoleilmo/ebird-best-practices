@@ -122,7 +122,7 @@ if (!dir.exists(gpkg_dir)) {
 f_ne <- file.path(gpkg_dir, "gis-data.gpkg")
 
 # download bcrs
-tmp_dir <- tempdir()
+tmp_dir <- normalizePath(tempdir())
 tmp_bcr <- file.path(tmp_dir, "bcr.zip")
 paste0("https://www.birdscanada.org/research/gislab/download/", 
        "bcr_terrestrial_shape.zip") %>% 
