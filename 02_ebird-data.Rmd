@@ -21,6 +21,24 @@ In the previous chapter, we described how to [access and download the EBD](#intr
 ### eBird taxonomy {#ebird-intro-tax}
 
 eBird uses its own [taxonomic system](https://ebird.org/science/the-ebird-taxonomy), updated annually after expert review every August. A notable benefit of these annual, system-wide updates is that splits and lumps are nearly instantly propagated across the entire eBird database. When necessary, expert reviewers manually sort through observations and assign records to current taxonomic hypotheses to the extent possible. This ensures that both new and historical eBird data conform to the updated taxonomy. In addition, after the taxonomy update, both the EBD and `auk` are updated to reflect the changes.
+See the checklist here: https://www.birds.cornell.edu/clementschecklist/download/?__hstc=60209138.6f747e6e23a2f1b7014cf372ca892894.1544132358313.1566237656917.1566240564794.714&__hssc=60209138.3.1566240564794&__hsfp=2467889448 
+
+Here we explore the taxonomy of eBird. This is to make sure that we all have the same names to subset the data properly. 
+```{r}
+if (!dir.exists("data/taxonomy")) {
+  dir.create("data/taxonomy")
+}
+download.file(url = "https://www.birds.cornell.edu/clementschecklist/wp-content/uploads/2019/08/eBird_Taxonomy_v2019.csv",
+              destfile = "data/taxonomy/eBird_Taxonomy_v2019.csv",
+              method = "wget")
+taxo.ebird = read.csv("data/taxonomy/eBird_Taxonomy_v2019.csv")
+# Look at the structure 
+head(taxo.ebird)
+# Check for a specific name 
+taxo.ebird[grep(pattern = "geospiza",x = taxo.ebird$SCI_NAME, ignore.case = TRUE),]
+taxo.ebird[grep(pattern = "Geospiza fortis",x = taxo.ebird$SCI_NAME),]
+```
+
 
 We emphasize that for any eBird analysis, you should consider the taxonomy of your study organisms, and whether you're accessing the intended data from eBird. For example, are you interested in all [Willets](https://www.allaboutbirds.org/guide/Willet/) or do you want to treat the eastern and western populations separately since they're completely allopatric on their breeding grounds? Do you want to do an analysis combining [Greater](https://www.allaboutbirds.org/guide/Greater_Yellowlegs/) and [Lesser Yellowlegs](https://www.allaboutbirds.org/guide/Lesser_Yellowlegs/)? eBirders have the option of recording observations for taxa above (e.g. at genus level) or below (e.g. at subspecies level) the species level. These more granular taxonomic assignments are available in the EBD. In many cases taxonomic differences can be dealt with by querying specific subspecies, or multiple species, and splitting and lumping after the query as necessary. However, note that the majority of eBird users don't assign their observations to subspecies, so querying taxa below species will result in a much smaller dataset.
 
@@ -46,19 +64,26 @@ if (!dir.exists("data")) {
   dir.create("data")
 }
 
-ebd <- auk_ebd("ebd_relDec-2018.txt", 
-               file_sampling = "ebd_sampling_relDec-2018.txt")
+untar("data/ebd_ecuador/ebd_sampling_relNov-2019.tar",exdir = "data/ebd_ecuador/ebd_sampling_relNov-2019")
+
+library(R.utils)
+gunzip("data/ebd_ecuador/ebd_sampling_relNov-2019/ebd_sampling_relNov-2019.txt.gz", remove=FALSE)
+
+ebd <- auk_ebd(file = "data/ebd_ecuador/ebd_EC-W_relNov-2019/ebd_EC-W_relNov-2019.txt", 
+               file_sampling = "data/ebd_ecuador/ebd_sampling_relNov-2019/ebd_sampling_relNov-2019.txt")
 ```
 
 Next, define the filters that you want to apply to the EBD. Each field that you can filter on has an associated function. For example, we'll filter to Wood Thrush observations with `auk_species()`, from BCR 27 with `auk_bcr()`, in June of any year with `auk_date()`, restrict observations to those from either Stationary or Traveling protocols with `auk_protocol()`, and only use complete checklists `auk_complete()` since we intend to zero-fill the data. For a full list of possible filters, [consult the package documentation](https://cornelllabofornithology.github.io/auk/reference/index.html#section-filter).
 
 ```{r ebird-extract-define}
 ebd_filters <- ebd %>% 
-  auk_species("Wood Thrush") %>% 
+  auk_species("Medium Ground-Finch") %>% 
+  # auk_country(country = "Ecuador") %>% 
+  auk_state(state = "EC-W") %>%  # Use the state_code, can't be used with country 
   # southeastern coastal plain bcr
-  auk_bcr(bcr = 27) %>% 
+  # auk_bcr(bcr = 27) %>% 
   # june, use * to get data from any year
-  auk_date(date = c("*-06-01", "*-06-30")) %>% 
+  # auk_date(date = c("*-06-01", "*-06-30")) %>% 
   # restrict to the standard traveling and stationary count protocols
   auk_protocol(protocol = c("Stationary", "Traveling")) %>% 
   auk_complete()
@@ -69,12 +94,12 @@ Note that printing the object `ebd_filters` shows what filters have been set. At
 
 ```{r ebird-extract-filter}
 # output files
-data_dir <- "data"
+data_dir <- "data/ebd_ecuador"
 if (!dir.exists(data_dir)) {
   dir.create(data_dir)
 }
-f_ebd <- file.path(data_dir, "ebd_woothr_june_bcr27.txt")
-f_sampling <- file.path(data_dir, "ebd_june_bcr27_sampling.txt")
+f_ebd <- file.path(data_dir, "ebd_geofor_all.txt")
+f_sampling <- file.path(data_dir, "ebd_sampling_2019.txt")
 
 # only run if the files don't already exist
 if (!file.exists(f_ebd)) {
@@ -91,6 +116,14 @@ The previous step left us with two tab separated text files, one for the EBD and
 ```{r ebird-zf}
 ebd_zf <- auk_zerofill(f_ebd, f_sampling, collapse = TRUE)
 ```
+
+```{r}
+seen.for = ebd_zf[ebd_zf$species_observed=="TRUE", ]
+plot(seen.for$latitude ~ seen.for$longitude, 
+     asp = 1, 
+     pch = 21 , bg = "black", cex = .5)
+```
+
 
 When any of the read functions from `auk` are used, two important processing steps occur by default behind the scenes. First, eBird observations can be made at levels below species (e.g. subspecies) or above species (e.g. a bird that was only identified as Duck sp.); however, for most uses we'll want observations at the species level. [`auk_rollup()`](https://cornelllabofornithology.github.io/auk/reference/auk_rollup.html) is applied by default when [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html) is used, and it drops all observations not identifiable to a species and rolls up all observations reported below species to the species level. eBird also allows for [group checklists](https://help.ebird.org/customer/en/portal/articles/1010555-understanding-the-ebird-checklist-sharing-process), those shared by multiple users. These checklists lead to duplication or near duplication of records within the dataset and the function [`auk_unique()`](https://cornelllabofornithology.github.io/auk/reference/auk_unique.html), applied by default by [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html), addresses this by only keeping one independent copy of each checklist. Finally, by default [`auk_zerofill()`](https://cornelllabofornithology.github.io/auk/reference/auk_zerofill.html) returns a compact representation of the data, consisting of a list of two data frames, one with checklist data and the other with observation data; the use of `collapse = TRUE` combines these into a single data frame, which will be easier to work with.
 
@@ -147,7 +180,7 @@ ebird <- ebd_zf_filtered %>%
          observation_date, time_observations_started, 
          duration_minutes, effort_distance_km,
          number_observers)
-write_csv(ebird, "data/ebd_woothr_june_bcr27_zf.csv", na = "")
+write_csv(ebird, "data/ebd_ecuador/ebd_geofor_all.zf.csv", na = "")
 ```
 
 If you'd like to ensure you're using exactly the same data as was used to generate this book, download the [data package](https://raw.githubusercontent.com/mstrimas/ebird-best-practices/master/data.zip) mentioned in the [setup instructions](#intro-setup-data).
@@ -159,18 +192,18 @@ Before proceeding to fitting species distribution models with these data, it's w
 ```{r ebird-explore-map}
 # load and project gis data
 map_proj <- st_crs(102003)
-ne_land <- read_sf("data/gis-data.gpkg", "ne_land") %>% 
+ne_land <- read_sf("data/geo_data/gis-data_EC.gpkg", "ne_land") %>% 
   st_transform(crs = map_proj) %>% 
   st_geometry()
-bcr <- read_sf("data/gis-data.gpkg", "bcr") %>% 
+# bcr <- read_sf("data/geo_data/gis-data_EC.gpkg", "bcr") %>% 
+#   st_transform(crs = map_proj) %>% 
+#   st_geometry()
+ne_country_lines <- read_sf("data/geo_data/gis-data_EC.gpkg", "ne_country_lines") %>% 
   st_transform(crs = map_proj) %>% 
   st_geometry()
-ne_country_lines <- read_sf("data/gis-data.gpkg", "ne_country_lines") %>% 
-  st_transform(crs = map_proj) %>% 
-  st_geometry()
-ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") %>% 
-  st_transform(crs = map_proj) %>% 
-  st_geometry()
+# ne_state_lines <- read_sf("data/geo_data/gis-data_EC.gpkg", "ne_state_lines") %>% 
+#   st_transform(crs = map_proj) %>% 
+#   st_geometry()
 
 # prepare ebird data for mapping
 ebird_sf <- ebird %>% 
@@ -182,11 +215,11 @@ ebird_sf <- ebird %>%
 # map
 par(mar = c(0.25, 0.25, 0.25, 0.25))
 # set up plot area
-plot(st_geometry(ebird_sf), col = NA)
+plot(st_geometry(ebird_sf), col = NA, asp = 1)
 # contextual gis data
 plot(ne_land, col = "#dddddd", border = "#888888", lwd = 0.5, add = TRUE)
-plot(bcr, col = "#cccccc", border = NA, add = TRUE)
-plot(ne_state_lines, col = "#ffffff", lwd = 0.75, add = TRUE)
+# plot(bcr, col = "#cccccc", border = NA, add = TRUE)
+# plot(ne_state_lines, col = "#ffffff", lwd = 0.75, add = TRUE)
 plot(ne_country_lines, col = "#ffffff", lwd = 1.5, add = TRUE)
 # ebird observations
 # not observed
@@ -204,7 +237,7 @@ legend("bottomright", bty = "n",
        pch = 19)
 box()
 par(new = TRUE, mar = c(0, 0, 3, 0))
-title("Wood Thrush eBird Observations\nJune 2009-2018, BCR 27")
+title("Geospiza fortis eBird Observations\n all time")
 ```
 
 In this map, the spatial bias in eBird data becomes immediately obvious, for example, notice the large number of checklists along the heavily populated Atlantic coast, especially around large cities like Jacksonville, Florida and popular birding areas like the Outer Banks of North Carolina. 
