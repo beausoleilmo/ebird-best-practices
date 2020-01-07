@@ -1,6 +1,4 @@
 .Rhistory
 .RData
 .Rproj.user
-data/calculate-cci.R
-data/ebd_all_june_bcr27.txt
-data/cci_june_bcr27.csv
+data/
