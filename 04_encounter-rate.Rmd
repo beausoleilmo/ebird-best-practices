@@ -42,7 +42,7 @@ if (!dir.exists("output")) {
 }
 
 # ebird data
-ebird <- read_csv("data/ebd_woothr_june_bcr27_zf.csv") %>% 
+ebird <- read_csv("data/ebd_ecuador/ebd_geofor_all.zf.csv") %>% 
   # year required to join to habitat data
   mutate(year = year(observation_date))
 
