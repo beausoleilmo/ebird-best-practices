@@ -176,3 +176,9 @@ write_sf(ne_country_lines, f_ne, "ne_country_lines")
 # write_sf(bcr, f_ne, "bcr")
 ```
 
+While using the GitHub repository, the local storage of the data in the tutorial might increase. You can clean the local repository with this command
+```{bash}
+cd ~/Dropbox/Git/ebird-best-practices/
+git gc --aggressive --prune=now
+```
+
