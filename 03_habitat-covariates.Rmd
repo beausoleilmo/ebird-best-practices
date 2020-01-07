@@ -10,10 +10,10 @@ editor_options:
 
 Species distribution models work by finding associations between species occurrence or abundance and environmental variables. Using these relationships, it's possible to predict the distribution in areas that aren't sampled, provided we know the value of the environmental variables in these areas. Therefore, to proceed with the modeling in the next several chapters, we'll need to prepare a suite of environmental variables to be used as covariates in our models. The particular set of covariates that's most suitable for a given study will depend on the focal species, region, and time period, as well as the availability of data. Fortunately, there is an abundance of freely available, satellite-based landcover products derived from satellites such as [Landsat](https://en.wikipedia.org/wiki/Landsat_program), [SPOT](https://en.wikipedia.org/wiki/SPOT_(satellite)), and [MODIS](https://en.wikipedia.org/wiki/Moderate_Resolution_Imaging_Spectroradiometer) that are suitable for distribution modeling.
 
-For the examples in this book, we'll use habitat covariates derived from the [MODIS MCD12Q1 v006](https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mcd12q1_v006) landcover product [@friedlMCD12Q1MODISTerra2015]. This product has global coverage at 500 m spatial resolution and annual temporal resolution from 2001-2017. These data are available for several different classification schemes. We'll use the University of Maryland (UMD) landcover classification, which provides a globally accurate classification of landcover in our experience. This system classifies pixels into one of 16 different landcover classes:
+For the examples in this book, we'll use habitat covariates derived from the [MODIS MCD12Q1 v006](https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mcd12q1_v006) https://lpdaac.usgs.gov/products/mcd12q1v006/ landcover product [@friedlMCD12Q1MODISTerra2015]. This product has global coverage at 500 m spatial resolution and annual temporal resolution from 2001-2017. These data are available for several different classification schemes. We'll use the University of Maryland (UMD) landcover classification, which provides a globally accurate classification of landcover in our experience. This system classifies pixels into one of 16 different landcover classes:
 
 ```{r habitat, echo = FALSE}
-lc_classes <- readr::read_csv("data/mcd12q1_classes.csv")
+lc_classes <- readr::read_csv("data/remote_sensing/mcd12q1_classes.csv")
 names(lc_classes) <- stringr::str_to_title(names(lc_classes))
 knitr::kable(lc_classes)
 ```
@@ -39,13 +39,13 @@ library(tidyverse)
 select <- dplyr::select
 projection <- raster::projection
 
-# bcr 27 boundary
-bcr <- read_sf("data/gis-data.gpkg", "bcr") %>% 
-  filter(bcr_code == 27)
+galapagos_isl <- read_sf("data/geo_data/gis-data_EC.gpkg", "galapagos_islands")
 # load ebird data
-ebird <- read_csv("data/ebd_woothr_june_bcr27_zf.csv")
+# ebird <- read_csv("data/ebd_woothr_june_bcr27_zf.csv")
+ebird <- read_csv("data/ebd_ecuador/ebd_geofor_all.zf.csv")
 # get list of tiles required to cover this bcr
-tiles <- getTile(bcr)
+
+tiles <- getTile(galapagos_isl)
 tiles@tile
 ```
 
@@ -87,19 +87,24 @@ Once all the setup steps have been completed, we can start downloading some data
 # earliest year of ebird data
 begin_year <- format(min(ebird$observation_date), "%Y.01.01")
 # end date for ebird data, mcd12q1 only exists up to 2017
-end_year <- min(format(max(ebird$observation_date), "%Y.12.31"), 
-                "2017.12.31")
+end_year <- format(max(ebird$observation_date), "%Y.12.31")
+
 # download tiles and combine into a single raster for each year
 tifs <- runGdal(product = "MCD12Q1", collection = "006", SDSstring = "01", 
-                tileH = tiles@tileH, tileV = tiles@tileV,
-                begin = begin_year, end = end_year, 
-                outDirPath = "data", job = "modis") %>% 
+                tileH = tiles@tileH, 
+                tileV = tiles@tileV,
+                begin = begin_year, 
+                end = end_year, 
+                outDirPath = "data/remote_sensing", 
+                job = "modis_galapagos") %>% 
   pluck("MCD12Q1.006") %>% 
   unlist()
+# ERROR 4: `/ebird_data/data/modis/MODIS/MCD12Q1.006/2009.01.01/MCD12Q1.A2009001.h08v09.006.2018145232037.hdf' not recognized as a supported file format.
+
 
 # rename tifs to have more descriptive names
 new_names <- format(as.Date(names(tifs)), "%Y") %>% 
-  sprintf("modis_mcd12q1_umd_%s.tif", .) %>% 
+  sprintf("modis_mcd12q1_gal_umd_%s.tif", .) %>% 
   file.path(dirname(tifs), .)
 file.rename(tifs, new_names)
 ```
