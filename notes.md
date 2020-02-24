@@ -16,3 +16,11 @@
 # its effect was unstable as its regression coefficient differed substantially
 # between the global model and the model-averaged value.
 # specify detection model
+
+
+# Various GIS resources 
+Soild grid 
+https://soilgrids.org/#!/?layer=ORCDRC_M_sl2_250m&vector=1
+
+HydroRIVERS
+https://www.hydrosheds.org/page/hydrorivers
